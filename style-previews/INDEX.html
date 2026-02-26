@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>FPC-Media Style Previews</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; color: white; font-family: 'Inter', sans-serif; padding: 40px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  p { color: rgba(255,255,255,0.45); margin-bottom: 40px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  a { display: block; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; text-decoration: none; transition: all 0.2s; }
+  a:hover { background: #222; border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
+  .num { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-bottom: 8px; }
+  .name { font-size: 16px; font-weight: 600; color: white; margin-bottom: 6px; }
+  .desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+  .tag { display: inline-block; margin-top: 12px; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 1px; }
+  .dark { background: rgba(0,255,255,0.1); color: #0ff; }
+  .glass { background: rgba(129,140,248,0.1); color: #a5b4fc; }
+  .brutal { background: rgba(255,230,0,0.1); color: #FFE600; }
+  .minimal { background: rgba(201,169,110,0.1); color: #c9a96e; }
+  .bento { background: rgba(0,229,160,0.1); color: #00e5a0; }
+  .luxe { background: rgba(201,169,110,0.1); color: #c9a96e; }
+  .warm { background: rgba(196,98,45,0.1); color: #c4622d; }
+  .matrix { background: rgba(0,255,65,0.1); color: #00ff41; }
+</style>
+</head>
+<body>
+  <h1>FPC-Media · Style Previews</h1>
+  <p>Klick auf einen Stil um den vollständigen Prototyp zu öffnen. Wähle deinen Favoriten!</p>
+  <div class="grid">
+    <a href="1-cyberpunk-neon.html" target="_blank">
+      <div class="num">STYLE 1</div>
+      <div class="name">Cyberpunk Neon</div>
+      <div class="desc">Dunkel, Cyan/Lila, Neon-Glow, Matrix-Grid, Scanlines</div>
+      <span class="tag dark">DARK</span>
+    </a>
+    <a href="2-glassmorphism.html" target="_blank">
+      <div class="num">STYLE 2</div>
+      <div class="name">Glassmorphism</div>
+      <div class="desc">Frosted Glass, animierte Blobs, Purple-Gradient, modern</div>
+      <span class="tag glass">GLASS</span>
+    </a>
+    <a href="3-brutalist.html" target="_blank">
+      <div class="num">STYLE 3</div>
+      <div class="name">Brutalist</div>
+      <div class="desc">Schwarz/Weiß/Gelb, dicke Borders, Bebas Neue, Ticker</div>
+      <span class="tag brutal">BRUTALIST</span>
+    </a>
+    <a href="4-minimal-swiss.html" target="_blank">
+      <div class="num">STYLE 4</div>
+      <div class="name">Minimal Swiss</div>
+      <div class="desc">Instrument Serif, viel Whitespace, editorial, elegant</div>
+      <span class="tag minimal">MINIMAL</span>
+    </a>
+    <a href="5-bento-dark.html" target="_blank">
+      <div class="num">STYLE 5</div>
+      <div class="name">Bento Dark</div>
+      <div class="desc">Apple Bento Grid, dunkel, Plus Jakarta Sans, grüne Akzente</div>
+      <span class="tag bento">BENTO</span>
+    </a>
+    <a href="6-gradient-luxe.html" target="_blank">
+      <div class="num">STYLE 6</div>
+      <div class="name">Gradient Luxe</div>
+      <div class="desc">Cormorant, violetter Mesh, Gold-Akzente, Grain-Texture</div>
+      <span class="tag luxe">LUXE</span>
+    </a>
+    <a href="7-warm-local.html" target="_blank">
+      <div class="num">STYLE 7</div>
+      <div class="name">Warm & Local</div>
+      <div class="desc">Creme/Terra, Fraunces Serif, lokal & menschlich, warm</div>
+      <span class="tag warm">WARM</span>
+    </a>
+    <a href="8-techno-matrix.html" target="_blank">
+      <div class="num">STYLE 8</div>
+      <div class="name">Techno Matrix</div>
+      <div class="desc">Terminal UI, Matrix Rain, Monospace, CRT-Scanlines</div>
+      <span class="tag matrix">MATRIX</span>
+    </a>
+  </div>
+</body>
+</html>

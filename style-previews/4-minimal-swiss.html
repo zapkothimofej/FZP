@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style 4 — Minimal Swiss</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Neue+Haas+Grotesk+Display+Pro:wght@400;500&family=Manrope:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #111010;
+    --soft: #f7f5f2;
+    --mid: #9e9e9e;
+    --accent: #c9a96e;
+    --line: rgba(0,0,0,0.1);
+  }
+
+  body {
+    background: var(--soft);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 60px;
+    border-bottom: 1px solid var(--line);
+    animation: fadeIn 0.8s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+  }
+
+  .logo sup {
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 500;
+    color: var(--mid);
+    vertical-align: super;
+    margin-left: 4px;
+  }
+
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    color: var(--mid);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--accent);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 82px);
+    animation: fadeIn 0.8s 0.15s ease both;
+  }
+
+  .hero-left {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--mid);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(52px, 6vw, 80px);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    font-weight: 400;
+    margin-bottom: 32px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(0,0,0,0.5);
+    font-weight: 300;
+    max-width: 420px;
+    margin-bottom: 48px;
+  }
+
+  .cta-row { display: flex; align-items: center; gap: 32px; }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--soft);
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #333; }
+
+  .btn-link {
+    font-size: 13px;
+    color: var(--mid);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Manrope', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .btn-link:hover { color: var(--ink); }
+
+  .hero-nums {
+    display: flex;
+    gap: 40px;
+  }
+
+  .num-item {}
+  .num { font-family: 'Instrument Serif', serif; font-size: 48px; color: var(--ink); line-height: 1; }
+  .num-label { font-size: 11px; letter-spacing: 2px; color: var(--mid); margin-top: 4px; text-transform: uppercase; }
+
+  .hero-right {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .right-top { flex: 1; display: flex; align-items: flex-end; margin-bottom: 40px; }
+
+  .big-word {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(80px, 14vw, 200px);
+    line-height: 0.85;
+    color: rgba(0,0,0,0.06);
+    font-weight: 400;
+    letter-spacing: -4px;
+  }
+
+  .services-list { display: flex; flex-direction: column; }
+
+  .service-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.2s;
+    group: true;
+  }
+
+  .service-row:last-child { border-bottom: 1px solid var(--line); }
+
+  .service-row:hover .service-row-name { color: var(--accent); }
+  .service-row:hover .service-row-arrow { opacity: 1; transform: translateX(0); }
+
+  .service-row-num { font-size: 11px; color: var(--mid); font-weight: 500; width: 30px; }
+  .service-row-name { font-family: 'Instrument Serif', serif; font-size: 20px; letter-spacing: -0.3px; transition: color 0.2s; }
+  .service-row-price { font-size: 12px; color: var(--mid); }
+  .service-row-arrow { opacity: 0; transform: translateX(-4px); transition: all 0.2s; font-size: 16px; }
+</style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">FPC-Media<sup>™</sup></div>
+    <div class="nav-links">
+      <a href="#">Leistungen</a>
+      <a href="#">Portfolio</a>
+      <a href="#">Preise</a>
+      <button class="nav-cta">Gespräch buchen →</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div>
+        <div class="eyebrow">Digitalagentur · Ruhrgebiet</div>
+        <h1>Dein Business,<br><em>digital erzählt.</em></h1>
+        <p class="desc">Wir verbinden handwerkliche Qualität mit moderner Technologie — für KMUs die endlich sichtbar werden wollen.</p>
+        <div class="cta-row">
+          <button class="btn-primary">Angebot anfragen</button>
+          <button class="btn-link">Portfolio ansehen →</button>
+        </div>
+      </div>
+      <div class="hero-nums">
+        <div class="num-item">
+          <div class="num">4</div>
+          <div class="num-label">Services</div>
+        </div>
+        <div class="num-item">
+          <div class="num">∞</div>
+          <div class="num-label">Möglichkeiten</div>
+        </div>
+        <div class="num-item">
+          <div class="num">1</div>
+          <div class="num-label">Anruf genügt</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="right-top">
+        <div class="big-word">Digital</div>
+      </div>
+      <div class="services-list">
+        <div class="service-row">
+          <span class="service-row-num">01</span>
+          <span class="service-row-name">Web-Entwicklung</span>
+          <span class="service-row-price">ab 300 €</span>
+          <span class="service-row-arrow">→</span>
+        </div>
+        <div class="service-row">
+          <span class="service-row-num">02</span>
+          <span class="service-row-name">Medienproduktion</span>
+          <span class="service-row-price">ab 200 €</span>
+          <span class="service-row-arrow">→</span>
+        </div>
+        <div class="service-row">
+          <span class="service-row-num">03</span>
+          <span class="service-row-name">Automatisierung</span>
+          <span class="service-row-price">ab 150 €</span>
+          <span class="service-row-arrow">→</span>
+        </div>
+        <div class="service-row">
+          <span class="service-row-num">04</span>
+          <span class="service-row-name">Coaching</span>
+          <span class="service-row-price">auf Anfrage</span>
+          <span class="service-row-arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style 1 — Cyberpunk Neon</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cyan: #00ffff;
+    --purple: #bf00ff;
+    --bg: #020208;
+    --surface: #0a0a1a;
+  }
+
+  body {
+    background: var(--bg);
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,255,0.015) 2px,
+      rgba(0,255,255,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Grid background */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+  }
+
+  /* Glowing orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: orbFloat 8s ease-in-out infinite;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--cyan); top: -100px; right: -100px; animation-delay: 0s; }
+  .orb-2 { width: 300px; height: 300px; background: var(--purple); bottom: -100px; left: -50px; animation-delay: 3s; }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.1); }
+  }
+
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    border-bottom: 1px solid rgba(0,255,255,0.2);
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(0,255,255,0.5);
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { text-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(0,255,255,0.3); }
+    50% { text-shadow: 0 0 30px var(--cyan), 0 0 60px rgba(0,255,255,0.6), 0 0 80px rgba(0,255,255,0.2); }
+  }
+
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: rgba(255,255,255,0.6); text-decoration: none; letter-spacing: 2px; font-size: 12px; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+
+  .hero {
+    position: relative;
+    z-index: 10;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+  }
+
+  .hero-content { max-width: 700px; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,255,0.1);
+    border: 1px solid rgba(0,255,255,0.3);
+    padding: 6px 16px;
+    margin-bottom: 32px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+    animation: blink 1.5s step-end infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    animation: fadeSlideIn 0.8s ease forwards;
+  }
+
+  .line-1 { color: white; }
+  .line-2 {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cyan);
+    text-shadow: none;
+  }
+  .line-3 {
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  p.sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    max-width: 500px;
+    animation: fadeSlideIn 0.8s 0.2s ease both;
+  }
+
+  .cta-group { display: flex; gap: 16px; animation: fadeSlideIn 0.8s 0.4s ease both; }
+
+  .btn-primary {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    padding: 14px 32px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: -1;
+  }
+
+  .btn-primary:hover { color: black; text-shadow: none; }
+  .btn-primary:hover::before { transform: translateX(0); }
+
+  .btn-secondary {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    padding: 14px 32px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .btn-secondary:hover { color: white; }
+
+  .stats {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeSlideIn 0.8s 0.6s ease both;
+  }
+
+  .stat {
+    border-left: 1px solid rgba(0,255,255,0.3);
+    padding-left: 20px;
+  }
+
+  .stat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 15px rgba(0,255,255,0.5);
+  }
+
+  .stat-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+  .services-row {
+    position: absolute;
+    bottom: 40px;
+    left: 48px;
+    right: 48px;
+    display: flex;
+    gap: 1px;
+    animation: fadeSlideIn 0.8s 0.8s ease both;
+  }
+
+  .service-chip {
+    flex: 1;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.3s;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .service-chip:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,255,255,0.05);
+  }
+</style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <nav>
+    <div class="logo">FPC-MEDIA</div>
+    <div class="nav-links">
+      <a href="#">LEISTUNGEN</a>
+      <a href="#">PORTFOLIO</a>
+      <a href="#">PREISE</a>
+      <a href="#">KONTAKT</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        RUHRGEBIET · DIGITAL AGENCY
+      </div>
+      <h1>
+        <div class="line-1">WIR MACHEN</div>
+        <div class="line-2">DEIN BUSINESS</div>
+        <div class="line-3">DIGITAL.</div>
+      </h1>
+      <p class="sub">Websites. Videos. Automation. Wir sind das Full-Service-Team für KMUs im Ruhrgebiet die endlich online sichtbar werden wollen.</p>
+      <div class="cta-group">
+        <button class="btn-primary">JETZT STARTEN</button>
+        <button class="btn-secondary">→ PORTFOLIO ANSEHEN</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">SERVICES</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">LOKAL</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">MÖGLICHKEITEN</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="services-row">
+    <div class="service-chip">WEB ENTWICKLUNG</div>
+    <div class="service-chip">VIDEO PRODUKTION</div>
+    <div class="service-chip">AUTOMATISIERUNG</div>
+    <div class="service-chip">COACHING</div>
+  </div>
+</body>
+</html>

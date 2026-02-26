@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style 3 — Brutalist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --yellow: #FFE600;
+    --red: #FF2B00;
+  }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    cursor: crosshair;
+  }
+
+  /* Moving ticker */
+  .ticker-wrap {
+    background: var(--black);
+    overflow: hidden;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid var(--yellow);
+  }
+
+  .ticker {
+    display: flex;
+    gap: 60px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker span {
+    color: var(--yellow);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    border-bottom: 3px solid var(--black);
+    height: 64px;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    border-right: 3px solid var(--black);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--black);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    color: var(--black);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    border-left: 3px solid var(--black);
+    transition: all 0.1s;
+  }
+
+  .nav-links a:hover {
+    background: var(--black);
+    color: var(--yellow);
+  }
+
+  .nav-links a.active {
+    background: var(--yellow);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    min-height: calc(100vh - 107px);
+    border-bottom: 3px solid var(--black);
+  }
+
+  .hero-main {
+    padding: 60px 48px;
+    border-right: 3px solid var(--black);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    background: var(--yellow);
+    display: inline-block;
+    padding: 4px 10px;
+    margin-bottom: 32px;
+    border: 2px solid var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 12vw, 160px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--black);
+    animation: glitchIn 0.5s ease forwards;
+  }
+
+  @keyframes glitchIn {
+    0% { opacity: 0; transform: skew(-5deg); }
+    50% { transform: skew(2deg); }
+    100% { opacity: 1; transform: skew(0); }
+  }
+
+  h1 .red { color: var(--red); }
+
+  .hero-bottom {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+  }
+
+  .desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(0,0,0,0.6);
+    max-width: 380px;
+  }
+
+  .btn-primary {
+    background: var(--black);
+    color: var(--yellow);
+    border: 3px solid var(--black);
+    padding: 16px 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 var(--black);
+    transition: all 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 2px 2px 0 var(--black);
+    transform: translate(4px, 4px);
+  }
+
+  .hero-side {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .side-service {
+    flex: 1;
+    padding: 28px 24px;
+    border-bottom: 3px solid var(--black);
+    cursor: pointer;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .side-service:hover { background: var(--yellow); }
+  .side-service:last-child { border-bottom: none; }
+
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  .service-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+  }
+
+  .service-arrow {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .marquee-bar {
+    background: var(--red);
+    overflow: hidden;
+    height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .marquee-inner {
+    display: flex;
+    gap: 48px;
+    animation: ticker 15s linear infinite;
+    white-space: nowrap;
+  }
+
+  .marquee-inner span {
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  .marquee-inner .dot { color: var(--yellow); }
+</style>
+</head>
+<body>
+
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>WEBENTWICKLUNG</span>
+      <span>★</span>
+      <span>VIDEOPRODUKTION</span>
+      <span>★</span>
+      <span>AUTOMATISIERUNG</span>
+      <span>★</span>
+      <span>COACHING</span>
+      <span>★</span>
+      <span>RUHRGEBIET</span>
+      <span>★</span>
+      <span>WEBENTWICKLUNG</span>
+      <span>★</span>
+      <span>VIDEOPRODUKTION</span>
+      <span>★</span>
+      <span>AUTOMATISIERUNG</span>
+      <span>★</span>
+      <span>COACHING</span>
+      <span>★</span>
+      <span>RUHRGEBIET</span>
+      <span>★</span>
+    </div>
+  </div>
+
+  <nav>
+    <div class="logo-area">
+      <div class="logo">FPC-MEDIA</div>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">START</a>
+      <a href="#">LEISTUNGEN</a>
+      <a href="#">PORTFOLIO</a>
+      <a href="#">PREISE</a>
+      <a href="#">KONTAKT</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div>
+        <div class="tag">⚡ DIGITALAGENTUR · RUHRGEBIET</div>
+        <h1>WIR<br>MACHEN<br><span class="red">DICH</span><br>DIGITAL.</h1>
+      </div>
+      <div class="hero-bottom">
+        <p class="desc">Websites. Videos. Automation. Kein Bullshit — nur Ergebnisse für KMUs die endlich online sichtbar werden wollen.</p>
+        <button class="btn-primary">JETZT ANFRAGEN →</button>
+      </div>
+    </div>
+
+    <div class="hero-side">
+      <div class="side-service">
+        <div>
+          <div class="service-num">01</div>
+          <div class="service-name">WEB DEV</div>
+        </div>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="side-service">
+        <div>
+          <div class="service-num">02</div>
+          <div class="service-name">VIDEO</div>
+        </div>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="side-service">
+        <div>
+          <div class="service-num">03</div>
+          <div class="service-name">AUTOMATION</div>
+        </div>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="side-service">
+        <div>
+          <div class="service-num">04</div>
+          <div class="service-name">COACHING</div>
+        </div>
+        <div class="service-arrow">→</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-bar">
+    <div class="marquee-inner">
+      <span>FPC-MEDIA</span><span class="dot">●</span>
+      <span>AUS DEM RUHRGEBIET</span><span class="dot">●</span>
+      <span>FÜR DAS RUHRGEBIET</span><span class="dot">●</span>
+      <span>WEB</span><span class="dot">●</span>
+      <span>VIDEO</span><span class="dot">●</span>
+      <span>AUTO</span><span class="dot">●</span>
+      <span>FPC-MEDIA</span><span class="dot">●</span>
+      <span>AUS DEM RUHRGEBIET</span><span class="dot">●</span>
+      <span>FÜR DAS RUHRGEBIET</span><span class="dot">●</span>
+      <span>WEB</span><span class="dot">●</span>
+      <span>VIDEO</span><span class="dot">●</span>
+      <span>AUTO</span><span class="dot">●</span>
+    </div>
+  </div>
+
+</body>
+</html>

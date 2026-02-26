@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style 5 — Bento Dark</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0c0c0f;
+    --card: #141418;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0eff5;
+    --muted: rgba(255,255,255,0.35);
+    --green: #00e5a0;
+    --orange: #ff6b35;
+    --blue: #4f9eff;
+    --purple: #9b6dff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 0 4px;
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo span { color: var(--green); }
+
+  .nav-links { display: flex; gap: 8px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+  .nav-cta {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* Bento grid */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 16px;
+    max-width: 1200px;
+    animation: fadeIn 0.5s 0.1s ease both;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* Hero card - large */
+  .card-hero {
+    grid-column: span 7;
+    grid-row: span 2;
+    padding: 48px;
+    background: linear-gradient(135deg, #141418 0%, #1a1a28 100%);
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,229,160,0.12), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,229,160,0.12);
+    border: 1px solid rgba(0,229,160,0.2);
+    color: var(--green);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: fit-content;
+    margin-bottom: 24px;
+  }
+
+  .card-hero h1 {
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+
+  .card-hero h1 span { color: var(--green); }
+
+  .card-hero p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 400;
+    max-width: 400px;
+    margin-bottom: 32px;
+  }
+
+  .hero-cta { display: flex; gap: 12px; }
+
+  .btn-green {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-green:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+
+  /* Service cards */
+  .card-web { grid-column: span 5; background: linear-gradient(135deg, #141418, #181825); }
+  .card-video { grid-column: span 5; background: linear-gradient(135deg, #141418, #1f1714); }
+  .card-auto { grid-column: span 3; }
+  .card-coaching { grid-column: span 2; }
+  .card-stat-1 { grid-column: span 2; }
+  .card-stat-2 { grid-column: span 2; }
+  .card-location { grid-column: span 3; }
+
+  .card-icon-wrapper {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .icon-blue { background: rgba(79,158,255,0.15); }
+  .icon-orange { background: rgba(255,107,53,0.15); }
+  .icon-green { background: rgba(0,229,160,0.15); }
+  .icon-purple { background: rgba(155,109,255,0.15); }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .stat-num {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-green { color: var(--green); }
+  .stat-orange { color: var(--orange); }
+
+  .location-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--green);
+    background: rgba(0,229,160,0.1);
+    padding: 5px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card:hover .card-arrow { opacity: 1; }
+</style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">FPC<span>.</span>Media</div>
+    <div class="nav-links">
+      <a href="#">Leistungen</a>
+      <a href="#">Portfolio</a>
+      <a href="#">Preise</a>
+      <a href="#">Über uns</a>
+    </div>
+    <button class="nav-cta">Kontakt aufnehmen</button>
+  </nav>
+
+  <div class="bento">
+
+    <!-- Hero card -->
+    <div class="card card-hero">
+      <div>
+        <div class="hero-tag">● Live · Ruhrgebiet</div>
+        <h1>Dein Business<br><span>digital wachsen</span><br>lassen.</h1>
+        <p>Full-Service Digitalagentur für KMUs. Web, Video, Automation — alles aus einer Hand.</p>
+        <div class="hero-cta">
+          <button class="btn-green">Jetzt anfragen</button>
+          <button class="btn-ghost">Portfolio →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Web card -->
+    <div class="card card-web">
+      <div class="card-icon-wrapper icon-blue">🌐</div>
+      <div class="card-label">Service 01</div>
+      <div class="card-title">Web-Entwicklung</div>
+      <div class="card-desc">Next.js, TypeScript, Tailwind. Schnell, modern, SEO-optimiert. Ab 300 €.</div>
+      <div class="card-arrow">→</div>
+    </div>
+
+    <!-- Video card -->
+    <div class="card card-video">
+      <div class="card-icon-wrapper icon-orange">🎬</div>
+      <div class="card-label">Service 02</div>
+      <div class="card-title">Medienproduktion</div>
+      <div class="card-desc">Foto, Video & Audio. Für Social Media, Website und Werbung. Ab 200 €.</div>
+      <div class="card-arrow">→</div>
+    </div>
+
+    <!-- Automation card -->
+    <div class="card card-auto">
+      <div class="card-icon-wrapper icon-green">⚡</div>
+      <div class="card-label">Service 03</div>
+      <div class="card-title">Automation</div>
+      <div class="card-desc">n8n Workflows die Zeit und Kosten sparen.</div>
+      <div class="card-arrow">→</div>
+    </div>
+
+    <!-- Coaching card -->
+    <div class="card card-coaching">
+      <div class="card-icon-wrapper icon-purple">🎯</div>
+      <div class="card-title">Coaching</div>
+      <div class="card-desc">Digital-Strategie</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card card-stat-1">
+      <div class="card-label">Websites</div>
+      <div class="stat-num stat-green">∞</div>
+      <div class="card-desc">Möglichkeiten</div>
+    </div>
+
+    <div class="card card-stat-2">
+      <div class="card-label">Reaktion</div>
+      <div class="stat-num stat-orange">24h</div>
+      <div class="card-desc">Antwortzeit</div>
+    </div>
+
+    <!-- Location card -->
+    <div class="card card-location">
+      <div class="location-tag">📍 Ruhrgebiet</div>
+      <div class="card-title" style="font-size:16px">Lokal. Persönlich. Zuverlässig.</div>
+      <div class="card-desc" style="margin-top:8px">Wir kennen den Markt hier.</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
