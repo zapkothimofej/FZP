@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { pricing } from "@/lib/content-de"
+import { pricing } from "@/lib/content"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -72,34 +72,34 @@ export function PricingSection() {
       ref={sectionRef}
       id="pricing"
       className="py-32 px-8 md:px-16 lg:px-24"
-      style={{ backgroundColor: "var(--v6-bg)" }}
+      style={{ backgroundColor: "#0a0a0a" }}
     >
       {/* Header */}
       <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
           <p
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
-            style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+            style={{ color: "#707070", fontFamily: "var(--font-body)" }}
           >
             Investment
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
-            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "var(--v6-text)" }}
+            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
           >
             Transparent Pricing
           </h2>
         </div>
         <p
           className="max-w-xs text-sm leading-relaxed"
-          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
           No hidden fees. No surprise invoices. One price, everything included.
         </p>
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--v6-border)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#222222]">
         {pricing.map((plan, i) => {
           const { prefix, num, suffix } = parsePrice(plan.price)
           return (
@@ -107,7 +107,7 @@ export function PricingSection() {
               key={plan.name}
               className="v6-pricing-card flex flex-col relative overflow-hidden"
               style={{
-                backgroundColor: plan.highlighted ? "var(--v6-bg-elevated)" : "var(--v6-bg)",
+                backgroundColor: plan.highlighted ? "#141414" : "#0a0a0a",
                 padding: "clamp(32px, 4vw, 56px)",
                 opacity: 0,
               }}
@@ -128,7 +128,7 @@ export function PricingSection() {
               {plan.highlighted && (
                 <div
                   className="absolute top-0 left-0 right-0"
-                  style={{ height: "2px", backgroundColor: "var(--v6-accent)" }}
+                  style={{ height: "2px", backgroundColor: "#c8c8c8" }}
                 />
               )}
 
@@ -138,8 +138,8 @@ export function PricingSection() {
                   <span
                     className="text-[10px] tracking-[0.15em] uppercase px-3 py-1 font-semibold"
                     style={{
-                      border: "1px solid var(--v6-accent)",
-                      color: "var(--v6-accent)",
+                      border: "1px solid #c8c8c8",
+                      color: "#c8c8c8",
                       fontFamily: "var(--font-body)",
                     }}
                   >
@@ -151,7 +151,7 @@ export function PricingSection() {
               {/* Plan name */}
               <p
                 className="text-[11px] tracking-[0.2em] uppercase mb-4"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                style={{ color: "#707070", fontFamily: "var(--font-body)" }}
               >
                 {plan.name}
               </p>
@@ -161,7 +161,7 @@ export function PricingSection() {
                 className="font-[family-name:var(--font-display)] mb-4"
                 style={{
                   fontSize: "clamp(48px, 7vw, 80px)",
-                  color: plan.highlighted ? "var(--v6-accent)" : "var(--v6-text)",
+                  color: plan.highlighted ? "#c8c8c8" : "#ebebeb",
                   lineHeight: 1,
                   textShadow: plan.highlighted
                     ? "1px 1px 0 rgba(200,200,200,0.3), 2px 2px 0 rgba(200,200,200,0.2), 3px 3px 0 rgba(200,200,200,0.1)"
@@ -182,13 +182,13 @@ export function PricingSection() {
               {/* Description */}
               <p
                 className="text-sm leading-relaxed mb-8"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                style={{ color: "#707070", fontFamily: "var(--font-body)" }}
               >
                 {plan.description}
               </p>
 
               {/* Divider */}
-              <div className="mb-8" style={{ height: "1px", backgroundColor: "var(--v6-border)" }} />
+              <div className="mb-8" style={{ height: "1px", backgroundColor: "#222222" }} />
 
               {/* Features */}
               <ul className="flex flex-col gap-3 flex-1">
@@ -196,7 +196,7 @@ export function PricingSection() {
                   <li
                     key={j}
                     className="flex items-start gap-3 text-sm"
-                    style={{ color: "var(--v6-text)", fontFamily: "var(--font-body)" }}
+                    style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}
                   >
                     <svg
                       className="mt-0.5 flex-shrink-0"
@@ -204,7 +204,7 @@ export function PricingSection() {
                       height="14"
                       viewBox="0 0 14 14"
                       fill="none"
-                      stroke="var(--v6-accent)"
+                      stroke="#c8c8c8"
                       strokeWidth="1.5"
                       strokeLinecap="round"
                     >
@@ -222,26 +222,26 @@ export function PricingSection() {
                 style={
                   plan.highlighted
                     ? {
-                        backgroundColor: "var(--v6-accent)",
-                        color: "var(--v6-text-on-accent)",
-                        border: "1px solid var(--v6-accent)",
+                        backgroundColor: "#c8c8c8",
+                        color: "#0a0a0a",
+                        border: "1px solid #c8c8c8",
                       }
                     : {
                         backgroundColor: "transparent",
-                        color: "var(--v6-accent)",
-                        border: "1px solid var(--v6-border)",
+                        color: "#c8c8c8",
+                        border: "1px solid #222222",
                       }
                 }
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLAnchorElement
                   if (!plan.highlighted) {
-                    el.style.borderColor = "var(--v6-accent)"
+                    el.style.borderColor = "#c8c8c8"
                   }
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLAnchorElement
                   if (!plan.highlighted) {
-                    el.style.borderColor = "var(--v6-border)"
+                    el.style.borderColor = "#222222"
                   }
                 }}
               >

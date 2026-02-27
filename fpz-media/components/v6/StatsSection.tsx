@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { stats } from "@/lib/content-de"
+import { stats } from "@/lib/content"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -77,11 +77,11 @@ export function StatsSection() {
     <section
       ref={sectionRef}
       className="py-28"
-      style={{ backgroundColor: "var(--v6-bg-elevated)" }}
+      style={{ backgroundColor: "#141414" }}
     >
       {/* Stats grid */}
       <div className="px-8 md:px-16 lg:px-24">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[var(--v6-border)]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[#222222]">
           {stats.map((stat, i) => {
             const { prefix, num, suffix } = parseStatValue(stat.value)
             return (
@@ -89,8 +89,8 @@ export function StatsSection() {
                 key={stat.label}
                 className="v6-stat-card flex flex-col items-center justify-center py-16 px-4 text-center"
                 style={{
-                  backgroundColor: "var(--v6-bg-elevated)",
-                  borderRight: i < stats.length - 1 ? "1px solid var(--v6-border)" : "none",
+                  backgroundColor: "#141414",
+                  borderRight: i < stats.length - 1 ? "1px solid #222222" : "none",
                   opacity: 0,
                 }}
               >
@@ -99,7 +99,7 @@ export function StatsSection() {
                   className="font-[family-name:var(--font-display)] mb-3"
                   style={{
                     fontSize: "clamp(36px, 6vw, 80px)",
-                    color: "var(--v6-accent)",
+                    color: "#c8c8c8",
                     lineHeight: 1,
                     textShadow:
                       "1px 1px 0 rgba(200,200,200,0.3), 2px 2px 0 rgba(200,200,200,0.2), 3px 3px 0 rgba(200,200,200,0.1)",
@@ -119,7 +119,7 @@ export function StatsSection() {
                 </div>
                 <p
                   className="text-[11px] tracking-[0.15em] uppercase"
-                  style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                 >
                   {stat.label}
                 </p>
@@ -132,14 +132,14 @@ export function StatsSection() {
       {/* Infinite marquee ticker */}
       <div
         className="mt-16 overflow-hidden border-t border-b select-none"
-        style={{ borderColor: "var(--v6-border)", padding: "14px 0" }}
+        style={{ borderColor: "#222222", padding: "14px 0" }}
         aria-hidden
       >
         <div className="flex">
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
             style={{
-              color: "var(--v6-text-muted)",
+              color: "#707070",
               fontSize: "11px",
               letterSpacing: "0.25em",
               fontFamily: "var(--font-body)",
@@ -151,7 +151,7 @@ export function StatsSection() {
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
             style={{
-              color: "var(--v6-text-muted)",
+              color: "#707070",
               fontSize: "11px",
               letterSpacing: "0.25em",
               fontFamily: "var(--font-body)",

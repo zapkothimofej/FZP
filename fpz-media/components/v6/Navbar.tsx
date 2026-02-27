@@ -5,20 +5,18 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Logo } from "@/components/shared/Logo"
-import { useV6Theme } from "@/app/v6/ThemeProvider"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
-  { label: "Leistungen", href: "#services" },
-  { label: "Prozess", href: "#process" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Preise", href: "#pricing" },
+  { label: "Services", href: "#services" },
+  { label: "Process", href: "#process" },
+  { label: "Work", href: "#portfolio" },
+  { label: "Pricing", href: "#pricing" },
 ]
 
 export function Navbar() {
   const navRef = useRef<HTMLElement>(null)
-  const { theme, toggleTheme } = useV6Theme()
 
   useGSAP(() => {
     if (!navRef.current) return
@@ -35,16 +33,16 @@ export function Navbar() {
       start: "top+=80 top",
       onEnter: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "var(--v6-nav-scrolled-bg)",
+          backgroundColor: "rgba(10,10,10,0.95)",
           backdropFilter: "blur(12px)",
-          borderBottomColor: "var(--v6-nav-scrolled-border)",
+          borderBottomColor: "#222222",
           duration: 0.4,
           ease: "power2.out",
         })
       },
       onLeaveBack: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "transparent",
+          backgroundColor: "rgba(10,10,10,0)",
           backdropFilter: "blur(0px)",
           borderBottomColor: "transparent",
           duration: 0.4,
@@ -60,47 +58,48 @@ export function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-12 h-16 border-b border-transparent transition-colors will-change-transform"
       style={{ opacity: 0 }}
     >
-      <Logo color="var(--v6-accent)" size="md" />
+      <Logo color="#c8c8c8" size="md" />
 
       <div className="hidden md:flex items-center gap-8">
         {NAV_LINKS.map((link) => (
           <a
             key={link.href}
             href={link.href}
-            className="text-[13px] tracking-[0.08em] uppercase font-medium transition-colors duration-200 hover:text-[var(--v6-text)]"
-            style={{ color: "var(--v6-text-muted)" }}
+            className="text-[13px] tracking-[0.08em] uppercase font-medium transition-colors duration-200"
+            style={{ color: "#707070" }}
+            onMouseEnter={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.color = "#ebebeb")
+            }
+            onMouseLeave={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.color = "#707070")
+            }
           >
             {link.label}
           </a>
         ))}
       </div>
 
-      <div className="hidden md:flex items-center gap-6">
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="p-2 rounded-md transition-colors hover:bg-[var(--v6-border)]"
-          style={{ color: "var(--v6-accent)" }}
-          aria-label={theme === "dark" ? "Zu Hellmodus wechseln" : "Zu Dunkelmodus wechseln"}
-        >
-          {theme === "dark" ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          )}
-        </button>
-        <a
-          href="#contact"
-          className="inline-flex items-center h-9 px-5 text-[12px] tracking-[0.1em] uppercase font-semibold border transition-all duration-300 hover:bg-[var(--v6-accent)] hover:text-[var(--v6-text-on-accent)]"
-          style={{
-            borderColor: "var(--v6-accent)",
-            color: "var(--v6-accent)",
-            letterSpacing: "0.1em",
-          }}
-        >
-          Projekt starten
-        </a>
-      </div>
+      <a
+        href="#contact"
+        className="hidden md:inline-flex items-center h-9 px-5 text-[12px] tracking-[0.1em] uppercase font-semibold border transition-all duration-300"
+        style={{
+          borderColor: "#c8c8c8",
+          color: "#c8c8c8",
+          letterSpacing: "0.1em",
+        }}
+        onMouseEnter={(e) => {
+          const el = e.currentTarget as HTMLAnchorElement
+          el.style.backgroundColor = "#c8c8c8"
+          el.style.color = "#0a0a0a"
+        }}
+        onMouseLeave={(e) => {
+          const el = e.currentTarget as HTMLAnchorElement
+          el.style.backgroundColor = "transparent"
+          el.style.color = "#c8c8c8"
+        }}
+      >
+        Start a Project
+      </a>
     </nav>
   )
 }

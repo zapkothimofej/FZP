@@ -5,8 +5,7 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import dynamic from "next/dynamic"
-import { services } from "@/lib/content-de"
-import { useV6Theme } from "@/app/v6/ThemeProvider"
+import { services } from "@/lib/content"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,8 +20,6 @@ const PANEL_ICONS: Array<"cube" | "sphere" | "torus"> = ["cube", "sphere", "toru
 export function ServicesSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const { theme } = useV6Theme()
-  const wireframeColor = theme === "light" ? "#404040" : "#c8c8c8"
 
   useGSAP(
     () => {
@@ -55,9 +52,9 @@ export function ServicesSection() {
       >
         <p
           className="text-[11px] tracking-[0.2em] uppercase"
-          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
-          Unsere Leistungen — Scroll
+          Our Services — Scroll
         </p>
       </div>
 
@@ -74,8 +71,8 @@ export function ServicesSection() {
             style={{
               width: "100vw",
               height: "100vh",
-              backgroundColor: "var(--v6-bg-elevated)",
-              borderRight: i < services.length - 1 ? "1px solid var(--v6-accent)" : "none",
+              backgroundColor: "#141414",
+              borderRight: i < services.length - 1 ? "1px solid #c8c8c8" : "none",
               flexShrink: 0,
             }}
           >
@@ -85,7 +82,7 @@ export function ServicesSection() {
               aria-hidden
               style={{
                 fontSize: "clamp(160px, 28vw, 400px)",
-                color: "var(--v6-accent)",
+                color: "#c8c8c8",
                 opacity: 0.06,
                 lineHeight: 0.85,
                 paddingRight: "2rem",
@@ -99,7 +96,7 @@ export function ServicesSection() {
               className="absolute top-8 right-8"
               aria-hidden
             >
-              <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} color={wireframeColor} />
+              <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
             </div>
 
             {/* Panel content */}
@@ -107,7 +104,7 @@ export function ServicesSection() {
               {/* Number label */}
               <p
                 className="text-[11px] tracking-[0.2em] uppercase mb-6"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                style={{ color: "#707070", fontFamily: "var(--font-body)" }}
               >
                 {service.number} / {String(services.length).padStart(2, "0")}
               </p>
@@ -117,7 +114,7 @@ export function ServicesSection() {
                 className="font-[family-name:var(--font-display)] mb-4"
                 style={{
                   fontSize: "clamp(40px, 7vw, 96px)",
-                  color: "var(--v6-text)",
+                  color: "#ebebeb",
                   lineHeight: 1,
                 }}
               >
@@ -128,7 +125,7 @@ export function ServicesSection() {
               <p
                 className="text-lg mb-6 italic"
                 style={{
-                  color: "var(--v6-accent)",
+                  color: "#c8c8c8",
                   fontFamily: "var(--font-display)",
                   fontSize: "clamp(18px, 2vw, 26px)",
                 }}
@@ -139,7 +136,7 @@ export function ServicesSection() {
               {/* Description */}
               <p
                 className="text-sm leading-relaxed mb-8 max-w-md"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                style={{ color: "#707070", fontFamily: "var(--font-body)" }}
               >
                 {service.description}
               </p>
@@ -147,7 +144,7 @@ export function ServicesSection() {
               {/* Thin separator */}
               <div
                 className="mb-6"
-                style={{ height: "1px", backgroundColor: "var(--v6-border)", width: "100%" }}
+                style={{ height: "1px", backgroundColor: "#222222", width: "100%" }}
               />
 
               {/* Deliverables */}
@@ -156,11 +153,11 @@ export function ServicesSection() {
                   <li
                     key={j}
                     className="flex items-center gap-3 text-sm"
-                    style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                    style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                   >
                     <span
                       className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: "var(--v6-accent)" }}
+                      style={{ backgroundColor: "#c8c8c8" }}
                     />
                     {d}
                   </li>
@@ -172,7 +169,7 @@ export function ServicesSection() {
             {i === 0 && (
               <div
                 className="absolute bottom-8 right-12 flex items-center gap-2"
-                style={{ color: "var(--v6-text-muted)", fontSize: "11px", letterSpacing: "0.1em" }}
+                style={{ color: "#707070", fontSize: "11px", letterSpacing: "0.1em" }}
               >
                 <span>DRAG TO EXPLORE</span>
                 <svg
