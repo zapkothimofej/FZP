@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { process as processSteps } from "@/lib/content"
+import { process as processSteps } from "@/lib/content-de"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -69,13 +69,13 @@ export function ProcessSection() {
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
             style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
           >
-            How We Work
+            So arbeiten wir
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
             style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "var(--v6-text)" }}
           >
-            The Process
+            Der Prozess
           </h2>
         </div>
 
@@ -135,7 +135,7 @@ export function ProcessSection() {
                   className="text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
                   style={{ color: "var(--v6-text-muted)" }}
                 >
-                  Step {item.step}
+                  Schritt {item.step}
                 </p>
 
                 {/* Large ghost number behind title */}

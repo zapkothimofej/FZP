@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { manifesto } from "@/lib/content"
+import { manifesto } from "@/lib/content-de"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,32 +15,24 @@ export function ManifestoSection() {
 
   useGSAP(
     () => {
-      if (!sectionRef.current || !textRef.current || !lineRef.current) return
+      if (!sectionRef.current || !lineRef.current) return
 
+      // Nur die Linie zeichnen beim Scrollen — Text bleibt von Anfang an in voller Größe
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=200%",
+          end: "+=100%",
           pin: true,
           scrub: 1,
         },
       })
 
-      // Shrink font size from large to normal as you scroll
-      tl.fromTo(
-        textRef.current,
-        { fontSize: "clamp(48px, 10vw, 160px)" },
-        { fontSize: "clamp(28px, 4vw, 64px)", ease: "none" },
-        0
-      )
-
-      // Draw the separator line from left
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
         { scaleX: 1, ease: "none" },
-        0.5
+        0
       )
     },
     { scope: sectionRef }
@@ -51,7 +43,7 @@ export function ManifestoSection() {
     return (
       <>
         {parts[0]}
-        <span style={{ color: "#c8c8c8" }}>unfair</span>
+        <span style={{ color: "var(--v6-accent)" }}>unfair</span>
         {parts[1]}
       </>
     )
@@ -61,16 +53,16 @@ export function ManifestoSection() {
     <section
       ref={sectionRef}
       className="relative flex flex-col justify-center min-h-screen px-8 md:px-16 lg:px-24"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{ backgroundColor: "var(--v6-bg)" }}
       id="manifesto"
     >
       <div className="max-w-6xl">
         {/* Small label */}
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-10"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
         >
-          Our Manifesto
+          Unser Manifest
         </p>
 
         {/* Main animated text — shrinks as scrub progresses */}
@@ -79,12 +71,12 @@ export function ManifestoSection() {
           className="font-[family-name:var(--font-display)] leading-tight"
           style={{
             fontSize: "clamp(48px, 10vw, 160px)",
-            color: "#ebebeb",
+            color: "var(--v6-text)",
             lineHeight: 1.05,
           }}
         >
           <div>{manifesto.line1}</div>
-          <div style={{ color: "#ebebeb" }}>
+          <div style={{ color: "var(--v6-text)" }}>
             {highlightUnfair(manifesto.line2)}
           </div>
         </div>
@@ -95,7 +87,7 @@ export function ManifestoSection() {
           className="mt-12"
           style={{
             height: "1px",
-            backgroundColor: "#c8c8c8",
+            backgroundColor: "var(--v6-accent)",
             width: "100%",
             transform: "scaleX(0)",
             transformOrigin: "left center",
@@ -105,7 +97,7 @@ export function ManifestoSection() {
         {/* Sub text */}
         <p
           className="mt-8 text-base leading-relaxed max-w-lg"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
         >
           {manifesto.sub}
         </p>

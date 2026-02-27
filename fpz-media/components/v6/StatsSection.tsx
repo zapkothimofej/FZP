@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { stats } from "@/lib/content"
+import { stats } from "@/lib/content-de"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -81,7 +81,7 @@ export function StatsSection() {
     >
       {/* Stats grid */}
       <div className="px-8 md:px-16 lg:px-24">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[#222222]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[var(--v6-border)]">
           {stats.map((stat, i) => {
             const { prefix, num, suffix } = parseStatValue(stat.value)
             return (

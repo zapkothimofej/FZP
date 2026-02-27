@@ -9,10 +9,10 @@ import { Logo } from "@/components/shared/Logo"
 gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
-  { label: "Work", href: "#portfolio" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Leistungen", href: "#services" },
+  { label: "Prozess", href: "#process" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Preise", href: "#pricing" },
 ]
 
 export function Navbar() {
@@ -98,7 +98,7 @@ export function Navbar() {
           el.style.color = "#c8c8c8"
         }}
       >
-        Start a Project
+        Projekt starten
       </a>
     </nav>
   )

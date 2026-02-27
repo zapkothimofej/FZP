@@ -16,11 +16,60 @@ import { cn } from "@/lib/utils"
 interface ContactFormProps {
   accentColor: string
   className?: string
+  lang?: "de" | "en"
+}
+
+const DE = {
+  successTitle: "Nachricht gesendet!",
+  successText: "Danke für deine Anfrage. Wir melden uns in Kürze.",
+  sendAnother: "Weitere Nachricht senden",
+  name: "Name",
+  email: "E-Mail",
+  phone: "Telefon",
+  phoneOptional: "(optional)",
+  company: "Unternehmen",
+  companyOptional: "(optional)",
+  service: "Leistung",
+  servicePlaceholder: "Wobei können wir helfen?",
+  web: "Webentwicklung",
+  media: "Medienproduktion",
+  automation: "Automation",
+  everything: "Alles",
+  message: "Nachricht",
+  messagePlaceholder: "Erzähl uns von deinem Projekt…",
+  sending: "Wird gesendet…",
+  sendButton: "Nachricht senden",
+  errorGeneric: "Etwas ist schiefgelaufen.",
+  errorNetwork: "Netzwerkfehler. Bitte erneut versuchen.",
+}
+const EN = {
+  successTitle: "Message sent!",
+  successText: "Thank you for reaching out. We'll get back to you shortly.",
+  sendAnother: "Send another message",
+  name: "Name",
+  email: "E-Mail",
+  phone: "Phone",
+  phoneOptional: "(optional)",
+  company: "Company",
+  companyOptional: "(optional)",
+  service: "Service",
+  servicePlaceholder: "What can we help you with?",
+  web: "Web Development",
+  media: "Media Production",
+  automation: "Automation",
+  everything: "Everything",
+  message: "Message",
+  messagePlaceholder: "Tell us about your project...",
+  sending: "Sending…",
+  sendButton: "Send Message",
+  errorGeneric: "Something went wrong.",
+  errorNetwork: "Network error. Please try again.",
 }
 
 type FormState = "idle" | "loading" | "success" | "error"
 
-export function ContactForm({ accentColor, className }: ContactFormProps) {
+export function ContactForm({ accentColor, className, lang = "en" }: ContactFormProps) {
+  const t = lang === "de" ? DE : EN
   const [formState, setFormState] = useState<FormState>("idle")
   const [errorMessage, setErrorMessage] = useState("")
   const [service, setService] = useState("")
@@ -50,14 +99,14 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
       const data = await res.json()
 
       if (!res.ok) {
-        setErrorMessage(data.error ?? "Something went wrong.")
+        setErrorMessage(data.error ?? t.errorGeneric)
         setFormState("error")
         return
       }
 
       setFormState("success")
     } catch {
-      setErrorMessage("Network error. Please try again.")
+      setErrorMessage(t.errorNetwork)
       setFormState("error")
     }
   }
@@ -82,16 +131,16 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h3 className="text-white text-xl font-semibold">Message sent!</h3>
+        <h3 className="text-white text-xl font-semibold">{t.successTitle}</h3>
         <p className="text-white/60 text-sm max-w-xs">
-          Thank you for reaching out. We&apos;ll get back to you shortly.
+          {t.successText}
         </p>
         <button
           onClick={() => setFormState("idle")}
           className="mt-4 text-sm underline underline-offset-4"
           style={{ color: accentColor }}
         >
-          Send another message
+          {t.sendAnother}
         </button>
       </div>
     )
@@ -109,7 +158,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name" className="text-white/80 text-sm">
-            Name <span style={{ color: accentColor }}>*</span>
+            {t.name} <span style={{ color: accentColor }}>*</span>
           </Label>
           <Input
             id="name"
@@ -128,7 +177,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="text-white/80 text-sm">
-            E-Mail <span style={{ color: accentColor }}>*</span>
+            {t.email} <span style={{ color: accentColor }}>*</span>
           </Label>
           <Input
             id="email"
@@ -151,7 +200,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="flex flex-col gap-2">
           <Label htmlFor="phone" className="text-white/80 text-sm">
-            Phone <span className="text-white/40 font-normal">(optional)</span>
+            {t.phone} <span className="text-white/40 font-normal">{t.phoneOptional}</span>
           </Label>
           <Input
             id="phone"
@@ -164,7 +213,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="company" className="text-white/80 text-sm">
-            Company <span className="text-white/40 font-normal">(optional)</span>
+            {t.company} <span className="text-white/40 font-normal">{t.companyOptional}</span>
           </Label>
           <Input
             id="company"
@@ -180,27 +229,27 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
       {/* Service Select */}
       <div className="flex flex-col gap-2">
         <Label htmlFor="service" className="text-white/80 text-sm">
-          Service
+          {t.service}
         </Label>
         <Select value={service} onValueChange={setService} disabled={isLoading}>
           <SelectTrigger
             id="service"
             className="w-full bg-white/5 border-white/10 text-white data-[placeholder]:text-white/30 focus-visible:border-transparent"
           >
-            <SelectValue placeholder="What can we help you with?" />
+            <SelectValue placeholder={t.servicePlaceholder} />
           </SelectTrigger>
           <SelectContent className="bg-neutral-900 border-white/10 text-white">
             <SelectItem value="Web Development" className="focus:bg-white/10 focus:text-white">
-              Web Development
+              {t.web}
             </SelectItem>
             <SelectItem value="Media Production" className="focus:bg-white/10 focus:text-white">
-              Media Production
+              {t.media}
             </SelectItem>
             <SelectItem value="Automation" className="focus:bg-white/10 focus:text-white">
-              Automation
+              {t.automation}
             </SelectItem>
             <SelectItem value="Everything" className="focus:bg-white/10 focus:text-white">
-              Everything
+              {t.everything}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -209,7 +258,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
       {/* Message */}
       <div className="flex flex-col gap-2">
         <Label htmlFor="message" className="text-white/80 text-sm">
-          Message <span style={{ color: accentColor }}>*</span>
+          {t.message} <span style={{ color: accentColor }}>*</span>
         </Label>
         <Textarea
           id="message"
@@ -217,7 +266,7 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
           required
           disabled={isLoading}
           rows={5}
-          placeholder="Tell us about your project..."
+          placeholder={t.messagePlaceholder}
           className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-transparent resize-none"
           style={
             {
@@ -253,10 +302,10 @@ export function ContactForm({ accentColor, className }: ContactFormProps) {
               <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
               <path d="M12 2a10 10 0 0 1 10 10" />
             </svg>
-            Sending…
+            {t.sending}
           </span>
         ) : (
-          "Send Message"
+          t.sendButton
         )}
       </button>
     </form>

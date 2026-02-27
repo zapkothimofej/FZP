@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import dynamic from "next/dynamic"
-import { services } from "@/lib/content"
+import { services } from "@/lib/content-de"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -54,7 +54,7 @@ export function ServicesSection() {
           className="text-[11px] tracking-[0.2em] uppercase"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
-          Our Services — Scroll
+          Unsere Leistungen — Scroll
         </p>
       </div>
 

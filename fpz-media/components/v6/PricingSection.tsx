@@ -4,15 +4,21 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { pricing } from "@/lib/content"
+import { pricing } from "@/lib/content-de"
 
 gsap.registerPlugin(ScrollTrigger)
 
 function parsePrice(priceStr: string): { prefix: string; num: number | null; suffix: string } {
-  const match = priceStr.match(/^([^0-9]*)([0-9]+(?:[.,][0-9]+)?)(.*)$/)
+  const match = priceStr.match(/^([^0-9]*)([0-9]+(?:[.,][0-9]*)*)(.*)$/)
   if (!match) return { prefix: "", num: null, suffix: priceStr }
-  const numStr = match[2].replace(",", ".")
-  return { prefix: match[1], num: parseFloat(numStr), suffix: match[3] }
+  // Deutsche Zahlen: 1.500 = 1500, 2.000 = 2000 (Punkt = Tausendertrennzeichen)
+  const raw = match[2]
+  const normalized = raw.includes(",")
+    ? raw.replace(/\./g, "").replace(",", ".")
+    : raw.replace(/\./g, "")
+  const num = parseFloat(normalized)
+  if (Number.isNaN(num)) return { prefix: match[1], num: null, suffix: match[3] }
+  return { prefix: match[1], num, suffix: match[3] }
 }
 
 export function PricingSection() {
@@ -59,7 +65,11 @@ export function PricingSection() {
             toggleActions: "play none none none",
           },
           onUpdate: () => {
-            el.textContent = prefix + Math.round(obj.val).toLocaleString("de-DE") + suffix
+            const formatted =
+              Number.isInteger(obj.val) && obj.val >= 1000
+                ? Math.round(obj.val).toLocaleString("de-DE") // 1500 → "1.500"
+                : String(Math.round(obj.val))
+            el.textContent = prefix + formatted + suffix
           },
         })
       })
@@ -81,20 +91,20 @@ export function PricingSection() {
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
             style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
           >
-            Investment
+            Investition
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
             style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "var(--v6-text)" }}
           >
-            Transparent Pricing
+            Transparente Preise
           </h2>
         </div>
         <p
           className="max-w-xs text-sm leading-relaxed"
           style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
         >
-          No hidden fees. No surprise invoices. One price, everything included.
+          Keine versteckten Kosten. Keine Überraschungsrechnungen. Ein Preis, alles inklusive.
         </p>
       </div>
 

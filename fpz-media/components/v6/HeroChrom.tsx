@@ -1,15 +1,9 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import dynamic from "next/dynamic"
-import { manifesto } from "@/lib/content"
-
-const ChromeSphere = dynamic(
-  () => import("@/components/v6/ChromeSphere").then((m) => m.ChromeSphere),
-  { ssr: false }
-)
+import { manifesto } from "@/lib/content-de"
 
 const MARQUEE_TEXT = "WEB DEVELOPMENT · MEDIA PRODUCTION · AUTOMATION · RUHRGEBIET · "
 
@@ -20,50 +14,16 @@ export function HeroChrom() {
   const word3Ref = useRef<HTMLDivElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<number>(0)
-
-  useEffect(() => {
-    const onScroll = () => {
-      scrollRef.current = Math.min(1, Math.max(0, window.scrollY / 700))
-    }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
-
-      // Words fly in from 3 different directions — exact V2 behavior
-      tl.fromTo(
-        word1Ref.current,
-        { x: "-15vw", opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.1 }
-      )
-        .fromTo(
-          word2Ref.current,
-          { x: "15vw", opacity: 0 },
-          { x: 0, opacity: 1, duration: 1.1 },
-          "-=0.85"
-        )
-        .fromTo(
-          word3Ref.current,
-          { y: "8vh", opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.1 },
-          "-=0.85"
-        )
-        .fromTo(
-          subRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.4"
-        )
-        .fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          "-=0.5"
-        )
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
+      // Einblenden in voller Größe — keine Positions-Animation, damit nichts „erst klein“ wirkt
+      tl.fromTo(word1Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 })
+        .fromTo(word2Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.4")
+        .fromTo(word3Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.4")
+        .fromTo(subRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.3")
+        .fromTo(ctaRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.3")
     },
     { scope: containerRef }
   )
@@ -79,25 +39,9 @@ export function HeroChrom() {
         justifyContent: "center",
         minHeight: "100vh",
         overflow: "hidden",
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "var(--v6-bg)",
       }}
     >
-      {/* THREE.JS CHROME SPHERE — full-screen background canvas */}
-      <ChromeSphere scrollRef={scrollRef} />
-
-      {/* Left-to-right gradient so text reads clearly over the sphere */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(to right, rgba(10,10,10,0.9) 35%, rgba(10,10,10,0.55) 65%, rgba(10,10,10,0.15) 100%)",
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-
       {/* Bottom fade gradient */}
       <div
         aria-hidden
@@ -107,7 +51,7 @@ export function HeroChrom() {
           left: 0,
           right: 0,
           height: "180px",
-          background: "linear-gradient(to bottom, transparent, #0a0a0a)",
+          background: "linear-gradient(to bottom, transparent, var(--v6-hero-gradient-end))",
           pointerEvents: "none",
           zIndex: 1,
         }}
@@ -122,7 +66,7 @@ export function HeroChrom() {
         <div className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
+            style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
           >
             {MARQUEE_TEXT}
             {MARQUEE_TEXT}
@@ -131,7 +75,7 @@ export function HeroChrom() {
           </span>
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
+            style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
             aria-hidden
           >
             {MARQUEE_TEXT}
@@ -142,7 +86,7 @@ export function HeroChrom() {
         </div>
       </div>
 
-      {/* GSAP word reveal — sits in front of the sphere */}
+      {/* GSAP word reveal */}
       <div
         className="px-8 md:px-16 lg:px-24 pt-16 pb-8 flex flex-col leading-none"
         style={{ position: "relative", zIndex: 2 }}
@@ -152,7 +96,7 @@ export function HeroChrom() {
           className="block font-[family-name:var(--font-display)] italic will-change-transform"
           style={{
             fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#ebebeb",
+            color: "var(--v6-text)",
             lineHeight: 0.9,
             opacity: 0,
           }}
@@ -164,7 +108,7 @@ export function HeroChrom() {
           className="block font-[family-name:var(--font-display)] will-change-transform self-end md:self-center text-right md:text-center"
           style={{
             fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#ebebeb",
+            color: "var(--v6-text)",
             lineHeight: 0.9,
             opacity: 0,
           }}
@@ -176,7 +120,7 @@ export function HeroChrom() {
           className="block font-[family-name:var(--font-display)] italic will-change-transform self-end"
           style={{
             fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#c8c8c8",
+            color: "var(--v6-accent)",
             lineHeight: 0.9,
             opacity: 0,
           }}
@@ -193,7 +137,7 @@ export function HeroChrom() {
         <p
           ref={subRef}
           className="max-w-md text-base md:text-lg leading-relaxed"
-          style={{ color: "#707070", opacity: 0, fontFamily: "var(--font-body)" }}
+          style={{ color: "var(--v6-text-muted)", opacity: 0, fontFamily: "var(--font-body)" }}
         >
           {manifesto.sub}
         </p>
@@ -202,29 +146,22 @@ export function HeroChrom() {
           <a
             href="#services"
             className="inline-flex items-center h-11 px-8 text-[13px] tracking-[0.1em] uppercase font-semibold transition-all duration-300"
-            style={{ backgroundColor: "#c8c8c8", color: "#0a0a0a", textDecoration: "none" }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLAnchorElement
-              el.style.backgroundColor = "#ebebeb"
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLAnchorElement
-              el.style.backgroundColor = "#c8c8c8"
-            }}
+            className="hover:bg-[var(--v6-accent-hover)]"
+            style={{ backgroundColor: "var(--v6-accent)", color: "var(--v6-text-on-accent)", textDecoration: "none" }}
           >
-            Our Services
+            Unsere Leistungen
           </a>
           <a
             href="#contact"
             className="inline-flex items-center gap-3 group"
-            style={{ color: "#c8c8c8", textDecoration: "none" }}
+            style={{ color: "var(--v6-accent)", textDecoration: "none" }}
           >
-            <span className="text-[13px] tracking-[0.12em] uppercase font-semibold transition-colors duration-300 group-hover:text-[#ebebeb]">
-              Start a Project
+            <span className="text-[13px] tracking-[0.12em] uppercase font-semibold transition-colors duration-300 group-hover:text-[var(--v6-text)]">
+              Projekt starten
             </span>
             <span
-              className="flex items-center justify-center w-10 h-10 border transition-all duration-300 group-hover:bg-[#c8c8c8] group-hover:text-[#0a0a0a]"
-              style={{ borderColor: "#c8c8c8" }}
+              className="flex items-center justify-center w-10 h-10 border transition-all duration-300 group-hover:bg-[var(--v6-accent)] group-hover:text-[var(--v6-text-on-accent)]"
+              style={{ borderColor: "var(--v6-accent)" }}
             >
               <svg
                 width="14"
