@@ -99,10 +99,9 @@ export function StatsSection() {
                   className="font-[family-name:var(--font-display)] mb-3"
                   style={{
                     fontSize: "clamp(36px, 6vw, 80px)",
-                    color: "#c8c8c8",
+                    color: "var(--v6-accent)",
                     lineHeight: 1,
-                    textShadow:
-                      "1px 1px 0 rgba(200,200,200,0.3), 2px 2px 0 rgba(200,200,200,0.2), 3px 3px 0 rgba(200,200,200,0.1)",
+                    textShadow: "var(--v6-text-shadow-extrude)",
                   }}
                 >
                   {num !== null ? (
@@ -119,7 +118,7 @@ export function StatsSection() {
                 </div>
                 <p
                   className="text-[11px] tracking-[0.15em] uppercase"
-                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                  style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
                 >
                   {stat.label}
                 </p>

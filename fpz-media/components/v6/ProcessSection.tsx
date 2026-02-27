@@ -60,20 +60,20 @@ export function ProcessSection() {
       ref={sectionRef}
       id="process"
       className="relative py-32 px-8 md:px-16 lg:px-24"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{ backgroundColor: "var(--v6-bg)" }}
     >
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-20">
           <p
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
-            style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+            style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
           >
             How We Work
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
-            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
+            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "var(--v6-text)" }}
           >
             The Process
           </h2>
@@ -89,7 +89,7 @@ export function ProcessSection() {
             {/* Static background line */}
             <div
               className="absolute top-0 bottom-0 left-0"
-              style={{ width: "1px", backgroundColor: "#222222" }}
+              style={{ width: "1px", backgroundColor: "var(--v6-border)" }}
             />
             {/* Animated platinum line draws over it */}
             <div
@@ -98,7 +98,7 @@ export function ProcessSection() {
               style={{
                 width: "1px",
                 height: "100%",
-                backgroundColor: "#c8c8c8",
+                backgroundColor: "var(--v6-accent)",
                 transformOrigin: "top center",
                 transform: "scaleY(0)",
               }}
@@ -122,19 +122,18 @@ export function ProcessSection() {
                     width: "13px",
                     height: "13px",
                     borderRadius: "50%",
-                    backgroundColor: "#c8c8c8",
-                    border: "2px solid #0a0a0a",
-                    outline: "1px solid #c8c8c8",
+                    backgroundColor: "var(--v6-accent)",
+                    border: "2px solid var(--v6-bg)",
+                    outline: "1px solid var(--v6-accent)",
                     marginLeft: "-6px",
-                    boxShadow:
-                      "0 0 0 3px rgba(200,200,200,0.1), 0 2px 8px rgba(200,200,200,0.4), inset 0 1px 2px rgba(255,255,255,0.6)",
+                    boxShadow: "var(--v6-shadow-step)",
                   }}
                 />
 
                 {/* Step label */}
                 <p
                   className="text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
-                  style={{ color: "#707070" }}
+                  style={{ color: "var(--v6-text-muted)" }}
                 >
                   Step {item.step}
                 </p>
@@ -145,7 +144,7 @@ export function ProcessSection() {
                     className="absolute -left-4 top-0 font-[family-name:var(--font-display)] select-none pointer-events-none leading-none"
                     style={{
                       fontSize: "clamp(80px, 12vw, 160px)",
-                      color: "#c8c8c8",
+                      color: "var(--v6-accent)",
                       opacity: 0.05,
                       lineHeight: 1,
                     }}
@@ -158,7 +157,7 @@ export function ProcessSection() {
                     className="relative font-[family-name:var(--font-display)] mb-4"
                     style={{
                       fontSize: "clamp(28px, 4vw, 52px)",
-                      color: "#ebebeb",
+                      color: "var(--v6-text)",
                     }}
                   >
                     {item.title}
@@ -167,7 +166,7 @@ export function ProcessSection() {
 
                 <p
                   className="text-base leading-relaxed max-w-lg"
-                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                  style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
                 >
                   {item.description}
                 </p>
