@@ -15,24 +15,31 @@ export function ManifestoSection() {
 
   useGSAP(
     () => {
-      if (!sectionRef.current || !lineRef.current) return
+      if (!sectionRef.current || !textRef.current || !lineRef.current) return
 
-      // Nur die Linie zeichnen beim Scrollen — Text bleibt von Anfang an in voller Größe
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=100%",
+          end: "+=200%",
           pin: true,
           scrub: 1,
         },
       })
 
+      // Beim Runterscrollen wird der Text kleiner
+      tl.fromTo(
+        textRef.current,
+        { fontSize: "clamp(48px, 10vw, 160px)" },
+        { fontSize: "clamp(28px, 4vw, 64px)", ease: "none" },
+        0
+      )
+      // Linie zeichnet sich von links
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
         { scaleX: 1, ease: "none" },
-        0
+        0.5
       )
     },
     { scope: sectionRef }
