@@ -15,16 +15,17 @@ export function PortfolioSection() {
     () => {
       if (!sectionRef.current) return
 
-      const cards = gsap.utils.toArray<HTMLElement>(".v6-portfolio-card")
+      const cards = gsap.utils.toArray<HTMLElement>(".v10-portfolio-card")
       
-      // Staggered 3D reveal
+      // Crazy 3D stagger reveal
       gsap.fromTo(
         cards,
-        { y: 150, opacity: 0, rotationX: 45, scale: 0.8 },
+        { y: 150, opacity: 0, rotationX: 45, rotationY: -15, scale: 0.8 },
         {
           y: 0,
           opacity: 1,
           rotationX: 0,
+          rotationY: 0,
           scale: 1,
           duration: 1.2,
           stagger: 0.15,
@@ -40,12 +41,14 @@ export function PortfolioSection() {
   )
 
   const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const inner = e.currentTarget.querySelector(".v6-portfolio-inner")
+    const inner = e.currentTarget.querySelector(".v10-portfolio-inner")
     const num = e.currentTarget.querySelector(".portfolio-num")
     const img = e.currentTarget.querySelector(".portfolio-bg")
 
     gsap.to(inner, {
       scale: 0.95,
+      rotationY: 5,
+      rotationX: -5,
       duration: 0.4,
       ease: "power2.out",
     })
@@ -53,13 +56,14 @@ export function PortfolioSection() {
     gsap.to(num, {
       scale: 1.5,
       x: -20,
-      opacity: 0.2,
+      opacity: 0.4,
+      color: "#0a0a0a",
       duration: 0.4,
       ease: "power2.out",
     })
 
     gsap.to(img, {
-      opacity: 0.5,
+      opacity: 0.8,
       scale: 1.1,
       duration: 0.5,
       ease: "power2.out",
@@ -67,12 +71,14 @@ export function PortfolioSection() {
   }, [])
 
   const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const inner = e.currentTarget.querySelector(".v6-portfolio-inner")
+    const inner = e.currentTarget.querySelector(".v10-portfolio-inner")
     const num = e.currentTarget.querySelector(".portfolio-num")
     const img = e.currentTarget.querySelector(".portfolio-bg")
 
     gsap.to(inner, {
       scale: 1,
+      rotationY: 0,
+      rotationX: 0,
       duration: 0.4,
       ease: "power2.out",
     })
@@ -80,7 +86,8 @@ export function PortfolioSection() {
     gsap.to(num, {
       scale: 1,
       x: 0,
-      opacity: 0.05,
+      opacity: 0.1,
+      color: "#e0e0e0",
       duration: 0.4,
       ease: "power2.out",
     })
@@ -120,57 +127,47 @@ export function PortfolioSection() {
       ref={sectionRef}
       id="portfolio"
       className="py-32 px-8 md:px-16 lg:px-24 overflow-hidden"
-      style={{ backgroundColor: "#141414" }}
+      style={{ backgroundColor: "#fafafa" }}
     >
       {/* Header */}
       <div className="mb-16">
         <p
-          className="text-[11px] tracking-[0.2em] uppercase mb-4"
+          className="text-[12px] tracking-[0.3em] font-bold uppercase mb-4"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
           Ausgewählte Arbeiten
         </p>
         <h2
           className="font-[family-name:var(--font-display)]"
-          style={{ fontSize: "clamp(40px, 8vw, 100px)", color: "#ebebeb" }}
+          style={{ fontSize: "clamp(40px, 8vw, 100px)", color: "#0a0a0a" }}
         >
           Portfolio
         </h2>
       </div>
 
       {/* Masonry-style grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-4" style={{ perspective: "1000px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-6" style={{ perspective: "1500px" }}>
         {portfolioPlaceholders.map((item) => (
           <div
             key={item.id}
-            className={`v6-portfolio-card cursor-pointer ${getSizeClasses(item.size)} ${getHeight(item.size)}`}
+            className={`v10-portfolio-card cursor-pointer ${getSizeClasses(item.size)} ${getHeight(item.size)}`}
             style={{ opacity: 0, transformStyle: "preserve-3d" }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <div
-              className="v6-portfolio-inner w-full h-full flex flex-col justify-end p-8 relative overflow-hidden rounded-xl border border-[#333] hover:border-[#ebebeb] transition-colors duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+              className="v10-portfolio-inner w-full h-full flex flex-col justify-end p-8 relative overflow-hidden rounded-2xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-[#e0e0e0] transition-colors duration-500 hover:border-[#0a0a0a]"
               style={{
-                backgroundColor: "#0a0a0a",
                 minHeight: "inherit",
                 height: "100%",
+                transformStyle: "preserve-3d"
               }}
             >
               {/* Animated abstract background on hover */}
               <div 
-                className="portfolio-bg absolute inset-0 opacity-0 pointer-events-none"
+                className="portfolio-bg absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-500"
                 style={{
-                  background: `radial-gradient(circle at ${Math.random()*100}% ${Math.random()*100}%, rgba(200,200,200,0.2) 0%, transparent 60%)`
-                }}
-              />
-
-              {/* Subtle grid pattern placeholder */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(0deg, #222222 0, #222222 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #222222 0, #222222 1px, transparent 1px, transparent 40px)",
-                  opacity: 0.1,
+                  background: `linear-gradient(${Math.random() * 360}deg, #f0f0f0 0%, transparent 100%)`
                 }}
               />
 
@@ -179,8 +176,8 @@ export function PortfolioSection() {
                 className="portfolio-num absolute top-6 right-8 font-[family-name:var(--font-display)] select-none pointer-events-none"
                 style={{
                   fontSize: "clamp(60px, 10vw, 160px)",
-                  color: "#c8c8c8",
-                  opacity: 0.05,
+                  color: "#e0e0e0",
+                  opacity: 0.1,
                   lineHeight: 1,
                   transformOrigin: "top right"
                 }}
@@ -190,16 +187,17 @@ export function PortfolioSection() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+              <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transformStyle: "preserve-3d", transform: "translateZ(30px)" }}>
                 {/* Tags */}
                 <div className="flex gap-2 mb-4">
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] tracking-[0.12em] uppercase px-3 py-1 rounded-full bg-[#222]"
+                      className="text-[10px] tracking-[0.12em] uppercase px-3 py-1 rounded-full bg-[#0a0a0a]"
                       style={{
-                        color: "#ebebeb",
+                        color: "#ffffff",
                         fontFamily: "var(--font-body)",
+                        fontWeight: "bold"
                       }}
                     >
                       {tag}
@@ -211,14 +209,15 @@ export function PortfolioSection() {
                   className="font-[family-name:var(--font-display)] mb-2"
                   style={{
                     fontSize: "clamp(24px, 3vw, 40px)",
-                    color: "#ebebeb",
+                    color: "#0a0a0a",
+                    lineHeight: 1.1
                   }}
                 >
                   {item.title}
                 </h3>
                 <p
-                  className="text-[12px] tracking-[0.1em] uppercase"
-                  style={{ color: "#c8c8c8", fontFamily: "var(--font-body)", fontWeight: 600 }}
+                  className="text-[12px] tracking-[0.1em] uppercase font-bold"
+                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                 >
                   {item.industry}
                 </p>
@@ -230,8 +229,8 @@ export function PortfolioSection() {
 
       {/* Footer note */}
       <p
-        className="mt-16 text-[14px] text-center uppercase tracking-[0.2em] font-bold"
-        style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+        className="mt-16 text-[14px] text-center uppercase tracking-[0.2em] font-extrabold"
+        style={{ color: "#333", fontFamily: "var(--font-body)" }}
       >
         Echte Kundenprojekte in Arbeit — Launch Q1 2025
       </p>

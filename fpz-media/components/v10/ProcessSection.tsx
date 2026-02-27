@@ -16,7 +16,7 @@ export function ProcessSection() {
     () => {
       if (!sectionRef.current || !lineRef.current) return
 
-      // Draw vertical line as user scrolls through the section with a glowing effect
+      // Draw vertical line as user scrolls through the section
       gsap.fromTo(
         lineRef.current,
         { scaleY: 0, transformOrigin: "top center" },
@@ -27,13 +27,13 @@ export function ProcessSection() {
             trigger: sectionRef.current,
             start: "top 60%",
             end: "bottom 60%",
-            scrub: 1.5,
+            scrub: 1,
           },
         }
       )
 
-      // Extreme reveal for each step
-      const steps = gsap.utils.toArray<HTMLElement>(".v6-process-step")
+      // Extreme reveal for each step (Light Theme)
+      const steps = gsap.utils.toArray<HTMLElement>(".v10-process-step")
       steps.forEach((step, i) => {
         const dot = step.querySelector(".timeline-dot")
         const content = step.querySelector(".step-content")
@@ -54,8 +54,8 @@ export function ProcessSection() {
           .to(dot, { scale: 1, duration: 0.3, ease: "power2.out" })
           .fromTo(
             content,
-            { x: i % 2 === 0 ? 100 : -100, opacity: 0, rotationY: 45, transformPerspective: 500 },
-            { x: 0, opacity: 1, rotationY: 0, duration: 0.8, ease: "power3.out" },
+            { x: i % 2 === 0 ? 150 : -150, opacity: 0, rotationY: i % 2 === 0 ? 45 : -45, transformPerspective: 1000 },
+            { x: 0, opacity: 1, rotationY: 0, duration: 1, ease: "elastic.out(1, 0.5)" },
             "-=0.6"
           )
       })
@@ -68,20 +68,20 @@ export function ProcessSection() {
       ref={sectionRef}
       id="process"
       className="relative py-32 px-8 md:px-16 lg:px-24 overflow-hidden"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{ backgroundColor: "#ffffff" }}
     >
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-20">
+        <div className="mb-24">
           <p
-            className="text-[11px] tracking-[0.2em] uppercase mb-4"
+            className="text-[12px] tracking-[0.3em] font-bold uppercase mb-4"
             style={{ color: "#707070", fontFamily: "var(--font-body)" }}
           >
             Wie wir arbeiten
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
-            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
+            style={{ fontSize: "clamp(40px, 8vw, 90px)", color: "#0a0a0a" }}
           >
             Der Prozess
           </h2>
@@ -91,22 +91,22 @@ export function ProcessSection() {
         <div className="relative flex">
           {/* Vertical line column */}
           <div
-            className="relative flex flex-col items-center mr-12 md:mr-20"
-            style={{ width: "2px", minHeight: "100%" }}
+            className="relative flex flex-col items-center mr-12 md:mr-24"
+            style={{ width: "3px", minHeight: "100%" }}
           >
             {/* Static background line */}
             <div
               className="absolute top-0 bottom-0 left-0"
-              style={{ width: "2px", backgroundColor: "#222222" }}
+              style={{ width: "3px", backgroundColor: "#f0f0f0" }}
             />
-            {/* Animated glowing line draws over it */}
+            {/* Animated bright line draws over it */}
             <div
               ref={lineRef}
-              className="absolute top-0 left-0 shadow-[0_0_15px_#c8c8c8]"
+              className="absolute top-0 left-0 shadow-[0_0_15px_#0a0a0a]"
               style={{
-                width: "2px",
+                width: "3px",
                 height: "100%",
-                backgroundColor: "#c8c8c8",
+                backgroundColor: "#0a0a0a",
                 transformOrigin: "top center",
                 transform: "scaleY(0)",
               }}
@@ -114,69 +114,60 @@ export function ProcessSection() {
           </div>
 
           {/* Steps */}
-          <div className="flex flex-col gap-32 flex-1 pb-8">
+          <div className="flex flex-col gap-32 flex-1 pb-16">
             {processSteps.map((item) => (
               <div
                 key={item.step}
-                className="v6-process-step relative group"
+                className="v10-process-step relative group"
               >
                 {/* 3D-look dot on the timeline line */}
                 <div
                   className="timeline-dot absolute"
                   style={{
-                    left: "-52px",
-                    top: "8px",
-                    width: "16px",
-                    height: "16px",
+                    left: "-54px", // Adjusted for thicker line
+                    top: "12px",
+                    width: "20px",
+                    height: "20px",
                     borderRadius: "50%",
-                    backgroundColor: "#ebebeb",
-                    border: "2px solid #0a0a0a",
-                    marginLeft: "-7px",
-                    boxShadow: "0 0 20px rgba(235, 235, 235, 0.8)",
+                    backgroundColor: "#0a0a0a",
+                    border: "4px solid #ffffff",
+                    marginLeft: "-10px",
+                    boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
                   }}
                 />
 
-                <div className="step-content">
-                  {/* Step label */}
-                  <p
-                    className="text-[12px] tracking-[0.3em] uppercase mb-3 font-[family-name:var(--font-body)] font-bold transition-colors group-hover:text-[#ebebeb]"
-                    style={{ color: "#707070" }}
-                  >
-                    Schritt {item.step}
-                  </p>
+                <div className="step-content bg-[#fafafa] p-10 rounded-2xl border border-[#e0e0e0] shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 relative overflow-hidden">
+                  
+                  {/* Hover effect background */}
+                  <div className="absolute inset-0 bg-[#0a0a0a] transform scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100 z-0" />
 
-                  {/* Large ghost number behind title */}
-                  <div className="relative">
-                    <span
-                      className="absolute -left-8 top-[-40px] font-[family-name:var(--font-display)] select-none pointer-events-none leading-none transition-all duration-500 group-hover:scale-110 group-hover:opacity-10 group-hover:text-white"
-                      style={{
-                        fontSize: "clamp(100px, 15vw, 200px)",
-                        color: "#c8c8c8",
-                        opacity: 0.03,
-                        lineHeight: 1,
-                      }}
-                      aria-hidden
+                  <div className="relative z-10">
+                    {/* Step label */}
+                    <p
+                      className="text-[13px] tracking-[0.2em] uppercase mb-4 font-[family-name:var(--font-body)] font-extrabold transition-colors group-hover:text-[#ffffff]"
+                      style={{ color: "#707070" }}
                     >
-                      {item.step}
-                    </span>
+                      Schritt {item.step}
+                    </p>
 
                     <h3
-                      className="relative font-[family-name:var(--font-display)] mb-6 transition-all duration-300 group-hover:translate-x-2"
+                      className="relative font-[family-name:var(--font-display)] mb-6 transition-colors duration-300 group-hover:text-[#ffffff]"
                       style={{
-                        fontSize: "clamp(32px, 5vw, 64px)",
-                        color: "#ebebeb",
+                        fontSize: "clamp(32px, 5vw, 56px)",
+                        color: "#0a0a0a",
+                        lineHeight: 1.1,
                       }}
                     >
                       {item.title}
                     </h3>
-                  </div>
 
-                  <p
-                    className="text-lg leading-relaxed max-w-lg transition-all duration-300 group-hover:text-[#c8c8c8]"
-                    style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-                  >
-                    {item.description}
-                  </p>
+                    <p
+                      className="text-lg leading-relaxed max-w-lg font-medium transition-colors duration-300 group-hover:text-[#e0e0e0]"
+                      style={{ color: "#555", fontFamily: "var(--font-body)" }}
+                    >
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

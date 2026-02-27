@@ -17,6 +17,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const navRef = useRef<HTMLElement>(null)
+  const ctaRef = useRef<HTMLAnchorElement>(null)
 
   useGSAP(() => {
     if (!navRef.current) return
@@ -28,22 +29,35 @@ export function Navbar() {
       { y: 0, opacity: 1, rotationX: 0, duration: 1.5, ease: "elastic.out(1, 0.4)", delay: 0.5 }
     )
 
-    // Background appears on scroll
+    // Background appears on scroll (light theme)
     ScrollTrigger.create({
       start: "top+=100 top",
       onEnter: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(10,10,10,0.8)",
+          backgroundColor: "rgba(255,255,255,0.9)",
           backdropFilter: "blur(20px)",
-          borderBottomColor: "#333",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+          borderBottomColor: "#e0e0e0",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
           duration: 0.5,
           ease: "power2.out",
         })
+        gsap.to(navRef.current?.querySelectorAll("a"), {
+          color: "#0a0a0a",
+          duration: 0.5
+        })
+        gsap.to(navRef.current?.querySelector("svg path"), {
+          fill: "#0a0a0a",
+          duration: 0.5
+        })
+        
+        if (ctaRef.current) {
+          ctaRef.current.style.borderColor = "#0a0a0a"
+          ctaRef.current.style.color = "#0a0a0a"
+        }
       },
       onLeaveBack: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(10,10,10,0)",
+          backgroundColor: "rgba(255,255,255,0)",
           backdropFilter: "blur(0px)",
           borderBottomColor: "transparent",
           boxShadow: "none",
@@ -61,7 +75,7 @@ export function Navbar() {
       style={{ opacity: 0 }}
     >
       <div className="hover:scale-110 transition-transform duration-300">
-        <Logo color="#ebebeb" size="md" />
+        <Logo color="#0a0a0a" size="md" />
       </div>
 
       <div className="hidden md:flex items-center gap-10">
@@ -69,8 +83,8 @@ export function Navbar() {
           <a
             key={link.href}
             href={link.href}
-            className="text-[13px] tracking-[0.2em] uppercase font-bold transition-all duration-300 hover:text-[#ebebeb] hover:-translate-y-1"
-            style={{ color: "#707070", display: "inline-block" }}
+            className="text-[13px] tracking-[0.2em] uppercase font-bold transition-all duration-300 hover:text-[#000000] hover:-translate-y-1"
+            style={{ color: "#0a0a0a", display: "inline-block" }}
           >
             {link.label}
           </a>
@@ -78,22 +92,24 @@ export function Navbar() {
       </div>
 
       <a
+        ref={ctaRef}
         href="#contact"
-        className="hidden md:inline-flex items-center h-12 px-8 text-[13px] tracking-[0.2em] uppercase font-bold border transition-all duration-300 rounded-sm hover:scale-105"
+        className="hidden md:inline-flex items-center h-12 px-8 text-[13px] tracking-[0.2em] uppercase font-bold border transition-all duration-300 rounded-full hover:scale-105"
         style={{
-          borderColor: "#c8c8c8",
-          color: "#c8c8c8",
+          borderColor: "#0a0a0a",
+          color: "#0a0a0a",
+          borderWidth: "2px"
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget as HTMLAnchorElement
-          el.style.backgroundColor = "#c8c8c8"
-          el.style.color = "#0a0a0a"
-          el.style.boxShadow = "0 0 20px rgba(200,200,200,0.3)"
+          el.style.backgroundColor = "#0a0a0a"
+          el.style.color = "#ffffff"
+          el.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)"
         }}
         onMouseLeave={(e) => {
           const el = e.currentTarget as HTMLAnchorElement
           el.style.backgroundColor = "transparent"
-          el.style.color = "#c8c8c8"
+          el.style.color = "#0a0a0a"
           el.style.boxShadow = "none"
         }}
       >

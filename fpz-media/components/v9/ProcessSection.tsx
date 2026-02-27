@@ -16,7 +16,7 @@ export function ProcessSection() {
     () => {
       if (!sectionRef.current || !lineRef.current) return
 
-      // Draw vertical line as user scrolls through the section
+      // Draw vertical line as user scrolls through the section with a glowing effect
       gsap.fromTo(
         lineRef.current,
         { scaleY: 0, transformOrigin: "top center" },
@@ -27,29 +27,37 @@ export function ProcessSection() {
             trigger: sectionRef.current,
             start: "top 60%",
             end: "bottom 60%",
-            scrub: 1,
+            scrub: 1.5,
           },
         }
       )
 
-      // Each step slides in from right
+      // Extreme reveal for each step
       const steps = gsap.utils.toArray<HTMLElement>(".v6-process-step")
-      steps.forEach((step) => {
-        gsap.fromTo(
-          step,
-          { x: 40, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: step,
-              start: "top 72%",
-              toggleActions: "play none none reverse",
-            },
-          }
+      steps.forEach((step, i) => {
+        const dot = step.querySelector(".timeline-dot")
+        const content = step.querySelector(".step-content")
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: step,
+            start: "top 75%",
+            toggleActions: "play reverse play reverse",
+          },
+        })
+
+        tl.fromTo(
+          dot,
+          { scale: 0, opacity: 0, rotation: -180 },
+          { scale: 1.5, opacity: 1, rotation: 0, duration: 0.5, ease: "back.out(2)" }
         )
+          .to(dot, { scale: 1, duration: 0.3, ease: "power2.out" })
+          .fromTo(
+            content,
+            { x: i % 2 === 0 ? 100 : -100, opacity: 0, rotationY: 45, transformPerspective: 500 },
+            { x: 0, opacity: 1, rotationY: 0, duration: 0.8, ease: "power3.out" },
+            "-=0.6"
+          )
       })
     },
     { scope: sectionRef }
@@ -59,7 +67,7 @@ export function ProcessSection() {
     <section
       ref={sectionRef}
       id="process"
-      className="relative py-32 px-8 md:px-16 lg:px-24"
+      className="relative py-32 px-8 md:px-16 lg:px-24 overflow-hidden"
       style={{ backgroundColor: "#0a0a0a" }}
     >
       <div className="max-w-5xl mx-auto">
@@ -69,13 +77,13 @@ export function ProcessSection() {
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
             style={{ color: "#707070", fontFamily: "var(--font-body)" }}
           >
-            How We Work
+            Wie wir arbeiten
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
             style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
           >
-            The Process
+            Der Prozess
           </h2>
         </div>
 
@@ -84,19 +92,19 @@ export function ProcessSection() {
           {/* Vertical line column */}
           <div
             className="relative flex flex-col items-center mr-12 md:mr-20"
-            style={{ width: "1px", minHeight: "100%" }}
+            style={{ width: "2px", minHeight: "100%" }}
           >
             {/* Static background line */}
             <div
               className="absolute top-0 bottom-0 left-0"
-              style={{ width: "1px", backgroundColor: "#222222" }}
+              style={{ width: "2px", backgroundColor: "#222222" }}
             />
-            {/* Animated platinum line draws over it */}
+            {/* Animated glowing line draws over it */}
             <div
               ref={lineRef}
-              className="absolute top-0 left-0"
+              className="absolute top-0 left-0 shadow-[0_0_15px_#c8c8c8]"
               style={{
-                width: "1px",
+                width: "2px",
                 height: "100%",
                 backgroundColor: "#c8c8c8",
                 transformOrigin: "top center",
@@ -106,71 +114,70 @@ export function ProcessSection() {
           </div>
 
           {/* Steps */}
-          <div className="flex flex-col gap-24 flex-1 pb-8">
+          <div className="flex flex-col gap-32 flex-1 pb-8">
             {processSteps.map((item) => (
               <div
                 key={item.step}
-                className="v6-process-step relative"
-                style={{ opacity: 0 }}
+                className="v6-process-step relative group"
               >
-                {/* 3D-look dot on the timeline line — CSS radial shadow depth effect */}
+                {/* 3D-look dot on the timeline line */}
                 <div
-                  className="absolute"
+                  className="timeline-dot absolute"
                   style={{
                     left: "-52px",
                     top: "8px",
-                    width: "13px",
-                    height: "13px",
+                    width: "16px",
+                    height: "16px",
                     borderRadius: "50%",
-                    backgroundColor: "#c8c8c8",
+                    backgroundColor: "#ebebeb",
                     border: "2px solid #0a0a0a",
-                    outline: "1px solid #c8c8c8",
-                    marginLeft: "-6px",
-                    boxShadow:
-                      "0 0 0 3px rgba(200,200,200,0.1), 0 2px 8px rgba(200,200,200,0.4), inset 0 1px 2px rgba(255,255,255,0.6)",
+                    marginLeft: "-7px",
+                    boxShadow: "0 0 20px rgba(235, 235, 235, 0.8)",
                   }}
                 />
 
-                {/* Step label */}
-                <p
-                  className="text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
-                  style={{ color: "#707070" }}
-                >
-                  Step {item.step}
-                </p>
-
-                {/* Large ghost number behind title */}
-                <div className="relative">
-                  <span
-                    className="absolute -left-4 top-0 font-[family-name:var(--font-display)] select-none pointer-events-none leading-none"
-                    style={{
-                      fontSize: "clamp(80px, 12vw, 160px)",
-                      color: "#c8c8c8",
-                      opacity: 0.05,
-                      lineHeight: 1,
-                    }}
-                    aria-hidden
+                <div className="step-content">
+                  {/* Step label */}
+                  <p
+                    className="text-[12px] tracking-[0.3em] uppercase mb-3 font-[family-name:var(--font-body)] font-bold transition-colors group-hover:text-[#ebebeb]"
+                    style={{ color: "#707070" }}
                   >
-                    {item.step}
-                  </span>
+                    Schritt {item.step}
+                  </p>
 
-                  <h3
-                    className="relative font-[family-name:var(--font-display)] mb-4"
-                    style={{
-                      fontSize: "clamp(28px, 4vw, 52px)",
-                      color: "#ebebeb",
-                    }}
+                  {/* Large ghost number behind title */}
+                  <div className="relative">
+                    <span
+                      className="absolute -left-8 top-[-40px] font-[family-name:var(--font-display)] select-none pointer-events-none leading-none transition-all duration-500 group-hover:scale-110 group-hover:opacity-10 group-hover:text-white"
+                      style={{
+                        fontSize: "clamp(100px, 15vw, 200px)",
+                        color: "#c8c8c8",
+                        opacity: 0.03,
+                        lineHeight: 1,
+                      }}
+                      aria-hidden
+                    >
+                      {item.step}
+                    </span>
+
+                    <h3
+                      className="relative font-[family-name:var(--font-display)] mb-6 transition-all duration-300 group-hover:translate-x-2"
+                      style={{
+                        fontSize: "clamp(32px, 5vw, 64px)",
+                        color: "#ebebeb",
+                      }}
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <p
+                    className="text-lg leading-relaxed max-w-lg transition-all duration-300 group-hover:text-[#c8c8c8]"
+                    style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                   >
-                    {item.title}
-                  </h3>
+                    {item.description}
+                  </p>
                 </div>
-
-                <p
-                  className="text-base leading-relaxed max-w-lg"
-                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-                >
-                  {item.description}
-                </p>
               </div>
             ))}
           </div>

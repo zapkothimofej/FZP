@@ -22,28 +22,45 @@ export function ManifestoSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=200%",
+          end: "+=150%", // Make it slightly shorter to prevent getting stuck
           pin: true,
           scrub: 1,
         },
       })
 
-      // Extreme flash / distortion effect
-      tl.to(bgRef.current, { backgroundColor: "#c8c8c8", duration: 0.1, yoyo: true, repeat: 1 })
+      // Extreme background color flash
+      tl.to(bgRef.current, { backgroundColor: "#0a0a0a", duration: 0.2, yoyo: true, repeat: 1, ease: "power2.inOut" })
 
-      // Shrink font size from large to normal as you scroll and rotate slightly
+      // Text scales down perfectly, with color change
       tl.fromTo(
         textRef.current,
-        { fontSize: "clamp(60px, 15vw, 200px)", rotationX: 45, filter: "blur(10px)", scale: 1.5, opacity: 0 },
-        { fontSize: "clamp(28px, 4vw, 64px)", rotationX: 0, filter: "blur(0px)", scale: 1, opacity: 1, ease: "power2.inOut", duration: 0.5 },
+        { 
+          fontSize: "clamp(80px, 15vw, 250px)", 
+          rotationX: -45, 
+          scale: 2, 
+          y: "20vh",
+          color: "#e0e0e0",
+          transformOrigin: "center top",
+          opacity: 0
+        },
+        { 
+          fontSize: "clamp(40px, 6vw, 96px)", 
+          rotationX: 0, 
+          scale: 1, 
+          y: "0vh",
+          color: "#0a0a0a",
+          opacity: 1,
+          ease: "power2.out", 
+          duration: 1 
+        },
         0
       )
 
-      // Draw the separator line from left with a bounce
+      // Draw the separator line from middle
       tl.fromTo(
         lineRef.current,
-        { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, ease: "elastic.out(1, 0.3)", duration: 0.5 },
+        { scaleX: 0, transformOrigin: "center center" },
+        { scaleX: 1, ease: "elastic.out(1, 0.5)", duration: 0.8 },
         0.5
       )
     },
@@ -56,7 +73,18 @@ export function ManifestoSection() {
     return (
       <>
         {parts[0]}
-        <span style={{ color: "#c8c8c8", fontStyle: "italic", textShadow: "0 0 20px rgba(200,200,200,0.5)" }}>unfairen</span>
+        <span 
+          style={{ 
+            color: "#ffffff", 
+            backgroundColor: "#0a0a0a", 
+            padding: "0 10px", 
+            display: "inline-block",
+            transform: "rotate(-2deg)",
+            boxShadow: "5px 5px 0px rgba(0,0,0,0.2)"
+          }}
+        >
+          unfairen
+        </span>
         {parts[1]}
       </>
     )
@@ -66,32 +94,29 @@ export function ManifestoSection() {
     <section
       ref={sectionRef}
       className="relative flex flex-col justify-center min-h-screen px-8 md:px-16 lg:px-24 overflow-hidden"
-      style={{ backgroundColor: "#0a0a0a" }}
+      style={{ backgroundColor: "#fafafa" }}
       id="manifesto"
     >
       <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none transition-colors" />
-      <div className="max-w-6xl z-10 relative">
+      <div className="max-w-6xl z-10 relative w-full mx-auto">
         {/* Small label */}
         <p
-          className="text-[11px] tracking-[0.2em] uppercase mb-10"
+          className="text-[12px] tracking-[0.3em] font-bold uppercase mb-10 text-center"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
           Unser Manifest
         </p>
 
-        {/* Main animated text — shrinks as scrub progresses */}
+        {/* Main animated text */}
         <div
           ref={textRef}
-          className="font-[family-name:var(--font-display)] leading-tight"
+          className="font-[family-name:var(--font-display)] leading-[1.1] text-center w-full"
           style={{
-            fontSize: "clamp(60px, 15vw, 200px)",
-            color: "#ebebeb",
-            lineHeight: 1.05,
             transformPerspective: 1000,
           }}
         >
           <div>{manifesto.line1}</div>
-          <div style={{ color: "#ebebeb" }}>
+          <div className="mt-2">
             {highlightUnfair(manifesto.line2)}
           </div>
         </div>
@@ -99,20 +124,19 @@ export function ManifestoSection() {
         {/* Separator line draws itself */}
         <div
           ref={lineRef}
-          className="mt-12"
+          className="mt-16 mx-auto"
           style={{
-            height: "2px",
-            backgroundColor: "#c8c8c8",
-            width: "100%",
+            height: "4px",
+            backgroundColor: "#0a0a0a",
+            width: "80%",
             transform: "scaleX(0)",
-            transformOrigin: "left center",
           }}
         />
 
         {/* Sub text */}
         <p
-          className="mt-8 text-base leading-relaxed max-w-lg"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+          className="mt-12 text-xl font-medium leading-relaxed max-w-2xl mx-auto text-center"
+          style={{ color: "#555", fontFamily: "var(--font-body)" }}
         >
           {manifesto.sub}
         </p>

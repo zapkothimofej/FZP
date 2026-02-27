@@ -3,13 +3,10 @@
 import { useRef, useEffect } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import dynamic from "next/dynamic"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { manifesto } from "@/lib/content-de"
 
-const ChromeSphere = dynamic(
-  () => import("@/components/v8/ChromeSphere").then((m) => m.ChromeSphere),
-  { ssr: false }
-)
+gsap.registerPlugin(ScrollTrigger)
 
 const MARQUEE_TEXT = "WEB DEVELOPMENT · MEDIA PRODUCTION · AUTOMATION · RUHRGEBIET · "
 
@@ -20,50 +17,133 @@ export function HeroChrom() {
   const word3Ref = useRef<HTMLDivElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<number>(0)
-
-  useEffect(() => {
-    const onScroll = () => {
-      scrollRef.current = Math.min(1, Math.max(0, window.scrollY / 700))
-    }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+  const marqueeRef = useRef<HTMLDivElement>(null)
+  const lightRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } })
 
-      // Words fly in from 3 different directions — exact V2 behavior
+      // Initial Fly-in
       tl.fromTo(
         word1Ref.current,
-        { x: "-15vw", opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.1 }
+        { x: "-100vw", rotation: -15, scale: 0.5, opacity: 0 },
+        { x: 0, rotation: 0, scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.2)" }
       )
         .fromTo(
           word2Ref.current,
-          { x: "15vw", opacity: 0 },
-          { x: 0, opacity: 1, duration: 1.1 },
-          "-=0.85"
+          { x: "100vw", rotation: 15, scale: 0.5, opacity: 0 },
+          { x: 0, rotation: 0, scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.2)" },
+          "-=1.2"
         )
         .fromTo(
           word3Ref.current,
-          { y: "8vh", opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.1 },
-          "-=0.85"
+          { y: "100vh", rotationX: -90, opacity: 0 },
+          { y: 0, rotationX: 0, opacity: 1, duration: 1.5, ease: "back.out(1.2)", transformPerspective: 500 },
+          "-=1.2"
         )
         .fromTo(
           subRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.4"
+          { opacity: 0, y: 50, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 1 },
+          "-=0.8"
         )
         .fromTo(
           ctaRef.current,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          "-=0.5"
+          { opacity: 0, y: 50, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 1 },
+          "-=0.8"
         )
+
+      // Extreme Scroll Effects
+      if (containerRef.current) {
+        gsap.to(lightRef.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+          y: "30vh",
+          scale: 1.5,
+          opacity: 0,
+        })
+
+        // Words parallax & rotation on scroll
+        gsap.to(word1Ref.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.5,
+          },
+          x: "-50vw",
+          y: "20vh",
+          rotation: -45,
+          scale: 1.5,
+          opacity: 0,
+          filter: "blur(20px)",
+        })
+        gsap.to(word2Ref.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 2,
+          },
+          x: "50vw",
+          y: "30vh",
+          rotation: 45,
+          scale: 1.8,
+          opacity: 0,
+          filter: "blur(20px)",
+        })
+        gsap.to(word3Ref.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 2.5,
+          },
+          y: "40vh",
+          scale: 2,
+          opacity: 0,
+          filter: "blur(20px)",
+        })
+
+        // Subtext & CTA slide out
+        gsap.to(subRef.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+          y: 100,
+          opacity: 0,
+        })
+        gsap.to(ctaRef.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+          y: 150,
+          opacity: 0,
+        })
+
+        // Marquee speed up on scroll
+        gsap.to(marqueeRef.current, {
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+          x: "-50vw",
+        })
+      }
     },
     { scope: containerRef }
   )
@@ -82,34 +162,24 @@ export function HeroChrom() {
         backgroundColor: "#0a0a0a",
       }}
     >
-      {/* THREE.JS CHROME SPHERE — full-screen background canvas */}
-      <ChromeSphere scrollRef={scrollRef} />
-
-      {/* Left-to-right gradient so text reads clearly over the sphere */}
+      {/* Background gradients instead of ChromeSphere */}
       <div
-        aria-hidden
+        className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(to right, rgba(10,10,10,0.9) 35%, rgba(10,10,10,0.55) 65%, rgba(10,10,10,0.15) 100%)",
-          pointerEvents: "none",
-          zIndex: 1,
+          background: "radial-gradient(circle at 50% 50%, rgba(50,50,50,0.4) 0%, rgba(10,10,10,1) 70%)",
         }}
       />
-
-      {/* Bottom fade gradient */}
+      
+      {/* Dynamic light blob moving behind text */}
       <div
-        aria-hidden
+        ref={lightRef}
+        className="absolute w-[80vw] h-[80vw] md:w-[40vw] md:h-[40vw] rounded-full blur-[100px] opacity-30 pointer-events-none"
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "180px",
-          background: "linear-gradient(to bottom, transparent, #0a0a0a)",
-          pointerEvents: "none",
-          zIndex: 1,
+          background: "linear-gradient(45deg, #c8c8c8, #707070)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 0,
         }}
       />
 
@@ -119,10 +189,10 @@ export function HeroChrom() {
         style={{ zIndex: 2 }}
         aria-hidden
       >
-        <div className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
+        <div ref={marqueeRef} className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
+            className="inline-flex shrink-0 animate-[stahl-marquee_12s_linear_infinite]"
+            style={{ color: "#c8c8c8", fontSize: "14px", letterSpacing: "0.2em", opacity: 0.6 }}
           >
             {MARQUEE_TEXT}
             {MARQUEE_TEXT}
@@ -130,8 +200,8 @@ export function HeroChrom() {
             {MARQUEE_TEXT}
           </span>
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
+            className="inline-flex shrink-0 animate-[stahl-marquee_12s_linear_infinite]"
+            style={{ color: "#c8c8c8", fontSize: "14px", letterSpacing: "0.2em", opacity: 0.6 }}
             aria-hidden
           >
             {MARQUEE_TEXT}
@@ -142,7 +212,7 @@ export function HeroChrom() {
         </div>
       </div>
 
-      {/* GSAP word reveal — sits in front of the sphere */}
+      {/* GSAP word reveal */}
       <div
         className="px-8 md:px-16 lg:px-24 pt-16 pb-8 flex flex-col leading-none"
         style={{ position: "relative", zIndex: 2 }}
@@ -179,6 +249,7 @@ export function HeroChrom() {
             color: "#c8c8c8",
             lineHeight: 0.9,
             opacity: 0,
+            textShadow: "0px 0px 20px rgba(200,200,200,0.5)",
           }}
         >
           Komplett.
@@ -193,7 +264,7 @@ export function HeroChrom() {
         <p
           ref={subRef}
           className="max-w-md text-base md:text-lg leading-relaxed"
-          style={{ color: "#707070", opacity: 0, fontFamily: "var(--font-body)" }}
+          style={{ color: "#c8c8c8", opacity: 0, fontFamily: "var(--font-body)", fontWeight: 500 }}
         >
           {manifesto.sub}
         </p>
@@ -201,38 +272,30 @@ export function HeroChrom() {
         <div ref={ctaRef} style={{ opacity: 0, display: "flex", gap: "16px", flexWrap: "wrap" }}>
           <a
             href="#services"
-            className="inline-flex items-center h-11 px-8 text-[13px] tracking-[0.1em] uppercase font-semibold transition-all duration-300"
-            style={{ backgroundColor: "#c8c8c8", color: "#0a0a0a", textDecoration: "none" }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLAnchorElement
-              el.style.backgroundColor = "#ebebeb"
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLAnchorElement
-              el.style.backgroundColor = "#c8c8c8"
-            }}
+            className="inline-flex items-center h-14 px-10 text-[14px] tracking-[0.1em] uppercase font-bold transition-all duration-300 shadow-[0_0_20px_rgba(200,200,200,0.2)] hover:shadow-[0_0_30px_rgba(200,200,200,0.5)] hover:scale-105"
+            style={{ backgroundColor: "#ebebeb", color: "#0a0a0a", textDecoration: "none" }}
           >
-            Our Services
+            Unsere Leistungen
           </a>
           <a
             href="#contact"
             className="inline-flex items-center gap-3 group"
-            style={{ color: "#c8c8c8", textDecoration: "none" }}
+            style={{ color: "#ebebeb", textDecoration: "none" }}
           >
-            <span className="text-[13px] tracking-[0.12em] uppercase font-semibold transition-colors duration-300 group-hover:text-[#ebebeb]">
-              Start a Project
+            <span className="text-[14px] tracking-[0.12em] uppercase font-bold transition-all duration-300 group-hover:text-white group-hover:tracking-[0.2em]">
+              Projekt starten
             </span>
             <span
-              className="flex items-center justify-center w-10 h-10 border transition-all duration-300 group-hover:bg-[#c8c8c8] group-hover:text-[#0a0a0a]"
-              style={{ borderColor: "#c8c8c8" }}
+              className="flex items-center justify-center w-14 h-14 border transition-all duration-300 group-hover:bg-[#ebebeb] group-hover:text-[#0a0a0a] group-hover:rotate-45"
+              style={{ borderColor: "#ebebeb" }}
             >
               <svg
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 14 14"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="2"
               >
                 <path d="M2 7h10M7 2l5 5-5 5" />
               </svg>

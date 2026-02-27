@@ -18,52 +18,52 @@ export function ContactSection() {
     () => {
       if (!sectionRef.current) return
 
+      // Extreme reveal for heading
       gsap.fromTo(
         headingRef.current,
-        { y: 40, opacity: 0 },
+        { y: 100, opacity: 0, rotationX: -90, transformOrigin: "top" },
         {
           y: 0,
           opacity: 1,
-          duration: 0.9,
-          ease: "power3.out",
+          rotationX: 0,
+          duration: 1.5,
+          ease: "elastic.out(1, 0.5)",
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
-            toggleActions: "play none none reverse",
           },
         }
       )
 
       gsap.fromTo(
         infoRef.current,
-        { y: 30, opacity: 0 },
+        { x: -50, opacity: 0 },
         {
-          y: 0,
+          x: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: 1,
           ease: "power3.out",
-          delay: 0.15,
+          delay: 0.3,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
-            toggleActions: "play none none reverse",
           },
         }
       )
 
       gsap.fromTo(
         formRef.current,
-        { y: 30, opacity: 0 },
+        { x: 50, opacity: 0, scale: 0.9 },
         {
-          y: 0,
+          x: 0,
           opacity: 1,
-          duration: 0.8,
+          scale: 1,
+          duration: 1,
           ease: "power3.out",
-          delay: 0.25,
+          delay: 0.5,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 70%",
-            toggleActions: "play none none reverse",
           },
         }
       )
@@ -75,64 +75,65 @@ export function ContactSection() {
     <section
       ref={sectionRef}
       id="contact"
-      className="py-32 px-8 md:px-16 lg:px-24"
-      style={{ backgroundColor: "#0a0a0a", borderTop: "1px solid #222222" }}
+      className="py-32 px-8 md:px-16 lg:px-24 overflow-hidden relative"
+      style={{ backgroundColor: "#0a0a0a", borderTop: "1px solid #333", perspective: "1000px" }}
     >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32">
+      {/* Background glow */}
+      <div 
+        className="absolute top-0 right-0 w-[50vw] h-[50vw] rounded-full blur-[120px] opacity-10 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #c8c8c8 0%, transparent 70%)", transform: "translate(20%, -20%)" }}
+      />
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 relative z-10">
         {/* Left: heading + contact info */}
         <div className="flex flex-col gap-10">
           <div>
             <p
-              className="text-[11px] tracking-[0.2em] uppercase mb-6"
+              className="text-[12px] tracking-[0.3em] uppercase mb-6 font-bold"
               style={{ color: "#707070", fontFamily: "var(--font-body)" }}
             >
-              Get in Touch
+              Kontakt aufnehmen
             </p>
             <h2
               ref={headingRef}
               className="font-[family-name:var(--font-display)] italic"
               style={{
-                fontSize: "clamp(40px, 7vw, 96px)",
+                fontSize: "clamp(50px, 8vw, 110px)",
                 color: "#ebebeb",
                 lineHeight: 1.05,
                 opacity: 0,
+                textShadow: "0 10px 30px rgba(0,0,0,0.5)"
               }}
             >
-              Let&apos;s build
+              Lass uns
               <br />
-              something
+              etwas
               <br />
-              <span style={{ color: "#c8c8c8" }}>exceptional.</span>
+              <span style={{ color: "#c8c8c8", textShadow: "0 0 20px rgba(200,200,200,0.3)" }}>Geniales bauen.</span>
             </h2>
           </div>
 
-          <div ref={infoRef} className="flex flex-col gap-6" style={{ opacity: 0 }}>
+          <div ref={infoRef} className="flex flex-col gap-8" style={{ opacity: 0 }}>
             <p
-              className="text-base leading-relaxed max-w-sm"
-              style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+              className="text-lg leading-relaxed max-w-sm"
+              style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}
             >
-              Based in the Ruhrgebiet. Available everywhere. Drop us a message
-              and we&apos;ll get back to you within 24 hours.
+              Ansässig im Ruhrgebiet. Überall verfügbar. Schreib uns eine Nachricht
+              und wir melden uns innerhalb von 24 Stunden zurück.
             </p>
 
-            <div className="flex flex-col gap-4">
-              <div>
+            <div className="flex flex-col gap-6">
+              <div className="group">
                 <p
-                  className="text-[10px] tracking-[0.15em] uppercase mb-1"
+                  className="text-[11px] tracking-[0.2em] uppercase mb-2 font-bold"
                   style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                 >
                   Email
                 </p>
                 <a
                   href="mailto:hallo@fpz-media.de"
-                  className="text-sm transition-colors duration-200"
-                  style={{ color: "#c8c8c8", fontFamily: "var(--font-body)" }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#ebebeb")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#c8c8c8")
-                  }
+                  className="text-xl transition-all duration-300 group-hover:pl-2"
+                  style={{ color: "#c8c8c8", fontFamily: "var(--font-body)", display: "inline-block" }}
                 >
                   hallo@fpz-media.de
                 </a>
@@ -140,37 +141,31 @@ export function ContactSection() {
 
               <div>
                 <p
-                  className="text-[10px] tracking-[0.15em] uppercase mb-1"
+                  className="text-[11px] tracking-[0.2em] uppercase mb-2 font-bold"
                   style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                 >
-                  Location
+                  Standort
                 </p>
                 <span
-                  className="text-sm"
+                  className="text-xl"
                   style={{ color: "#c8c8c8", fontFamily: "var(--font-body)" }}
                 >
-                  Ruhrgebiet, NRW, Germany
+                  Ruhrgebiet, NRW, Deutschland
                 </span>
               </div>
             </div>
 
             {/* Separator */}
-            <div style={{ height: "1px", backgroundColor: "#222222", width: "100%" }} />
+            <div style={{ height: "1px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.1)" }} />
 
             {/* Social links */}
-            <div className="flex gap-6">
+            <div className="flex gap-8">
               {["Instagram", "LinkedIn"].map((social) => (
                 <a
                   key={social}
                   href="#"
-                  className="text-[11px] tracking-[0.1em] uppercase transition-colors duration-200"
-                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-                  onMouseEnter={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#c8c8c8")
-                  }
-                  onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLAnchorElement).style.color = "#707070")
-                  }
+                  className="text-[13px] tracking-[0.2em] uppercase transition-all duration-300 font-bold hover:-translate-y-1 hover:text-[#ebebeb]"
+                  style={{ color: "#707070", fontFamily: "var(--font-body)", display: "inline-block" }}
                 >
                   {social}
                 </a>
@@ -180,7 +175,7 @@ export function ContactSection() {
         </div>
 
         {/* Right: Contact form */}
-        <div ref={formRef} style={{ opacity: 0 }}>
+        <div ref={formRef} style={{ opacity: 0 }} className="bg-[#141414] p-8 md:p-12 rounded-2xl border border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           <ContactForm accentColor="#c8c8c8" />
         </div>
       </div>

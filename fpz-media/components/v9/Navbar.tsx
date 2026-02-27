@@ -9,10 +9,10 @@ import { Logo } from "@/components/shared/Logo"
 gsap.registerPlugin(ScrollTrigger)
 
 const NAV_LINKS = [
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
-  { label: "Work", href: "#portfolio" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Leistungen", href: "#services" },
+  { label: "Prozess", href: "#process" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Preise", href: "#pricing" },
 ]
 
 export function Navbar() {
@@ -21,22 +21,23 @@ export function Navbar() {
   useGSAP(() => {
     if (!navRef.current) return
 
-    // Slide down on load
+    // Extreme drop-in on load
     gsap.fromTo(
       navRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.3 }
+      { y: -150, opacity: 0, rotationX: -90, transformPerspective: 1000 },
+      { y: 0, opacity: 1, rotationX: 0, duration: 1.5, ease: "elastic.out(1, 0.4)", delay: 0.5 }
     )
 
     // Background appears on scroll
     ScrollTrigger.create({
-      start: "top+=80 top",
+      start: "top+=100 top",
       onEnter: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(10,10,10,0.95)",
-          backdropFilter: "blur(12px)",
-          borderBottomColor: "#222222",
-          duration: 0.4,
+          backgroundColor: "rgba(10,10,10,0.8)",
+          backdropFilter: "blur(20px)",
+          borderBottomColor: "#333",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+          duration: 0.5,
           ease: "power2.out",
         })
       },
@@ -45,7 +46,8 @@ export function Navbar() {
           backgroundColor: "rgba(10,10,10,0)",
           backdropFilter: "blur(0px)",
           borderBottomColor: "transparent",
-          duration: 0.4,
+          boxShadow: "none",
+          duration: 0.5,
           ease: "power2.out",
         })
       },
@@ -55,24 +57,20 @@ export function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-12 h-16 border-b border-transparent transition-colors will-change-transform"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-12 h-20 border-b border-transparent transition-all will-change-transform"
       style={{ opacity: 0 }}
     >
-      <Logo color="#c8c8c8" size="md" />
+      <div className="hover:scale-110 transition-transform duration-300">
+        <Logo color="#ebebeb" size="md" />
+      </div>
 
-      <div className="hidden md:flex items-center gap-8">
+      <div className="hidden md:flex items-center gap-10">
         {NAV_LINKS.map((link) => (
           <a
             key={link.href}
             href={link.href}
-            className="text-[13px] tracking-[0.08em] uppercase font-medium transition-colors duration-200"
-            style={{ color: "#707070" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.color = "#ebebeb")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.color = "#707070")
-            }
+            className="text-[13px] tracking-[0.2em] uppercase font-bold transition-all duration-300 hover:text-[#ebebeb] hover:-translate-y-1"
+            style={{ color: "#707070", display: "inline-block" }}
           >
             {link.label}
           </a>
@@ -81,24 +79,25 @@ export function Navbar() {
 
       <a
         href="#contact"
-        className="hidden md:inline-flex items-center h-9 px-5 text-[12px] tracking-[0.1em] uppercase font-semibold border transition-all duration-300"
+        className="hidden md:inline-flex items-center h-12 px-8 text-[13px] tracking-[0.2em] uppercase font-bold border transition-all duration-300 rounded-sm hover:scale-105"
         style={{
           borderColor: "#c8c8c8",
           color: "#c8c8c8",
-          letterSpacing: "0.1em",
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget as HTMLAnchorElement
           el.style.backgroundColor = "#c8c8c8"
           el.style.color = "#0a0a0a"
+          el.style.boxShadow = "0 0 20px rgba(200,200,200,0.3)"
         }}
         onMouseLeave={(e) => {
           const el = e.currentTarget as HTMLAnchorElement
           el.style.backgroundColor = "transparent"
           el.style.color = "#c8c8c8"
+          el.style.boxShadow = "none"
         }}
       >
-        Start a Project
+        Projekt starten
       </a>
     </nav>
   )

@@ -6,7 +6,7 @@ import * as THREE from "three"
 
 type ShapeType = "cube" | "sphere" | "torus"
 
-function WireframeMesh({ type, color }: { type: ShapeType; color: string }) {
+function WireframeMesh({ type, color }: { type: ShapeType, color: string }) {
   const meshRef = useRef<THREE.Mesh>(null)
 
   useFrame(({ clock }) => {
@@ -17,7 +17,7 @@ function WireframeMesh({ type, color }: { type: ShapeType; color: string }) {
   })
 
   const material = (
-    <meshBasicMaterial color={color} wireframe opacity={0.55} transparent />
+    <meshBasicMaterial color={color} wireframe opacity={0.6} transparent />
   )
 
   if (type === "cube") {
@@ -45,12 +45,12 @@ function WireframeMesh({ type, color }: { type: ShapeType; color: string }) {
   )
 }
 
-export function WireframeIcon({ type, color = "#c8c8c8" }: { type: ShapeType; color?: string }) {
+export function WireframeIcon({ type, color = "#0a0a0a" }: { type: ShapeType, color?: string }) {
   return (
     <div
       style={{
-        width: "90px",
-        height: "90px",
+        width: "120px",
+        height: "120px",
         pointerEvents: "none",
         flexShrink: 0,
       }}

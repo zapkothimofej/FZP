@@ -9,7 +9,7 @@ import { PortfolioSection } from "@/components/v9/PortfolioSection"
 import { ContactSection } from "@/components/v9/ContactSection"
 import { Footer } from "@/components/v9/Footer"
 
-export default function V6Page() {
+export default function V9Page() {
   return (
     <main>
       <Navbar />

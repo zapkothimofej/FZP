@@ -87,7 +87,7 @@ export const process = [
 export const stats = [
   { value: "3", label: "Kernleistungen" },
   { value: "100%", label: "Lokal im Ruhrgebiet" },
-  { value: "1 Partner", label: "Für Alles" },
+  { value: "1", label: "Partner für Alles" },
   { value: "∞", label: "Ambition" },
 ]
 

@@ -10,11 +10,10 @@ import { services } from "@/lib/content-de"
 gsap.registerPlugin(ScrollTrigger)
 
 const WireframeIcon = dynamic(
-  () => import("@/components/v9/WireframeIcon").then((m) => m.WireframeIcon),
+  () => import("@/components/v10/WireframeIcon").then((m) => m.WireframeIcon),
   { ssr: false }
 )
 
-// Each service panel gets a different wireframe icon
 const PANEL_ICONS: Array<"cube" | "sphere" | "torus"> = ["cube", "sphere", "torus"]
 
 export function ServicesSection() {
@@ -25,51 +24,52 @@ export function ServicesSection() {
     () => {
       if (!containerRef.current || !trackRef.current) return
 
-      const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
+      const panels = gsap.utils.toArray<HTMLElement>(".v10-service-panel")
       if (panels.length === 0) return
 
+      // Use a slightly different approach to avoid disappearing elements.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           pin: true,
-          scrub: 1.5, // Smoother scrub
-          end: () => "+=" + (panels.length - 1) * window.innerWidth * 1.5, // Slower scroll
+          scrub: 1, // Smooth scrub
+          end: () => "+=" + (panels.length * 100) + "%", // Make scrolling proportional
           invalidateOnRefresh: true,
         },
       })
 
-      // Extreme horizontal scroll with rotation and scale
+      // Horizontal scroll
       tl.to(panels, {
         xPercent: -100 * (panels.length - 1),
-        ease: "power1.inOut",
+        ease: "none",
       })
 
-      // Parallax effects inside each panel
-      panels.forEach((panel, i) => {
+      // Internal animations based on container timeline
+      panels.forEach((panel) => {
         const title = panel.querySelector("h2")
         const number = panel.querySelector(".bg-number")
         
+        // Use simpler parallax to avoid layout breaking
         gsap.to(title, {
-          x: 200,
-          scale: 1.1,
+          x: 100,
           ease: "none",
           scrollTrigger: {
             trigger: panel,
             containerAnimation: tl,
-            start: "left right",
+            start: "left center",
             end: "right left",
             scrub: true,
           }
         })
 
         gsap.to(number, {
-          x: -150,
-          rotation: 45,
+          rotation: 30,
+          scale: 1.2,
           ease: "none",
           scrollTrigger: {
             trigger: panel,
             containerAnimation: tl,
-            start: "left right",
+            start: "left center",
             end: "right left",
             scrub: true,
           }
@@ -80,15 +80,15 @@ export function ServicesSection() {
   )
 
   return (
-    <section id="services" className="relative" ref={containerRef} style={{ overflow: "hidden" }}>
+    <section id="services" className="relative overflow-hidden bg-white" ref={containerRef}>
       {/* Section label */}
       <div
-        className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
+        className="absolute top-8 left-8 md:left-16 lg:left-24 z-20 pointer-events-none"
         aria-hidden
       >
         <p
-          className="text-[11px] tracking-[0.2em] uppercase"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+          className="text-[12px] tracking-[0.3em] font-bold uppercase"
+          style={{ color: "#0a0a0a", fontFamily: "var(--font-body)" }}
         >
           Unsere Leistungen — Scroll
         </p>
@@ -103,12 +103,12 @@ export function ServicesSection() {
         {services.map((service, i) => (
           <div
             key={service.id}
-            className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
+            className="v10-service-panel relative flex flex-col justify-end overflow-hidden"
             style={{
               width: "100vw",
               height: "100vh",
-              backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
-              borderRight: i < services.length - 1 ? "1px solid #333" : "none",
+              backgroundColor: i % 2 === 0 ? "#ffffff" : "#f8f9fa",
+              borderRight: i < services.length - 1 ? "1px solid #e0e0e0" : "none",
               flexShrink: 0,
             }}
           >
@@ -118,11 +118,11 @@ export function ServicesSection() {
               aria-hidden
               style={{
                 fontSize: "clamp(250px, 45vw, 600px)",
-                color: "#c8c8c8",
-                opacity: 0.03,
+                color: "#e0e0e0", // Light grey
+                opacity: 0.3,
                 lineHeight: 0.85,
                 paddingRight: "2rem",
-                textShadow: "0 0 50px rgba(200,200,200,0.1)",
+                textShadow: "0 0 50px rgba(0,0,0,0.05)",
               }}
             >
               {service.number}
@@ -130,18 +130,18 @@ export function ServicesSection() {
 
             {/* Three.js Wireframe Icon — top-right corner */}
             <div
-              className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
+              className="absolute top-12 right-12 z-0 opacity-20 mix-blend-multiply scale-150 pointer-events-none"
               aria-hidden
             >
-              <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
+              <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} color="#0a0a0a" />
             </div>
 
             {/* Panel content */}
             <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
               {/* Number label */}
               <p
-                className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold"
-                style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}
+                className="text-[14px] tracking-[0.3em] uppercase mb-8 font-extrabold"
+                style={{ color: "#0a0a0a", fontFamily: "var(--font-body)" }}
               >
                 {service.number} / {String(services.length).padStart(2, "0")}
               </p>
@@ -151,9 +151,8 @@ export function ServicesSection() {
                 className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
                 style={{
                   fontSize: "clamp(50px, 9vw, 120px)",
-                  color: "#ebebeb",
+                  color: "#0a0a0a",
                   lineHeight: 0.9,
-                  textShadow: "0 10px 30px rgba(0,0,0,0.5)",
                 }}
               >
                 {service.title}
@@ -161,9 +160,9 @@ export function ServicesSection() {
 
               {/* Headline */}
               <p
-                className="text-xl mb-8 italic"
+                className="text-xl mb-8 italic font-medium"
                 style={{
-                  color: "#c8c8c8",
+                  color: "#555555",
                   fontFamily: "var(--font-display)",
                   fontSize: "clamp(22px, 3vw, 36px)",
                 }}
@@ -173,16 +172,16 @@ export function ServicesSection() {
 
               {/* Description */}
               <p
-                className="text-base leading-relaxed mb-10 max-w-lg"
-                style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}
+                className="text-base leading-relaxed mb-10 max-w-lg font-medium"
+                style={{ color: "#333333", fontFamily: "var(--font-body)" }}
               >
                 {service.description}
               </p>
 
-              {/* Thin separator with glow */}
+              {/* Thin separator */}
               <div
                 className="mb-8"
-                style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }}
+                style={{ height: "2px", backgroundColor: "#0a0a0a", width: "100%", opacity: 0.1 }}
               />
 
               {/* Deliverables */}
@@ -190,12 +189,11 @@ export function ServicesSection() {
                 {service.deliverables.map((d, j) => (
                   <li
                     key={j}
-                    className="flex items-center gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors cursor-default"
-                    style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                    className="flex items-center gap-4 text-sm font-bold text-[#0a0a0a] transition-all hover:translate-x-2"
+                    style={{ fontFamily: "var(--font-body)" }}
                   >
                     <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0 shadow-[0_0_8px_#c8c8c8]"
-                      style={{ backgroundColor: "#c8c8c8" }}
+                      className="w-2 h-2 flex-shrink-0 bg-[#0a0a0a]"
                     />
                     {d}
                   </li>
@@ -207,7 +205,7 @@ export function ServicesSection() {
             {i === 0 && (
               <div
                 className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse"
-                style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}
+                style={{ color: "#0a0a0a", fontSize: "14px", letterSpacing: "0.2em", fontWeight: "bold" }}
               >
                 <span>WEITER SCROLLEN</span>
                 <svg

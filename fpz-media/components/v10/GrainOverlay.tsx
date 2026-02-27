@@ -1,8 +1,8 @@
 export function GrainOverlay() {
   return (
     <div className="fixed inset-0 pointer-events-none z-[100]" aria-hidden>
-      <svg className="w-full h-full" style={{ opacity: "var(--v6-grain-opacity)" }}>
-        <filter id="noise-v6">
+      <svg className="w-full h-full opacity-[0.035]">
+        <filter id="noise-v10">
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.65"
@@ -11,7 +11,7 @@ export function GrainOverlay() {
           />
           <feColorMatrix type="saturate" values="0" />
         </filter>
-        <rect width="100%" height="100%" filter="url(#noise-v6)" />
+        <rect width="100%" height="100%" filter="url(#noise-v10)" />
       </svg>
     </div>
   )

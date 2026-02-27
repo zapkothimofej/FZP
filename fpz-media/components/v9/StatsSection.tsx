@@ -24,48 +24,50 @@ export function StatsSection() {
     () => {
       if (!sectionRef.current) return
 
-      // Count-up animations using GSAP — same as V2
+      // Count-up animations using GSAP
       stats.forEach((stat, i) => {
         const el = numbersRef.current[i]
         if (!el) return
         const { prefix, num, suffix } = parseStatValue(stat.value)
-        if (num === null) return // ∞ — skip
-
-        const obj = { val: 0 }
-        gsap.to(obj, {
-          val: num,
-          duration: 2,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 75%",
-            toggleActions: "play none none none",
-          },
-          onUpdate: () => {
-            el.textContent =
-              prefix +
-              (Number.isInteger(num)
-                ? Math.round(obj.val).toString()
-                : obj.val.toFixed(1)) +
-              suffix
-          },
-        })
+        
+        if (num !== null) {
+          const obj = { val: 0 }
+          gsap.to(obj, {
+            val: num,
+            duration: 3, // Slower count
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+            onUpdate: () => {
+              el.textContent =
+                prefix +
+                (Number.isInteger(num)
+                  ? Math.round(obj.val).toString()
+                  : obj.val.toFixed(1)) +
+                suffix
+            },
+          })
+        }
       })
 
-      // Stagger stat cards in
+      // Stagger stat cards in with an intense 3D flip
       gsap.fromTo(
         ".v6-stat-card",
-        { y: 30, opacity: 0 },
+        { y: 100, opacity: 0, rotationX: 90, scale: 0.5 },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.12,
-          duration: 0.7,
-          ease: "power3.out",
+          rotationX: 0,
+          scale: 1,
+          stagger: 0.2,
+          duration: 1.5,
+          ease: "elastic.out(1, 0.5)",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
+            start: "top 80%",
           },
         }
       )
@@ -76,33 +78,41 @@ export function StatsSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-28"
-      style={{ backgroundColor: "#141414" }}
+      className="py-32"
+      style={{ backgroundColor: "#141414", perspective: "1500px", overflow: "hidden" }}
     >
       {/* Stats grid */}
       <div className="px-8 md:px-16 lg:px-24">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[#222222]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat, i) => {
             const { prefix, num, suffix } = parseStatValue(stat.value)
             return (
               <div
                 key={stat.label}
-                className="v6-stat-card flex flex-col items-center justify-center py-16 px-4 text-center"
+                className="v6-stat-card relative flex flex-col items-center justify-center py-20 px-6 text-center rounded-2xl overflow-hidden group hover:scale-105 transition-transform duration-500"
                 style={{
-                  backgroundColor: "#141414",
-                  borderRight: i < stats.length - 1 ? "1px solid #222222" : "none",
+                  backgroundColor: "#0a0a0a",
+                  border: "1px solid #333",
                   opacity: 0,
+                  transformStyle: "preserve-3d"
                 }}
               >
+                {/* Glow effect inside card */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at center, rgba(200,200,200,0.15) 0%, transparent 70%)"
+                  }}
+                />
+
                 {/* 3D extrusion effect on the numbers via text-shadow stacking */}
                 <div
-                  className="font-[family-name:var(--font-display)] mb-3"
+                  className="font-[family-name:var(--font-display)] mb-4 relative z-10 transition-transform duration-500 group-hover:scale-110"
                   style={{
-                    fontSize: "clamp(36px, 6vw, 80px)",
-                    color: "#c8c8c8",
+                    fontSize: "clamp(50px, 8vw, 120px)",
+                    color: "#ebebeb",
                     lineHeight: 1,
-                    textShadow:
-                      "1px 1px 0 rgba(200,200,200,0.3), 2px 2px 0 rgba(200,200,200,0.2), 3px 3px 0 rgba(200,200,200,0.1)",
+                    textShadow: "0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(235,235,235,0.4)"
                   }}
                 >
                   {num !== null ? (
@@ -118,7 +128,7 @@ export function StatsSection() {
                   )}
                 </div>
                 <p
-                  className="text-[11px] tracking-[0.15em] uppercase"
+                  className="text-[14px] tracking-[0.3em] uppercase font-bold relative z-10 transition-colors duration-500 group-hover:text-[#ebebeb]"
                   style={{ color: "#707070", fontFamily: "var(--font-body)" }}
                 >
                   {stat.label}
@@ -131,30 +141,32 @@ export function StatsSection() {
 
       {/* Infinite marquee ticker */}
       <div
-        className="mt-16 overflow-hidden border-t border-b select-none"
-        style={{ borderColor: "#222222", padding: "14px 0" }}
+        className="mt-24 overflow-hidden border-t border-b select-none shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+        style={{ borderColor: "#333", padding: "20px 0", backgroundColor: "#0a0a0a" }}
         aria-hidden
       >
         <div className="flex">
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
+            className="inline-flex shrink-0 animate-[stahl-marquee_15s_linear_infinite]"
             style={{
-              color: "#707070",
-              fontSize: "11px",
-              letterSpacing: "0.25em",
+              color: "#c8c8c8",
+              fontSize: "14px",
+              letterSpacing: "0.4em",
               fontFamily: "var(--font-body)",
+              fontWeight: "bold",
               whiteSpace: "nowrap",
             }}
           >
             {Array(6).fill(MARQUEE_TEXT).join("")}
           </span>
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
+            className="inline-flex shrink-0 animate-[stahl-marquee_15s_linear_infinite]"
             style={{
-              color: "#707070",
-              fontSize: "11px",
-              letterSpacing: "0.25em",
+              color: "#c8c8c8",
+              fontSize: "14px",
+              letterSpacing: "0.4em",
               fontFamily: "var(--font-body)",
+              fontWeight: "bold",
               whiteSpace: "nowrap",
             }}
             aria-hidden

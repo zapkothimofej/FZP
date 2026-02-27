@@ -23,25 +23,26 @@ export function PricingSection() {
     () => {
       if (!sectionRef.current) return
 
-      // Cards stagger in
+      // Extreme 3D rotation and scale in
       gsap.fromTo(
         ".v6-pricing-card",
-        { y: 60, opacity: 0 },
+        { y: 150, opacity: 0, rotationY: -90, scale: 0.8 },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.15,
-          duration: 0.9,
-          ease: "power3.out",
+          rotationY: 0,
+          scale: 1,
+          stagger: 0.2,
+          duration: 1.2,
+          ease: "back.out(1.2)",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 70%",
-            toggleActions: "play none none reverse",
+            start: "top 75%",
           },
         }
       )
 
-      // Count-up prices
+      // Count-up prices with pop effect
       pricing.forEach((plan, i) => {
         const el = priceRefs.current[i]
         if (!el) return
@@ -51,16 +52,18 @@ export function PricingSection() {
         const obj = { val: 0 }
         gsap.to(obj, {
           val: num,
-          duration: 1.8,
-          ease: "power2.out",
+          duration: 2.5,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 70%",
-            toggleActions: "play none none none",
+            start: "top 75%",
           },
           onUpdate: () => {
             el.textContent = prefix + Math.round(obj.val).toLocaleString("de-DE") + suffix
           },
+          onComplete: () => {
+            gsap.to(el, { scale: 1.2, color: "#fff", duration: 0.1, yoyo: true, repeat: 1 })
+          }
         })
       })
     },
@@ -71,54 +74,66 @@ export function PricingSection() {
     <section
       ref={sectionRef}
       id="pricing"
-      className="py-32 px-8 md:px-16 lg:px-24"
-      style={{ backgroundColor: "#0a0a0a" }}
+      className="py-32 px-8 md:px-16 lg:px-24 overflow-hidden"
+      style={{ backgroundColor: "#0a0a0a", perspective: "2000px" }}
     >
       {/* Header */}
-      <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <div className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6 relative z-10">
         <div>
           <p
             className="text-[11px] tracking-[0.2em] uppercase mb-4"
             style={{ color: "#707070", fontFamily: "var(--font-body)" }}
           >
-            Investment
+            Investition
           </p>
           <h2
             className="font-[family-name:var(--font-display)]"
-            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
+            style={{ fontSize: "clamp(40px, 8vw, 90px)", color: "#ebebeb" }}
           >
-            Transparent Pricing
+            Transparente Preise
           </h2>
         </div>
         <p
-          className="max-w-xs text-sm leading-relaxed"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+          className="max-w-sm text-base leading-relaxed"
+          style={{ color: "#c8c8c8", fontFamily: "var(--font-body)" }}
         >
-          No hidden fees. No surprise invoices. One price, everything included.
+          Keine versteckten Kosten. Keine überraschenden Rechnungen. Ein Preis, alles inklusive.
         </p>
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#222222]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
         {pricing.map((plan, i) => {
           const { prefix, num, suffix } = parsePrice(plan.price)
           return (
             <div
               key={plan.name}
-              className="v6-pricing-card flex flex-col relative overflow-hidden"
+              className={`v6-pricing-card flex flex-col relative overflow-hidden rounded-2xl transition-transform duration-500 hover:-translate-y-4 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] ${plan.highlighted ? "scale-105 z-10" : ""}`}
               style={{
-                backgroundColor: plan.highlighted ? "#141414" : "#0a0a0a",
+                backgroundColor: plan.highlighted ? "#141414" : "#0f0f0f",
+                border: plan.highlighted ? "1px solid #c8c8c8" : "1px solid #333",
                 padding: "clamp(32px, 4vw, 56px)",
                 opacity: 0,
+                transformStyle: "preserve-3d"
               }}
             >
-              {/* Shimmer sweep for highlighted card */}
+              {/* Glow for highlighted card */}
               {plan.highlighted && (
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
+                    background: "radial-gradient(circle at 50% 0%, rgba(200,200,200,0.1) 0%, transparent 60%)",
+                  }}
+                />
+              )}
+
+              {/* Shimmer sweep for highlighted card */}
+              {plan.highlighted && (
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-50"
+                  style={{
                     background:
-                      "linear-gradient(135deg, transparent 30%, rgba(200,200,200,0.08) 50%, transparent 70%)",
+                      "linear-gradient(135deg, transparent 30%, rgba(200,200,200,0.2) 50%, transparent 70%)",
                     animation: "stahl-shimmer 3s ease-in-out infinite",
                   }}
                 />
@@ -127,30 +142,30 @@ export function PricingSection() {
               {/* Accent top line */}
               {plan.highlighted && (
                 <div
-                  className="absolute top-0 left-0 right-0"
-                  style={{ height: "2px", backgroundColor: "#c8c8c8" }}
+                  className="absolute top-0 left-0 right-0 shadow-[0_0_10px_#c8c8c8]"
+                  style={{ height: "4px", backgroundColor: "#c8c8c8" }}
                 />
               )}
 
               {/* Popular badge */}
               {plan.highlighted && (
-                <div className="mb-6">
+                <div className="mb-8">
                   <span
-                    className="text-[10px] tracking-[0.15em] uppercase px-3 py-1 font-semibold"
+                    className="text-[12px] tracking-[0.2em] uppercase px-4 py-2 font-bold rounded-full"
                     style={{
-                      border: "1px solid #c8c8c8",
-                      color: "#c8c8c8",
+                      backgroundColor: "#c8c8c8",
+                      color: "#0a0a0a",
                       fontFamily: "var(--font-body)",
                     }}
                   >
-                    Most Popular
+                    Bestseller
                   </span>
                 </div>
               )}
 
               {/* Plan name */}
               <p
-                className="text-[11px] tracking-[0.2em] uppercase mb-4"
+                className="text-[14px] tracking-[0.3em] uppercase mb-4 font-bold"
                 style={{ color: "#707070", fontFamily: "var(--font-body)" }}
               >
                 {plan.name}
@@ -158,54 +173,54 @@ export function PricingSection() {
 
               {/* Price — 3D extrusion text-shadow */}
               <div
-                className="font-[family-name:var(--font-display)] mb-4"
+                className="font-[family-name:var(--font-display)] mb-6 transition-all duration-300 hover:scale-105"
                 style={{
-                  fontSize: "clamp(48px, 7vw, 80px)",
-                  color: plan.highlighted ? "#c8c8c8" : "#ebebeb",
+                  fontSize: "clamp(50px, 8vw, 90px)",
+                  color: plan.highlighted ? "#ebebeb" : "#c8c8c8",
                   lineHeight: 1,
                   textShadow: plan.highlighted
-                    ? "1px 1px 0 rgba(200,200,200,0.3), 2px 2px 0 rgba(200,200,200,0.2), 3px 3px 0 rgba(200,200,200,0.1)"
-                    : "none",
+                    ? "0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(200,200,200,0.3)"
+                    : "0 5px 15px rgba(0,0,0,0.3)",
                 }}
               >
                 {num !== null ? (
                   <>
                     {prefix}
-                    <span ref={(el) => { priceRefs.current[i] = el }}>0</span>
+                    <span ref={(el) => { priceRefs.current[i] = el }} style={{ display: "inline-block" }}>0</span>
                     {suffix}
                   </>
                 ) : (
-                  <span ref={(el) => { priceRefs.current[i] = el }}>{plan.price}</span>
+                  <span ref={(el) => { priceRefs.current[i] = el }} style={{ display: "inline-block" }}>{plan.price}</span>
                 )}
               </div>
 
               {/* Description */}
               <p
-                className="text-sm leading-relaxed mb-8"
-                style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                className="text-base leading-relaxed mb-10 min-h-[48px]"
+                style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}
               >
                 {plan.description}
               </p>
 
               {/* Divider */}
-              <div className="mb-8" style={{ height: "1px", backgroundColor: "#222222" }} />
+              <div className="mb-10" style={{ height: "1px", backgroundColor: "#333" }} />
 
               {/* Features */}
-              <ul className="flex flex-col gap-3 flex-1">
+              <ul className="flex flex-col gap-4 flex-1">
                 {plan.features.map((feature, j) => (
                   <li
                     key={j}
-                    className="flex items-start gap-3 text-sm"
-                    style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}
+                    className="flex items-start gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors"
+                    style={{ color: "#c8c8c8", fontFamily: "var(--font-body)" }}
                   >
                     <svg
-                      className="mt-0.5 flex-shrink-0"
-                      width="14"
-                      height="14"
+                      className="mt-1 flex-shrink-0"
+                      width="16"
+                      height="16"
                       viewBox="0 0 14 14"
                       fill="none"
-                      stroke="#c8c8c8"
-                      strokeWidth="1.5"
+                      stroke="#ebebeb"
+                      strokeWidth="2"
                       strokeLinecap="round"
                     >
                       <polyline points="2 7 5.5 10.5 12 3.5" />
@@ -218,30 +233,38 @@ export function PricingSection() {
               {/* CTA */}
               <a
                 href="#contact"
-                className="mt-10 flex items-center justify-center h-11 text-[13px] tracking-[0.08em] uppercase font-semibold transition-all duration-300"
+                className="mt-12 flex items-center justify-center h-14 text-[14px] tracking-[0.1em] uppercase font-bold transition-all duration-300 rounded-sm hover:scale-[1.02]"
                 style={
                   plan.highlighted
                     ? {
-                        backgroundColor: "#c8c8c8",
+                        backgroundColor: "#ebebeb",
                         color: "#0a0a0a",
-                        border: "1px solid #c8c8c8",
+                        boxShadow: "0 0 20px rgba(200,200,200,0.2)",
                       }
                     : {
-                        backgroundColor: "transparent",
+                        backgroundColor: "#1a1a1a",
                         color: "#c8c8c8",
-                        border: "1px solid #222222",
+                        border: "1px solid #333",
                       }
                 }
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLAnchorElement
                   if (!plan.highlighted) {
+                    el.style.backgroundColor = "#222"
                     el.style.borderColor = "#c8c8c8"
+                    el.style.color = "#ebebeb"
+                  } else {
+                    el.style.boxShadow = "0 0 30px rgba(200,200,200,0.5)"
                   }
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLAnchorElement
                   if (!plan.highlighted) {
-                    el.style.borderColor = "#222222"
+                    el.style.backgroundColor = "#1a1a1a"
+                    el.style.borderColor = "#333"
+                    el.style.color = "#c8c8c8"
+                  } else {
+                    el.style.boxShadow = "0 0 20px rgba(200,200,200,0.2)"
                   }
                 }}
               >

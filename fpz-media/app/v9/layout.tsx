@@ -15,12 +15,12 @@ const body = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "FPZ Media — V6 Chrom",
+  title: "FPZ Media — V9 Perfect",
   description:
-    "Full-service digital agency for local businesses in the Ruhrgebiet. Web. Film. Automation.",
+    "Full-Service Digitalagentur für lokale Unternehmen im Ruhrgebiet. Web. Film. Automation.",
 }
 
-export default function V6Layout({ children }: { children: React.ReactNode }) {
+export default function V9Layout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={`${display.variable} ${body.variable} antialiased`}

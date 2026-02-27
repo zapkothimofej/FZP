@@ -1,0 +1,32 @@
+/* V6 theme variables — default dark */
+[data-theme="dark"],
+[data-theme=""] {
+  --v6-bg: #0a0a0a;
+  --v6-bg-elevated: #141414;
+  --v6-text: #ebebeb;
+  --v6-text-muted: #707070;
+  --v6-accent: #c8c8c8;
+  --v6-accent-hover: #ebebeb;
+  --v6-border: #222222;
+  --v6-text-on-accent: #0a0a0a;
+  --v6-nav-scrolled-bg: rgba(10, 10, 10, 0.95);
+  --v6-nav-scrolled-border: #222222;
+  --v6-hero-gradient-end: #0a0a0a;
+  --v6-grain-opacity: 0.035;
+}
+
+/* V6 light mode */
+[data-theme="light"] {
+  --v6-bg: #f5f5f5;
+  --v6-bg-elevated: #ebebeb;
+  --v6-text: #0a0a0a;
+  --v6-text-muted: #525252;
+  --v6-accent: #404040;
+  --v6-accent-hover: #171717;
+  --v6-border: #e5e5e5;
+  --v6-text-on-accent: #f5f5f5;
+  --v6-nav-scrolled-bg: rgba(245, 245, 245, 0.95);
+  --v6-nav-scrolled-border: #e5e5e5;
+  --v6-hero-gradient-end: #f5f5f5;
+  --v6-grain-opacity: 0.04;
+}

@@ -16,39 +16,79 @@ export function PortfolioSection() {
       if (!sectionRef.current) return
 
       const cards = gsap.utils.toArray<HTMLElement>(".v6-portfolio-card")
-      cards.forEach((card) => {
-        gsap.fromTo(
-          card,
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        )
-      })
+      
+      // Staggered 3D reveal
+      gsap.fromTo(
+        cards,
+        { y: 150, opacity: 0, rotationX: 45, scale: 0.8 },
+        {
+          y: 0,
+          opacity: 1,
+          rotationX: 0,
+          scale: 1,
+          duration: 1.2,
+          stagger: 0.15,
+          ease: "back.out(1.5)",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 70%",
+          },
+        }
+      )
     },
     { scope: sectionRef }
   )
 
   const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    gsap.to(e.currentTarget.querySelector(".v6-portfolio-inner"), {
-      scale: 1.03,
+    const inner = e.currentTarget.querySelector(".v6-portfolio-inner")
+    const num = e.currentTarget.querySelector(".portfolio-num")
+    const img = e.currentTarget.querySelector(".portfolio-bg")
+
+    gsap.to(inner, {
+      scale: 0.95,
       duration: 0.4,
+      ease: "power2.out",
+    })
+    
+    gsap.to(num, {
+      scale: 1.5,
+      x: -20,
+      opacity: 0.2,
+      duration: 0.4,
+      ease: "power2.out",
+    })
+
+    gsap.to(img, {
+      opacity: 0.5,
+      scale: 1.1,
+      duration: 0.5,
       ease: "power2.out",
     })
   }, [])
 
   const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    gsap.to(e.currentTarget.querySelector(".v6-portfolio-inner"), {
+    const inner = e.currentTarget.querySelector(".v6-portfolio-inner")
+    const num = e.currentTarget.querySelector(".portfolio-num")
+    const img = e.currentTarget.querySelector(".portfolio-bg")
+
+    gsap.to(inner, {
       scale: 1,
       duration: 0.4,
+      ease: "power2.out",
+    })
+
+    gsap.to(num, {
+      scale: 1,
+      x: 0,
+      opacity: 0.05,
+      duration: 0.4,
+      ease: "power2.out",
+    })
+
+    gsap.to(img, {
+      opacity: 0,
+      scale: 1,
+      duration: 0.5,
       ease: "power2.out",
     })
   }, [])
@@ -79,7 +119,7 @@ export function PortfolioSection() {
     <section
       ref={sectionRef}
       id="portfolio"
-      className="py-32 px-8 md:px-16 lg:px-24"
+      className="py-32 px-8 md:px-16 lg:px-24 overflow-hidden"
       style={{ backgroundColor: "#141414" }}
     >
       {/* Header */}
@@ -88,52 +128,61 @@ export function PortfolioSection() {
           className="text-[11px] tracking-[0.2em] uppercase mb-4"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
-          Selected Work
+          Ausgewählte Arbeiten
         </p>
         <h2
           className="font-[family-name:var(--font-display)]"
-          style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "#ebebeb" }}
+          style={{ fontSize: "clamp(40px, 8vw, 100px)", color: "#ebebeb" }}
         >
           Portfolio
         </h2>
       </div>
 
       {/* Masonry-style grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-px bg-[#222222]">
+      <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-4" style={{ perspective: "1000px" }}>
         {portfolioPlaceholders.map((item) => (
           <div
             key={item.id}
-            className={`v6-portfolio-card cursor-pointer overflow-hidden ${getSizeClasses(item.size)} ${getHeight(item.size)}`}
-            style={{ opacity: 0 }}
+            className={`v6-portfolio-card cursor-pointer ${getSizeClasses(item.size)} ${getHeight(item.size)}`}
+            style={{ opacity: 0, transformStyle: "preserve-3d" }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <div
-              className="v6-portfolio-inner w-full h-full flex flex-col justify-end p-8 relative"
+              className="v6-portfolio-inner w-full h-full flex flex-col justify-end p-8 relative overflow-hidden rounded-xl border border-[#333] hover:border-[#ebebeb] transition-colors duration-500 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
               style={{
                 backgroundColor: "#0a0a0a",
                 minHeight: "inherit",
                 height: "100%",
               }}
             >
+              {/* Animated abstract background on hover */}
+              <div 
+                className="portfolio-bg absolute inset-0 opacity-0 pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle at ${Math.random()*100}% ${Math.random()*100}%, rgba(200,200,200,0.2) 0%, transparent 60%)`
+                }}
+              />
+
               {/* Subtle grid pattern placeholder */}
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   backgroundImage:
                     "repeating-linear-gradient(0deg, #222222 0, #222222 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #222222 0, #222222 1px, transparent 1px, transparent 40px)",
-                  opacity: 0.3,
+                  opacity: 0.1,
                 }}
               />
 
               {/* Large placeholder number */}
               <div
-                className="absolute top-6 right-8 font-[family-name:var(--font-display)] select-none pointer-events-none"
+                className="portfolio-num absolute top-6 right-8 font-[family-name:var(--font-display)] select-none pointer-events-none"
                 style={{
-                  fontSize: "clamp(48px, 8vw, 120px)",
+                  fontSize: "clamp(60px, 10vw, 160px)",
                   color: "#c8c8c8",
                   opacity: 0.05,
                   lineHeight: 1,
+                  transformOrigin: "top right"
                 }}
                 aria-hidden
               >
@@ -141,16 +190,15 @@ export function PortfolioSection() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10">
+              <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 {/* Tags */}
                 <div className="flex gap-2 mb-4">
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] tracking-[0.12em] uppercase px-2 py-1"
+                      className="text-[10px] tracking-[0.12em] uppercase px-3 py-1 rounded-full bg-[#222]"
                       style={{
-                        border: "1px solid #222222",
-                        color: "#707070",
+                        color: "#ebebeb",
                         fontFamily: "var(--font-body)",
                       }}
                     >
@@ -160,17 +208,17 @@ export function PortfolioSection() {
                 </div>
 
                 <h3
-                  className="font-[family-name:var(--font-display)] mb-1"
+                  className="font-[family-name:var(--font-display)] mb-2"
                   style={{
-                    fontSize: "clamp(18px, 2.5vw, 32px)",
+                    fontSize: "clamp(24px, 3vw, 40px)",
                     color: "#ebebeb",
                   }}
                 >
                   {item.title}
                 </h3>
                 <p
-                  className="text-[12px] tracking-[0.08em] uppercase"
-                  style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                  className="text-[12px] tracking-[0.1em] uppercase"
+                  style={{ color: "#c8c8c8", fontFamily: "var(--font-body)", fontWeight: 600 }}
                 >
                   {item.industry}
                 </p>
@@ -182,10 +230,10 @@ export function PortfolioSection() {
 
       {/* Footer note */}
       <p
-        className="mt-12 text-[12px] text-center"
-        style={{ color: "#707070", fontFamily: "var(--font-body)", letterSpacing: "0.05em" }}
+        className="mt-16 text-[14px] text-center uppercase tracking-[0.2em] font-bold"
+        style={{ color: "#707070", fontFamily: "var(--font-body)" }}
       >
-        Real client work incoming — launching Q1 2025
+        Echte Kundenprojekte in Arbeit — Launch Q1 2025
       </p>
     </section>
   )
