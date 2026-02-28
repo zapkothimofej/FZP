@@ -10,28 +10,42 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function ManifestoSection() {
   const sectionRef = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
   const lineRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      if (!sectionRef.current || !lineRef.current) return
+      if (!sectionRef.current || !textRef.current || !lineRef.current) return
+
+      const vw = window.innerWidth
+      const startPx = Math.max(48, Math.min(vw * 0.1, 160))
+      const endPx = Math.max(28, Math.min(vw * 0.04, 64))
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=100%",
+          end: "+=200%",
           pin: true,
           scrub: true,
           anticipatePin: 1,
         },
       })
 
+      // Text schrumpft gleichmaessig ueber den vollen Scroll
+      tl.fromTo(
+        textRef.current,
+        { fontSize: startPx + "px" },
+        { fontSize: endPx + "px", ease: "none", duration: 2 },
+        0
+      )
+
+      // Linie zeichnet sich in der zweiten Haelfte
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, ease: "none" },
-        0
+        { scaleX: 1, ease: "none", duration: 1 },
+        1
       )
     },
     { scope: sectionRef }
@@ -64,6 +78,7 @@ export function ManifestoSection() {
         </p>
 
         <div
+          ref={textRef}
           className="font-[family-name:var(--font-display)] leading-tight"
           style={{
             fontSize: "clamp(48px, 10vw, 160px)",
