@@ -67,7 +67,7 @@ export function Footer() {
                 ((e.currentTarget as HTMLAnchorElement).style.color = "var(--v6-accent)")
               }
               onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLAnchorElement).style.color = "#707070")
+                ((e.currentTarget as HTMLAnchorElement).style.color = "var(--v6-text-muted)")
               }
             >
               Impressum
@@ -80,7 +80,7 @@ export function Footer() {
                 ((e.currentTarget as HTMLAnchorElement).style.color = "var(--v6-accent)")
               }
               onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLAnchorElement).style.color = "#707070")
+                ((e.currentTarget as HTMLAnchorElement).style.color = "var(--v6-text-muted)")
               }
             >
               Datenschutz

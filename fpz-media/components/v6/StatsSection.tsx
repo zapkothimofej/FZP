@@ -24,12 +24,11 @@ export function StatsSection() {
     () => {
       if (!sectionRef.current) return
 
-      // Count-up animations using GSAP — same as V2
       stats.forEach((stat, i) => {
         const el = numbersRef.current[i]
         if (!el) return
         const { prefix, num, suffix } = parseStatValue(stat.value)
-        if (num === null) return // ∞ — skip
+        if (num === null) return
 
         const obj = { val: 0 }
         gsap.to(obj, {
@@ -52,7 +51,6 @@ export function StatsSection() {
         })
       })
 
-      // Stagger stat cards in
       gsap.fromTo(
         ".v6-stat-card",
         { y: 30, opacity: 0 },
@@ -77,11 +75,14 @@ export function StatsSection() {
     <section
       ref={sectionRef}
       className="py-28"
-      style={{ backgroundColor: "#141414" }}
+      style={{ backgroundColor: "var(--v6-bg-elevated)" }}
     >
       {/* Stats grid */}
       <div className="px-8 md:px-16 lg:px-24">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px border border-[var(--v6-border)]">
+        <div
+          className="grid grid-cols-2 md:grid-cols-4"
+          style={{ border: "1px solid var(--v6-border)" }}
+        >
           {stats.map((stat, i) => {
             const { prefix, num, suffix } = parseStatValue(stat.value)
             return (
@@ -89,12 +90,11 @@ export function StatsSection() {
                 key={stat.label}
                 className="v6-stat-card flex flex-col items-center justify-center py-16 px-4 text-center"
                 style={{
-                  backgroundColor: "#141414",
+                  backgroundColor: "var(--v6-bg-elevated)",
                   borderRight: i < stats.length - 1 ? "1px solid var(--v6-border)" : "none",
                   opacity: 0,
                 }}
               >
-                {/* 3D extrusion effect on the numbers via text-shadow stacking */}
                 <div
                   className="font-[family-name:var(--font-display)] mb-3"
                   style={{
@@ -131,14 +131,14 @@ export function StatsSection() {
       {/* Infinite marquee ticker */}
       <div
         className="mt-16 overflow-hidden border-t border-b select-none"
-        style={{ borderColor: "#222222", padding: "14px 0" }}
+        style={{ borderColor: "var(--v6-border)", padding: "14px 0" }}
         aria-hidden
       >
         <div className="flex">
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
             style={{
-              color: "#707070",
+              color: "var(--v6-text-muted)",
               fontSize: "11px",
               letterSpacing: "0.25em",
               fontFamily: "var(--font-body)",
@@ -150,7 +150,7 @@ export function StatsSection() {
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_20s_linear_infinite]"
             style={{
-              color: "#707070",
+              color: "var(--v6-text-muted)",
               fontSize: "11px",
               letterSpacing: "0.25em",
               fontFamily: "var(--font-body)",
