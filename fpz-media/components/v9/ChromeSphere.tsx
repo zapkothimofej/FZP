@@ -1,23 +1,27 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Environment, Sphere } from "@react-three/drei"
 import * as THREE from "three"
 
 function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
   const meshRef = useRef<THREE.Mesh>(null)
+  // Lerped scroll value — prevents hard rotation snap on fast scroll
+  const smoothProgress = useRef(0)
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return
-    const progress = scrollRef.current
 
+    // Smooth interpolation toward target scroll value
+    smoothProgress.current += (scrollRef.current - smoothProgress.current) * 0.06
+
+    const progress = smoothProgress.current
     meshRef.current.rotation.y = clock.elapsedTime * 0.2 + progress * Math.PI * 2
     meshRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.1
 
     const scale = Math.max(0.3, 1 - progress * 0.7)
     meshRef.current.scale.setScalar(scale)
-    meshRef.current.position.z = 0
   })
 
   return (
@@ -25,7 +29,10 @@ function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
       <ambientLight intensity={0.3} />
       <pointLight position={[8, 8, 8]} intensity={2} color="#ffffff" />
       <pointLight position={[-8, -4, -6]} intensity={0.8} color="#c8c8c8" />
-      <Environment preset="city" />
+      {/* Suspense prevents flash when HDR environment map loads asynchronously */}
+      <Suspense fallback={null}>
+        <Environment preset="city" />
+      </Suspense>
       <Sphere ref={meshRef} args={[2, 128, 128]}>
         <meshStandardMaterial
           metalness={0.95}
@@ -43,6 +50,7 @@ export function ChromeSphere({ scrollRef }: { scrollRef: React.MutableRefObject<
     <Canvas
       camera={{ position: [0, 0, 6], fov: 45 }}
       gl={{ antialias: true, alpha: true }}
+      dpr={[1, 2]}
       style={{
         position: "absolute",
         inset: 0,
