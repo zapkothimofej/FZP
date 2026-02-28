@@ -12,81 +12,42 @@ export function ManifestoSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
   const lineRef = useRef<HTMLDivElement>(null)
-  const bgRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
       if (!sectionRef.current || !textRef.current || !lineRef.current) return
 
-      // Compute how far right the text must shift so its center aligns with the viewport center
-      const viewportCenter = window.innerWidth / 2
-      const textRect = textRef.current.getBoundingClientRect()
-      const textCenter = textRect.left + textRect.width / 2
-      const xToCenter = viewportCenter - textCenter
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "+=200%",
-          pin: true,
-          scrub: 1,
-        },
-      })
-
-      // Subtle background flash
-      tl.to(bgRef.current, {
-        backgroundColor: "var(--v6-bg-elevated)",
-        duration: 0.2,
-        yoyo: true,
-        repeat: 1,
-        ease: "power2.inOut",
-      })
-
-      // Phase 1 (0→1): Settle into center — starts visible so there's no empty screen
-      tl.fromTo(
+      // Text fades + slides up once when section enters viewport
+      gsap.fromTo(
         textRef.current,
+        { y: 50, opacity: 0 },
         {
-          fontSize: "clamp(60px, 10vw, 160px)",
-          rotationX: -20,
-          scale: 1.4,
-          x: xToCenter,
-          y: "10vh",
-          color: "var(--v6-text-muted)",
-          transformOrigin: "center top",
-          opacity: 0.7,
-        },
-        {
-          fontSize: "clamp(40px, 6vw, 96px)",
-          rotationX: 0,
-          scale: 1,
-          x: xToCenter,
-          y: "0vh",
-          color: "var(--v6-text)",
+          y: 0,
           opacity: 1,
-          ease: "power2.out",
-          duration: 1,
-        },
-        0
+          duration: 1.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+            toggleActions: "play none none none",
+          },
+        }
       )
 
-      // Phase 2 (1→2): Slide from center to left (natural position)
-      tl.to(
-        textRef.current,
-        {
-          x: 0,
-          ease: "power2.inOut",
-          duration: 1,
-        },
-        1
-      )
-
-      // Separator line draws itself after text lands left
-      tl.fromTo(
+      // Line draws in from left as section scrolls into center
+      gsap.fromTo(
         lineRef.current,
-        { scaleX: 0, transformOrigin: "center center" },
-        { scaleX: 1, ease: "elastic.out(1, 0.5)", duration: 0.8 },
-        1.5
+        { scaleX: 0, transformOrigin: "left center" },
+        {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 50%",
+            end: "bottom 70%",
+            scrub: true,
+          },
+        }
       )
     },
     { scope: sectionRef }
@@ -121,7 +82,6 @@ export function ManifestoSection() {
       style={{ backgroundColor: "var(--v6-bg)" }}
       id="manifesto"
     >
-      <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none" />
       <div className="max-w-6xl z-10 relative">
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-10"
@@ -134,8 +94,9 @@ export function ManifestoSection() {
           ref={textRef}
           className="font-[family-name:var(--font-display)] leading-tight"
           style={{
-            transformPerspective: 1000,
             lineHeight: 1.05,
+            opacity: 0,
+            fontSize: "clamp(40px, 6vw, 96px)",
           }}
         >
           <div>{manifesto.line1}</div>
@@ -150,6 +111,7 @@ export function ManifestoSection() {
             backgroundColor: "var(--v6-accent)",
             width: "100%",
             transform: "scaleX(0)",
+            transformOrigin: "left center",
           }}
         />
 

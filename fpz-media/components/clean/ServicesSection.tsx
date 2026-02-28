@@ -26,12 +26,12 @@ export function ServicesSection() {
           trigger: wrapperRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1,
+          scrub: 0.4,
           snap: {
             snapTo: 1 / (panels.length - 1),
-            duration: { min: 0.3, max: 0.6 },
-            ease: "power2.inOut",
-            delay: 0.05,
+            duration: { min: 0.05, max: 0.2 },
+            ease: "power3.out",
+            delay: 0,
           },
           invalidateOnRefresh: true,
         },
@@ -78,14 +78,16 @@ export function ServicesSection() {
                 flexShrink: 0,
               }}
             >
-              {/* Giant service number — centered in background */}
+              {/* Giant service number — top-right corner, partially clipped */}
               <div
-                className="absolute inset-0 flex items-center justify-center select-none pointer-events-none font-[family-name:var(--font-display)] leading-none"
+                className="absolute select-none pointer-events-none font-[family-name:var(--font-display)]"
                 aria-hidden
                 style={{
+                  top: "-8%",
+                  right: "-4%",
                   fontSize: "clamp(220px, 38vw, 550px)",
                   color: "var(--v6-accent)",
-                  opacity: 0.05,
+                  opacity: 0.06,
                   lineHeight: 1,
                 }}
               >
