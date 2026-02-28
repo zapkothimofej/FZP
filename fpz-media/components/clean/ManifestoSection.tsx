@@ -43,18 +43,18 @@ export function ManifestoSection() {
         ease: "power2.inOut",
       })
 
-      // Phase 1 (0→1): Pop up INTO the center — text settles centered
+      // Phase 1 (0→1): Settle into center — starts visible so there's no empty screen
       tl.fromTo(
         textRef.current,
         {
-          fontSize: "clamp(80px, 15vw, 250px)",
-          rotationX: -45,
-          scale: 2,
+          fontSize: "clamp(60px, 10vw, 160px)",
+          rotationX: -20,
+          scale: 1.4,
           x: xToCenter,
-          y: "20vh",
+          y: "10vh",
           color: "var(--v6-text-muted)",
           transformOrigin: "center top",
-          opacity: 0,
+          opacity: 0.7,
         },
         {
           fontSize: "clamp(40px, 6vw, 96px)",
