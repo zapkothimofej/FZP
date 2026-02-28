@@ -129,27 +129,9 @@ export function HeroChrom() {
         </div>
       </div>
 
-      {/* Scroll-Indikator */}
-      <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        style={{ zIndex: 2, opacity: 0.45 }}
-        aria-hidden
-      >
-        <span
-          className="text-[10px] tracking-[0.2em] uppercase"
-          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
-        >
-          Scroll
-        </span>
-        <div
-          className="w-[1px] h-10 animate-[stahl-pulse-border_2s_ease-in-out_infinite]"
-          style={{ backgroundColor: "var(--v6-accent)" }}
-        />
-      </div>
-
       {/* Sub + CTA row */}
       <div
-        className="px-8 md:px-16 lg:px-24 pb-28 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
+        className="px-8 md:px-16 lg:px-24 pb-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
         style={{ position: "relative", zIndex: 2 }}
       >
         <p

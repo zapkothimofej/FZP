@@ -32,19 +32,19 @@ export function ManifestoSection() {
         },
       })
 
-      // Beim Runterscrollen wird der Text kleiner
+      // Text schrumpft gleichmäßig über den kompletten Scroll (2 Screens)
       tl.fromTo(
         textRef.current,
         { fontSize: `${startPx}px` },
-        { fontSize: `${endPx}px`, ease: "none" },
+        { fontSize: `${endPx}px`, ease: "none", duration: 2 },
         0
       )
-      // Linie zeichnet sich von links
+      // Linie zeichnet sich erst in der zweiten Hälfte — genauso langsam
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, ease: "none" },
-        0.5
+        { scaleX: 1, ease: "none", duration: 1 },
+        1
       )
     },
     { scope: sectionRef }
