@@ -57,8 +57,16 @@ export function HeroChrom() {
         backgroundColor: "var(--v6-bg)",
       }}
     >
-      {/* Chrome sphere — full-screen canvas */}
-      <ChromeSphere scrollRef={scrollRef} />
+      {/* Chrome sphere — fades in after mount so HDR has time to load before appearing */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ animation: "sphere-fadein 1.2s ease 0.4s both" }}
+      >
+        <ChromeSphere scrollRef={scrollRef} />
+      </div>
+      <style>{`
+        @keyframes sphere-fadein { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
 
       {/* Left-to-right gradient so text stays readable */}
       <div

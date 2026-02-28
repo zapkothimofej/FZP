@@ -29,18 +29,19 @@ function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
       <ambientLight intensity={0.3} />
       <pointLight position={[8, 8, 8]} intensity={2} color="#ffffff" />
       <pointLight position={[-8, -4, -6]} intensity={0.8} color="#c8c8c8" />
-      {/* Suspense prevents flash when HDR environment map loads asynchronously */}
+      {/* Sphere + Environment in same Suspense — neither renders until HDR is ready,
+          preventing the dark→reflective flash on initial load */}
       <Suspense fallback={null}>
         <Environment preset="city" />
+        <Sphere ref={meshRef} args={[2, 128, 128]}>
+          <meshStandardMaterial
+            metalness={0.95}
+            roughness={0.08}
+            color="#d0d0d0"
+            envMapIntensity={2.5}
+          />
+        </Sphere>
       </Suspense>
-      <Sphere ref={meshRef} args={[2, 128, 128]}>
-        <meshStandardMaterial
-          metalness={0.95}
-          roughness={0.08}
-          color="#d0d0d0"
-          envMapIntensity={2.5}
-        />
-      </Sphere>
     </>
   )
 }
