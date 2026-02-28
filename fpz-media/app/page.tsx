@@ -2,44 +2,32 @@ import Link from "next/link"
 
 const versions = [
   {
-    num: "V1",
-    slug: "v1",
-    name: "Nacht",
-    accent: "#60a5fa",
-    stack: "Three.js + FM + GSAP",
-    desc: "Particle network reacts to cursor",
-  },
-  {
-    num: "V2",
-    slug: "v2",
+    slug: "gsap",
     name: "Stahl",
     accent: "#c8c8c8",
-    stack: "GSAP only",
+    stack: "GSAP",
     desc: "Luxury editorial, horizontal scroll",
   },
   {
-    num: "V3",
-    slug: "v3",
-    name: "Glut",
-    accent: "#f43f5e",
-    stack: "Three.js + FM",
-    desc: "Morphing wireframe geometry",
-  },
-  {
-    num: "V6",
-    slug: "v6",
+    slug: "chrom",
     name: "Chrom",
-    accent: "#c8c8c8",
+    accent: "#a78bfa",
     stack: "Three.js + GSAP",
-    desc: "V2 Stahl × Three.js — maximale Effekte",
+    desc: "Maximale Effekte, Chrome-Ästhetik",
   },
   {
-    num: "V7",
-    slug: "v7",
+    slug: "clean",
     name: "Klar",
     accent: "#2dd4bf",
     stack: "FM subtle",
     desc: "Clean, timeless, design-over-effects",
+  },
+  {
+    slug: "sphere",
+    name: "Sphere",
+    accent: "#f472b6",
+    stack: "Three.js + GSAP",
+    desc: "Chrome Sphere, dynamische 3D-Effekte",
   },
 ]
 
@@ -49,7 +37,6 @@ export default function VersionPickerPage() {
       style={{ backgroundColor: "#080808", minHeight: "100vh" }}
       className="flex flex-col items-center justify-center px-6 py-20"
     >
-      {/* Inline CSS for card hover effects */}
       <style>{`
         .version-card {
           background-color: #111111;
@@ -62,80 +49,48 @@ export default function VersionPickerPage() {
         }
       `}</style>
 
-      {/* Header */}
       <div className="text-center mb-16 max-w-xl">
         <h1 className="text-white text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-          FPZ Media — Choose Your Design
+          FPZ Media
         </h1>
-        <p className="text-white/40 text-lg">
-          5 versions, 5 aesthetics. Pick your favorite.
-        </p>
+        <p className="text-white/40 text-lg">Wähle ein Design.</p>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full max-w-6xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl">
         {versions.map((v) => (
-          <VersionCard key={v.slug} {...v} />
+          <Link
+            key={v.slug}
+            href={`/${v.slug}`}
+            className="version-card block rounded-xl p-6"
+            style={{ "--card-accent": v.accent } as React.CSSProperties}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className="text-xs font-mono font-bold tracking-widest uppercase"
+                style={{ color: v.accent }}
+              >
+                {v.slug}
+              </span>
+              <span
+                className="block w-4 h-4 rounded-full"
+                style={{ backgroundColor: v.accent }}
+              />
+            </div>
+            <h2 className="text-white text-xl font-bold mb-1">{v.name}</h2>
+            <p className="text-white/50 text-sm mb-4 leading-relaxed">{v.desc}</p>
+            <span
+              className="text-xs font-mono px-2 py-1 rounded"
+              style={{
+                backgroundColor: `color-mix(in srgb, ${v.accent} 15%, transparent)`,
+                color: v.accent,
+                border: `1px solid color-mix(in srgb, ${v.accent} 30%, transparent)`,
+              }}
+            >
+              {v.stack}
+            </span>
+          </Link>
         ))}
       </div>
     </div>
-  )
-}
-
-function VersionCard({
-  num,
-  slug,
-  name,
-  accent,
-  stack,
-  desc,
-}: {
-  num: string
-  slug: string
-  name: string
-  accent: string
-  stack: string
-  desc: string
-}) {
-  return (
-    <Link
-      href={`/${slug}`}
-      className="version-card block rounded-xl p-6"
-      style={{ "--card-accent": accent } as React.CSSProperties}
-    >
-      {/* Top row: version number + color swatch */}
-      <div className="flex items-center justify-between mb-4">
-        <span
-          className="text-xs font-mono font-bold tracking-widest"
-          style={{ color: accent }}
-        >
-          {num}
-        </span>
-        <span
-          className="block w-4 h-4 rounded-full"
-          style={{ backgroundColor: accent }}
-        />
-      </div>
-
-      {/* Name */}
-      <h2 className="text-white text-xl font-bold mb-1">{name}</h2>
-
-      {/* Description */}
-      <p className="text-white/50 text-sm mb-4 leading-relaxed">{desc}</p>
-
-      {/* Stack badge */}
-      <div className="flex items-center">
-        <span
-          className="text-xs font-mono px-2 py-1 rounded"
-          style={{
-            backgroundColor: `color-mix(in srgb, ${accent} 15%, transparent)`,
-            color: accent,
-            border: `1px solid color-mix(in srgb, ${accent} 30%, transparent)`,
-          }}
-        >
-          {stack}
-        </span>
-      </div>
-    </Link>
   )
 }
