@@ -61,7 +61,7 @@ export function ManifestoSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex flex-col justify-center min-h-screen px-8 md:px-16 lg:px-24"
+      className="relative flex flex-col justify-start min-h-screen px-8 md:px-16 lg:px-24 pt-24 md:pt-32"
       style={{ backgroundColor: "#0a0a0a" }}
       id="manifesto"
     >
