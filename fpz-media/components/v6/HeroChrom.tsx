@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { manifesto } from "@/lib/content-de"
 
-const MARQUEE_TEXT = "WEBENTWICKLUNG · MEDIENPRODUKTION · AUTOMATION · RUHRGEBIET · "
+const MARQUEE_TEXT = "WEBENTWICKLUNG \u00b7 MEDIENPRODUKTION \u00b7 AUTOMATION \u00b7 RUHRGEBIET \u00b7 "
 
 export function HeroChrom() {
   const containerRef = useRef<HTMLElement>(null)
@@ -17,13 +17,13 @@ export function HeroChrom() {
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
-      // Einblenden in voller Größe — keine Positions-Animation, damit nichts „erst klein“ wirkt
-      tl.fromTo(word1Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 })
-        .fromTo(word2Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.4")
-        .fromTo(word3Ref.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, "-=0.4")
-        .fromTo(subRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.3")
-        .fromTo(ctaRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.3")
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+
+      tl.fromTo(word1Ref.current, { x: "-15vw", opacity: 0 }, { x: 0, opacity: 1, duration: 1.1 })
+        .fromTo(word2Ref.current, { x: "15vw", opacity: 0 }, { x: 0, opacity: 1, duration: 1.1 }, "-=0.85")
+        .fromTo(word3Ref.current, { y: "8vh", opacity: 0 }, { y: 0, opacity: 1, duration: 1.1 }, "-=0.85")
+        .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.4")
+        .fromTo(ctaRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.5")
     },
     { scope: containerRef }
   )
@@ -57,7 +57,7 @@ export function HeroChrom() {
         }}
       />
 
-      {/* Marquee ticker — upper band */}
+      {/* Marquee ticker */}
       <div
         className="absolute top-20 left-0 right-0 overflow-hidden select-none"
         style={{ zIndex: 2 }}
@@ -68,25 +68,19 @@ export function HeroChrom() {
             className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
             style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
           >
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
+            {MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}
           </span>
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
             style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
             aria-hidden
           >
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
+            {MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}
           </span>
         </div>
       </div>
 
-      {/* GSAP word reveal */}
+      {/* Words */}
       <div
         className="px-8 md:px-16 lg:px-24 pt-16 pb-8 flex flex-col leading-none"
         style={{ position: "relative", zIndex: 2 }}
@@ -94,42 +88,27 @@ export function HeroChrom() {
         <div
           ref={word1Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "var(--v6-text)",
-            lineHeight: 0.9,
-            opacity: 0,
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Lokal.
         </div>
         <div
           ref={word2Ref}
           className="block font-[family-name:var(--font-display)] will-change-transform self-end md:self-center text-right md:text-center"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "var(--v6-text)",
-            lineHeight: 0.9,
-            opacity: 0,
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Digital.
         </div>
         <div
           ref={word3Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform self-end"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "var(--v6-accent)",
-            lineHeight: 0.9,
-            opacity: 0,
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-accent)", lineHeight: 0.9, opacity: 0 }}
         >
           Komplett.
         </div>
       </div>
 
-      {/* Sub + CTA row */}
+      {/* Sub + CTA */}
       <div
         className="px-8 md:px-16 lg:px-24 pb-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
         style={{ position: "relative", zIndex: 2 }}
@@ -162,14 +141,7 @@ export function HeroChrom() {
               className="flex items-center justify-center w-10 h-10 border transition-all duration-300 group-hover:bg-[var(--v6-accent)] group-hover:text-[var(--v6-text-on-accent)]"
               style={{ borderColor: "var(--v6-accent)" }}
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 7h10M7 2l5 5-5 5" />
               </svg>
             </span>

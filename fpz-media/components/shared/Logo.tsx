@@ -35,7 +35,7 @@ export function Logo({ color = "#60a5fa", size = "md", className }: LogoProps) {
           y1="18"
           x2="10"
           y2="6"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth={iconStroke}
           strokeLinecap="round"
         />
@@ -45,7 +45,7 @@ export function Logo({ color = "#60a5fa", size = "md", className }: LogoProps) {
           y1="18"
           x2="16"
           y2="6"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth={iconStroke}
           strokeLinecap="round"
         />
@@ -55,7 +55,7 @@ export function Logo({ color = "#60a5fa", size = "md", className }: LogoProps) {
           y1="18"
           x2="22"
           y2="6"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth={iconStroke}
           strokeLinecap="round"
         />

@@ -17,7 +17,7 @@ export function ManifestoSection() {
     () => {
       if (!sectionRef.current || !textRef.current || !lineRef.current) return
 
-      // GSAP kann keine CSS clamp()-Strings tweenen — konkrete px-Werte berechnen
+      // Konkrete px-Werte berechnen (GSAP kann kein clamp() tweenen)
       const vw = window.innerWidth
       const startPx = Math.max(48, Math.min(vw * 0.1, 160))
       const endPx = Math.max(28, Math.min(vw * 0.04, 64))
@@ -32,14 +32,14 @@ export function ManifestoSection() {
         },
       })
 
-      // Text schrumpft gleichmäßig über den kompletten Scroll (2 Screens)
+      // Text schrumpft gleichmaessig ueber den vollen Scroll (2 Screens)
       tl.fromTo(
         textRef.current,
-        { fontSize: `${startPx}px` },
-        { fontSize: `${endPx}px`, ease: "none", duration: 2 },
+        { fontSize: startPx + "px" },
+        { fontSize: endPx + "px", ease: "none", duration: 2 },
         0
       )
-      // Linie zeichnet sich erst in der zweiten Hälfte — genauso langsam
+      // Linie zeichnet sich in der zweiten Haelfte
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
