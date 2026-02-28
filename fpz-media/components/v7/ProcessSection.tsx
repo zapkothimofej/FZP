@@ -1,157 +1,162 @@
 "use client"
 
-import { motion, type Variants } from "framer-motion"
-import { process } from "@/lib/content"
+import { useRef } from "react"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { process as processSteps } from "@/lib/content-de"
 
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1 },
-  },
-}
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-}
+gsap.registerPlugin(ScrollTrigger)
 
 export function ProcessSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const lineRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current || !lineRef.current) return
+
+      // Draw vertical line as user scrolls through the section
+      gsap.fromTo(
+        lineRef.current,
+        { scaleY: 0, transformOrigin: "top center" },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 60%",
+            end: "bottom 60%",
+            scrub: 1,
+          },
+        }
+      )
+
+      // Each step slides in from right
+      const steps = gsap.utils.toArray<HTMLElement>(".v6-process-step")
+      steps.forEach((step) => {
+        gsap.fromTo(
+          step,
+          { x: 40, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: step,
+              start: "top 72%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        )
+      })
+    },
+    { scope: sectionRef }
+  )
+
   return (
     <section
+      ref={sectionRef}
       id="process"
-      style={{
-        backgroundColor: "#1e293b",
-        padding: "96px 24px",
-      }}
+      className="relative py-32 px-8 md:px-16 lg:px-24"
+      style={{ backgroundColor: "var(--v6-bg)" }}
     >
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          style={{ marginBottom: "64px" }}
-        >
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#2dd4bf",
-            }}
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="mb-20">
+          <p
+            className="text-[11px] tracking-[0.2em] uppercase mb-4"
+            style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
           >
-            Process
-          </span>
+            So arbeiten wir
+          </p>
           <h2
-            style={{
-              fontFamily: "var(--font-display, sans-serif)",
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontWeight: 700,
-              color: "#f8fafc",
-              margin: "12px 0 0",
-              letterSpacing: "-0.02em",
-            }}
+            className="font-[family-name:var(--font-display)]"
+            style={{ fontSize: "clamp(36px, 6vw, 72px)", color: "var(--v6-text)" }}
           >
-            How It Works
+            Der Prozess
           </h2>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "0",
-            position: "relative",
-          }}
-        >
-          {process.map((step, i) => (
-            <motion.div
-              key={step.step}
-              variants={itemVariants}
+        {/* Timeline layout */}
+        <div className="relative flex">
+          {/* Vertical line column */}
+          <div
+            className="relative flex flex-col items-center mr-12 md:mr-20"
+            style={{ width: "1px", minHeight: "100%" }}
+          >
+            {/* Static background line */}
+            <div
+              className="absolute top-0 bottom-0 left-0"
+              style={{ width: "1px", backgroundColor: "var(--v6-border)" }}
+            />
+            {/* Animated platinum line draws over it */}
+            <div
+              ref={lineRef}
+              className="absolute top-0 left-0"
               style={{
-                position: "relative",
-                padding: "0 32px 0 0",
+                width: "1px",
+                height: "100%",
+                backgroundColor: "var(--v6-accent)",
+                transformOrigin: "top center",
+                transform: "scaleY(0)",
               }}
-            >
-              {/* Connecting arrow (desktop) — not on last item */}
-              {i < process.length - 1 && (
-                <div
-                  aria-hidden
-                  style={{
-                    position: "absolute",
-                    top: "36px",
-                    right: "0",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0,
-                  }}
-                  className="hidden lg:flex"
-                >
-                  <div style={{ width: "24px", height: "1px", backgroundColor: "#2dd4bf" }} />
-                  <svg
-                    width="8"
-                    height="8"
-                    viewBox="0 0 8 8"
-                    style={{ color: "#2dd4bf", flexShrink: 0 }}
-                  >
-                    <path d="M0 4h6M4 1l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  </svg>
-                </div>
-              )}
+            />
+          </div>
 
-              {/* Step number */}
+          {/* Steps */}
+          <div className="flex flex-col gap-24 flex-1 pb-8">
+            {processSteps.map((item) => (
               <div
-                style={{
-                  fontFamily: "var(--font-display, sans-serif)",
-                  fontSize: "80px",
-                  fontWeight: 800,
-                  color: "#334155",
-                  lineHeight: 1,
-                  marginBottom: "16px",
-                  userSelect: "none",
-                }}
+                key={item.step}
+                className="v6-process-step relative"
+                style={{ opacity: 0 }}
               >
-                {step.step}
+                {/* Dot zentriert auf der Timeline-Linie — mr-12=48px mobile, mr-20=80px desktop */}
+                {/* left = -(gap + 0.5px Linie + 6.5px halber Dot) */}
+                <div
+                  className="absolute left-[-55px] md:left-[-87px]"
+                  style={{
+                    top: "8px",
+                    width: "13px",
+                    height: "13px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--v6-accent)",
+                    border: "2px solid var(--v6-bg)",
+                    outline: "1px solid var(--v6-accent)",
+                    boxShadow: "var(--v6-shadow-step)",
+                  }}
+                />
+
+                {/* Step label */}
+                <p
+                  className="text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
+                  style={{ color: "var(--v6-text-muted)" }}
+                >
+                  Schritt {item.step}
+                </p>
+
+                <h3
+                  className="font-[family-name:var(--font-display)] mb-4"
+                  style={{
+                    fontSize: "clamp(28px, 4vw, 52px)",
+                    color: "var(--v6-text)",
+                  }}
+                >
+                  {item.title}
+                </h3>
+
+                <p
+                  className="text-base leading-relaxed max-w-lg"
+                  style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                >
+                  {item.description}
+                </p>
               </div>
-
-              {/* Title */}
-              <h3
-                style={{
-                  fontFamily: "var(--font-display, sans-serif)",
-                  fontSize: "22px",
-                  fontWeight: 700,
-                  color: "#f8fafc",
-                  margin: "0 0 12px",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {step.title}
-              </h3>
-
-              {/* Description */}
-              <p
-                style={{
-                  fontSize: "15px",
-                  color: "#94a3b8",
-                  lineHeight: 1.65,
-                  margin: 0,
-                  paddingRight: "16px",
-                }}
-              >
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )

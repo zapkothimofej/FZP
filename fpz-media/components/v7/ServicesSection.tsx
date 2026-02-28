@@ -1,188 +1,184 @@
 "use client"
 
-import { useState } from "react"
-import { motion, type Variants } from "framer-motion"
-import { services } from "@/lib/content"
+import { useRef } from "react"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { services } from "@/lib/content-de"
 
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1 },
-  },
-}
+gsap.registerPlugin(ScrollTrigger)
 
-const rowVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-}
+export function ServicesSection() {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
-function ServiceRow({ service, index }: { service: typeof services[0]; index: number }) {
-  const [hovered, setHovered] = useState(false)
+  useGSAP(
+    () => {
+      if (!wrapperRef.current || !trackRef.current) return
+
+      const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
+      if (panels.length === 0) return
+
+      gsap.to(panels, {
+        xPercent: -100 * (panels.length - 1),
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      })
+    },
+    { scope: wrapperRef }
+  )
 
   return (
-    <motion.div
-      variants={rowVariants}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderTop: "1px solid #334155",
-        padding: "48px 0",
-        display: "grid",
-        gridTemplateColumns: "120px 1fr 1fr",
-        gap: "40px",
-        alignItems: "start",
-        position: "relative",
-        cursor: "default",
-      }}
+    // Wrapper gibt dem horizontalen Scroll Platz (1 Screen pro Panel)
+    <div
+      ref={wrapperRef}
+      id="services"
+      style={{ height: `${services.length * 100}vh` }}
     >
-      {/* Teal grow line on hover */}
+      {/* CSS sticky — kein GSAP pin:true, kein DOM-Eingriff */}
+      <section className="sticky top-0 relative overflow-hidden" style={{ height: "100vh" }}>
+      {/* Section label */}
       <div
+        className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
         aria-hidden
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: "2px",
-          backgroundColor: "#2dd4bf",
-          width: hovered ? "100%" : "0%",
-          transition: "width 0.4s ease",
-        }}
-      />
-
-      {/* Number */}
-      <div
-        style={{
-          fontFamily: "var(--font-display, sans-serif)",
-          fontSize: "80px",
-          fontWeight: 800,
-          color: hovered ? "#2dd4bf" : "#334155",
-          lineHeight: 1,
-          transition: "color 0.3s ease, text-shadow 0.3s ease",
-          userSelect: "none",
-          textShadow: hovered ? "0 0 30px rgba(45,212,191,0.6)" : "none",
-        }}
       >
-        {service.number}
-      </div>
-
-      {/* Heading + description */}
-      <div>
-        <h3
-          style={{
-            fontFamily: "var(--font-display, sans-serif)",
-            fontSize: "32px",
-            fontWeight: 700,
-            color: "#f8fafc",
-            margin: "0 0 12px",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {service.title}
-        </h3>
         <p
-          style={{
-            fontSize: "17px",
-            color: "#94a3b8",
-            lineHeight: 1.65,
-            maxWidth: "420px",
-            margin: 0,
-          }}
+          className="text-[11px] tracking-[0.2em] uppercase"
+          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
         >
-          {service.description}
+          Unsere Leistungen — Scroll
         </p>
       </div>
 
-      {/* Deliverables */}
-      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-        {service.deliverables.map((item) => (
-          <li
-            key={item}
+      {/* Horizontal track */}
+      <div
+        ref={trackRef}
+        className="flex"
+        style={{ width: `${services.length * 100}vw` }}
+      >
+        {services.map((service, i) => (
+          <div
+            key={service.id}
+            className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              fontSize: "14px",
-              color: "#94a3b8",
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "var(--v6-bg-elevated)",
+              borderRight: i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
+              flexShrink: 0,
             }}
           >
-            <span
+            {/* Giant service number in background */}
+            <div
+              className="absolute top-0 right-0 select-none pointer-events-none font-[family-name:var(--font-display)] leading-none"
               aria-hidden
               style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                backgroundColor: "#2dd4bf",
-                flexShrink: 0,
+                fontSize: "clamp(160px, 28vw, 400px)",
+                color: "var(--v6-accent)",
+                opacity: 0.06,
+                lineHeight: 0.85,
+                paddingRight: "2rem",
               }}
-            />
-            {item}
-          </li>
+            >
+              {service.number}
+            </div>
+
+            {/* Panel content */}
+            <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-2xl">
+              {/* Number label */}
+              <p
+                className="text-[11px] tracking-[0.2em] uppercase mb-6"
+                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+              >
+                {service.number} / {String(services.length).padStart(2, "0")}
+              </p>
+
+              {/* Title */}
+              <h2
+                className="font-[family-name:var(--font-display)] mb-4"
+                style={{
+                  fontSize: "clamp(40px, 7vw, 96px)",
+                  color: "var(--v6-text)",
+                  lineHeight: 1,
+                }}
+              >
+                {service.title}
+              </h2>
+
+              {/* Headline */}
+              <p
+                className="text-lg mb-6 italic"
+                style={{
+                  color: "var(--v6-accent)",
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(18px, 2vw, 26px)",
+                }}
+              >
+                {service.headline}
+              </p>
+
+              {/* Description */}
+              <p
+                className="text-sm leading-relaxed mb-8 max-w-md"
+                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+              >
+                {service.description}
+              </p>
+
+              {/* Thin separator */}
+              <div
+                className="mb-6"
+                style={{ height: "1px", backgroundColor: "var(--v6-border)", width: "100%" }}
+              />
+
+              {/* Deliverables */}
+              <ul className="flex flex-col gap-2">
+                {service.deliverables.map((d, j) => (
+                  <li
+                    key={j}
+                    className="flex items-center gap-3 text-sm"
+                    style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                  >
+                    <span
+                      className="w-1 h-1 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: "var(--v6-accent)" }}
+                    />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Scroll hint on first panel */}
+            {i === 0 && (
+              <div
+                className="absolute bottom-8 right-12 flex items-center gap-2"
+                style={{ color: "var(--v6-text-muted)", fontSize: "11px", letterSpacing: "0.1em" }}
+              >
+                <span>SCROLLEN ZUM ENTDECKEN</span>
+                <svg
+                  width="24"
+                  height="10"
+                  viewBox="0 0 24 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                >
+                  <path d="M0 5h22M17 1l5 4-5 4" />
+                </svg>
+              </div>
+            )}
+          </div>
         ))}
-      </ul>
-    </motion.div>
-  )
-}
-
-export function ServicesSection() {
-  return (
-    <section
-      id="services"
-      style={{
-        backgroundColor: "#0f172a",
-        padding: "0 24px 96px",
-      }}
-    >
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          style={{ marginBottom: "16px" }}
-        >
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "#2dd4bf",
-            }}
-          >
-            Services
-          </span>
-          <h2
-            style={{
-              fontFamily: "var(--font-display, sans-serif)",
-              fontSize: "clamp(28px, 4vw, 48px)",
-              fontWeight: 700,
-              color: "#f8fafc",
-              margin: "12px 0 0",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            What We Do
-          </h2>
-        </motion.div>
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {services.map((service, i) => (
-            <ServiceRow key={service.id} service={service} index={i} />
-          ))}
-          {/* Bottom border */}
-          <div style={{ borderTop: "1px solid #334155" }} />
-        </motion.div>
       </div>
-    </section>
+      </section>
+    </div>
   )
 }
 
