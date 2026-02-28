@@ -33,7 +33,8 @@ export function ServicesSection() {
         scrollTrigger: {
           trigger: containerRef.current,
           pin: true,
-          scrub: 1,
+          scrub: true,
+          anticipatePin: 1,
           end: () => "+=" + (panels.length - 1) * window.innerWidth,
           invalidateOnRefresh: true,
         },

@@ -10,41 +10,28 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function ManifestoSection() {
   const sectionRef = useRef<HTMLElement>(null)
-  const textRef = useRef<HTMLDivElement>(null)
   const lineRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      if (!sectionRef.current || !textRef.current || !lineRef.current) return
-
-      // Konkrete px-Werte berechnen (GSAP kann kein clamp() tweenen)
-      const vw = window.innerWidth
-      const startPx = Math.max(48, Math.min(vw * 0.1, 160))
-      const endPx = Math.max(28, Math.min(vw * 0.04, 64))
+      if (!sectionRef.current || !lineRef.current) return
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=200%",
+          end: "+=100%",
           pin: true,
-          scrub: 1,
+          scrub: true,
+          anticipatePin: 1,
         },
       })
 
-      // Text schrumpft gleichmaessig ueber den vollen Scroll (2 Screens)
-      tl.fromTo(
-        textRef.current,
-        { fontSize: startPx + "px" },
-        { fontSize: endPx + "px", ease: "none", duration: 2 },
-        0
-      )
-      // Linie zeichnet sich in der zweiten Haelfte
       tl.fromTo(
         lineRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, ease: "none", duration: 1 },
-        1
+        { scaleX: 1, ease: "none" },
+        0
       )
     },
     { scope: sectionRef }
@@ -69,7 +56,6 @@ export function ManifestoSection() {
       id="manifesto"
     >
       <div className="max-w-6xl">
-        {/* Small label */}
         <p
           className="text-[11px] tracking-[0.2em] uppercase mb-10"
           style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
@@ -77,9 +63,7 @@ export function ManifestoSection() {
           Unser Manifest
         </p>
 
-        {/* Main animated text — shrinks as scrub progresses */}
         <div
-          ref={textRef}
           className="font-[family-name:var(--font-display)] leading-tight"
           style={{
             fontSize: "clamp(48px, 10vw, 160px)",
@@ -93,7 +77,6 @@ export function ManifestoSection() {
           </div>
         </div>
 
-        {/* Separator line draws itself */}
         <div
           ref={lineRef}
           className="mt-12"
@@ -106,7 +89,6 @@ export function ManifestoSection() {
           }}
         />
 
-        {/* Sub text */}
         <p
           className="mt-8 text-base leading-relaxed max-w-lg"
           style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
