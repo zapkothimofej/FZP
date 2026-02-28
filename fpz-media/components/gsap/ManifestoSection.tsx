@@ -17,6 +17,15 @@ export function ManifestoSection() {
     () => {
       if (!sectionRef.current || !textRef.current || !lineRef.current) return
 
+      // Compute actual px values so GSAP can interpolate correctly
+      // (GSAP cannot interpolate CSS clamp() strings)
+      const vw = window.innerWidth
+      const fromPx = Math.min(Math.max(vw * 0.10, 48), 160)
+      const toPx   = Math.min(Math.max(vw * 0.04, 28), 64)
+
+      // Set the starting font size immediately so it's never invisible
+      gsap.set(textRef.current, { fontSize: fromPx })
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -24,14 +33,23 @@ export function ManifestoSection() {
           end: "+=200%",
           pin: true,
           scrub: 1,
+          invalidateOnRefresh: true,
+          onRefresh() {
+            const vw2 = window.innerWidth
+            const from2 = Math.min(Math.max(vw2 * 0.10, 48), 160)
+            const to2   = Math.min(Math.max(vw2 * 0.04, 28), 64)
+            gsap.set(textRef.current!, { fontSize: from2 })
+            tl.vars.from = { fontSize: from2 }
+            tl.vars.to   = { fontSize: to2 }
+          },
         },
       })
 
-      // Shrink font size from large to normal
+      // Shrink font size from large to normal using plain px values
       tl.fromTo(
         textRef.current,
-        { fontSize: "clamp(48px, 10vw, 160px)" },
-        { fontSize: "clamp(28px, 4vw, 64px)", ease: "none" },
+        { fontSize: fromPx },
+        { fontSize: toPx, ease: "none" },
         0
       )
 
@@ -61,7 +79,7 @@ export function ManifestoSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex flex-col justify-center min-h-screen px-8 md:px-16 lg:px-24"
+      className="relative flex flex-col justify-start min-h-screen px-8 md:px-16 lg:px-24 pt-20"
       style={{ backgroundColor: "#0a0a0a" }}
       id="manifesto"
     >
