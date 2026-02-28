@@ -1,13 +1,13 @@
-import { Navbar } from "@/components/v9/Navbar"
+import { Navbar } from "@/components/v6/Navbar"
 import { HeroChrom } from "@/components/v9/HeroChrom"
-import { ManifestoSection } from "@/components/v9/ManifestoSection"
-import { ServicesSection } from "@/components/v9/ServicesSection"
-import { ProcessSection } from "@/components/v9/ProcessSection"
-import { StatsSection } from "@/components/v9/StatsSection"
-import { PricingSection } from "@/components/v9/PricingSection"
-import { PortfolioSection } from "@/components/v9/PortfolioSection"
-import { ContactSection } from "@/components/v9/ContactSection"
-import { Footer } from "@/components/v9/Footer"
+import { ManifestoSection } from "@/components/v7/ManifestoSection"
+import { ServicesSection } from "@/components/v7/ServicesSection"
+import { ProcessSection } from "@/components/v7/ProcessSection"
+import { StatsSection } from "@/components/v6/StatsSection"
+import { PricingSection } from "@/components/v6/PricingSection"
+import { PortfolioSection } from "@/components/v6/PortfolioSection"
+import { ContactSection } from "@/components/v6/ContactSection"
+import { Footer } from "@/components/v6/Footer"
 
 export default function V9Page() {
   return (

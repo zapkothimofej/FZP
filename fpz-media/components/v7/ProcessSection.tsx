@@ -110,9 +110,23 @@ export function ProcessSection() {
             {processSteps.map((item) => (
               <div
                 key={item.step}
-                className="v6-process-step relative"
+                className="v6-process-step relative overflow-hidden"
                 style={{ opacity: 0 }}
               >
+                {/* Ghost step number — background decoration, right side, behind content */}
+                <span
+                  className="absolute right-0 top-1/2 -translate-y-1/2 font-[family-name:var(--font-display)] select-none pointer-events-none leading-none"
+                  style={{
+                    fontSize: "clamp(120px, 18vw, 220px)",
+                    color: "var(--v6-accent)",
+                    opacity: 0.04,
+                    zIndex: 0,
+                  }}
+                  aria-hidden
+                >
+                  {item.step}
+                </span>
+
                 {/* Dot zentriert auf der Timeline-Linie — mr-12=48px mobile, mr-20=80px desktop */}
                 {/* left = -(gap + 0.5px Linie + 6.5px halber Dot) */}
                 <div
@@ -131,14 +145,14 @@ export function ProcessSection() {
 
                 {/* Step label */}
                 <p
-                  className="text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
+                  className="relative z-10 text-[11px] tracking-[0.2em] uppercase mb-3 font-[family-name:var(--font-body)]"
                   style={{ color: "var(--v6-text-muted)" }}
                 >
                   Schritt {item.step}
                 </p>
 
                 <h3
-                  className="font-[family-name:var(--font-display)] mb-4"
+                  className="relative z-10 font-[family-name:var(--font-display)] mb-4"
                   style={{
                     fontSize: "clamp(28px, 4vw, 52px)",
                     color: "var(--v6-text)",
@@ -148,7 +162,7 @@ export function ProcessSection() {
                 </h3>
 
                 <p
-                  className="text-base leading-relaxed max-w-lg"
+                  className="relative z-10 text-base leading-relaxed max-w-lg"
                   style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
                 >
                   {item.description}

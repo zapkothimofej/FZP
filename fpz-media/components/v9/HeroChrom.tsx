@@ -1,14 +1,86 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, Suspense } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Canvas, useFrame } from "@react-three/fiber"
+import * as THREE from "three"
 import { manifesto } from "@/lib/content-de"
 
-gsap.registerPlugin(ScrollTrigger)
+const MARQUEE_TEXT = "WEBENTWICKLUNG · MEDIENPRODUKTION · AUTOMATION · RUHRGEBIET · "
 
-const MARQUEE_TEXT = "WEB DEVELOPMENT · MEDIA PRODUCTION · AUTOMATION · RUHRGEBIET · "
+// Chrome sphere with three animated point lights giving it dynamic reflections
+function ChromeSphere() {
+  const meshRef = useRef<THREE.Mesh>(null)
+  const groupRef = useRef<THREE.Group>(null)
+  const light1Ref = useRef<THREE.PointLight>(null)
+  const light2Ref = useRef<THREE.PointLight>(null)
+  const light3Ref = useRef<THREE.PointLight>(null)
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime
+
+    // Slow sphere rotation
+    if (meshRef.current) {
+      meshRef.current.rotation.x = t * 0.04
+      meshRef.current.rotation.y = t * 0.07
+    }
+
+    // Gentle float
+    if (groupRef.current) {
+      groupRef.current.position.y = Math.sin(t * 0.4) * 0.12
+    }
+
+    // Orbiting lights — create shifting reflections on the sphere
+    if (light1Ref.current) {
+      light1Ref.current.position.set(
+        Math.sin(t * 0.35) * 5,
+        Math.cos(t * 0.28) * 3 + 1,
+        Math.cos(t * 0.22) * 2 + 5
+      )
+    }
+    if (light2Ref.current) {
+      light2Ref.current.position.set(
+        Math.cos(t * 0.42) * 6,
+        Math.sin(t * 0.31) * 4,
+        Math.sin(t * 0.19) * 3 + 4
+      )
+    }
+    if (light3Ref.current) {
+      light3Ref.current.position.set(
+        Math.sin(t * 0.18 + 2) * 4,
+        Math.cos(t * 0.45) * 2 - 2,
+        Math.cos(t * 0.38) * 3 + 6
+      )
+    }
+  })
+
+  return (
+    <group ref={groupRef} position={[1.2, 0, 0]}>
+      {/* Static key light for strong specular */}
+      <pointLight position={[4, 3, 6]} intensity={8} color="#ffffff" />
+
+      {/* Three animated lights for dynamic shifting reflections */}
+      <pointLight ref={light1Ref} intensity={6} color="#d0d0d0" distance={18} decay={2} />
+      <pointLight ref={light2Ref} intensity={4} color="#a8a8a8" distance={16} decay={2} />
+      <pointLight ref={light3Ref} intensity={3} color="#e8e8e8" distance={14} decay={2} />
+
+      {/* Dim fill */}
+      <ambientLight intensity={0.06} />
+
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[2.4, 128, 128]} />
+        {/* MeshPhongMaterial: dark base, bright specular highlight — classic chrome look */}
+        <meshPhongMaterial
+          color="#0d0d0d"
+          specular="#e0e0e0"
+          shininess={180}
+          reflectivity={1}
+        />
+      </mesh>
+    </group>
+  )
+}
 
 export function HeroChrom() {
   const containerRef = useRef<HTMLElement>(null)
@@ -17,133 +89,16 @@ export function HeroChrom() {
   const word3Ref = useRef<HTMLDivElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
-  const marqueeRef = useRef<HTMLDivElement>(null)
-  const lightRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } })
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
 
-      // Initial Fly-in
-      tl.fromTo(
-        word1Ref.current,
-        { x: "-100vw", rotation: -15, scale: 0.5, opacity: 0 },
-        { x: 0, rotation: 0, scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.2)" }
-      )
-        .fromTo(
-          word2Ref.current,
-          { x: "100vw", rotation: 15, scale: 0.5, opacity: 0 },
-          { x: 0, rotation: 0, scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.2)" },
-          "-=1.2"
-        )
-        .fromTo(
-          word3Ref.current,
-          { y: "100vh", rotationX: -90, opacity: 0 },
-          { y: 0, rotationX: 0, opacity: 1, duration: 1.5, ease: "back.out(1.2)", transformPerspective: 500 },
-          "-=1.2"
-        )
-        .fromTo(
-          subRef.current,
-          { opacity: 0, y: 50, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 1 },
-          "-=0.8"
-        )
-        .fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 50, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 1 },
-          "-=0.8"
-        )
-
-      // Extreme Scroll Effects
-      if (containerRef.current) {
-        gsap.to(lightRef.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-          y: "30vh",
-          scale: 1.5,
-          opacity: 0,
-        })
-
-        // Words parallax & rotation on scroll
-        gsap.to(word1Ref.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.5,
-          },
-          x: "-50vw",
-          y: "20vh",
-          rotation: -45,
-          scale: 1.5,
-          opacity: 0,
-          filter: "blur(20px)",
-        })
-        gsap.to(word2Ref.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 2,
-          },
-          x: "50vw",
-          y: "30vh",
-          rotation: 45,
-          scale: 1.8,
-          opacity: 0,
-          filter: "blur(20px)",
-        })
-        gsap.to(word3Ref.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 2.5,
-          },
-          y: "40vh",
-          scale: 2,
-          opacity: 0,
-          filter: "blur(20px)",
-        })
-
-        // Subtext & CTA slide out
-        gsap.to(subRef.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-          y: 100,
-          opacity: 0,
-        })
-        gsap.to(ctaRef.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1.2,
-          },
-          y: 150,
-          opacity: 0,
-        })
-
-        // Marquee speed up on scroll
-        gsap.to(marqueeRef.current, {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-          x: "-50vw",
-        })
-      }
+      tl.fromTo(word1Ref.current, { x: "-15vw", opacity: 0 }, { x: 0, opacity: 1, duration: 1.1 })
+        .fromTo(word2Ref.current, { x: "15vw", opacity: 0 }, { x: 0, opacity: 1, duration: 1.1 }, "-=0.85")
+        .fromTo(word3Ref.current, { y: "8vh", opacity: 0 }, { y: 0, opacity: 1, duration: 1.1 }, "-=0.85")
+        .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.4")
+        .fromTo(ctaRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7 }, "-=0.5")
     },
     { scope: containerRef }
   )
@@ -159,60 +114,74 @@ export function HeroChrom() {
         justifyContent: "center",
         minHeight: "100vh",
         overflow: "hidden",
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "var(--v6-bg)",
       }}
     >
-      {/* Background gradients instead of ChromeSphere */}
+      {/* Three.js sphere — full-section canvas */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(50,50,50,0.4) 0%, rgba(10,10,10,1) 70%)",
-        }}
-      />
-      
-      {/* Dynamic light blob moving behind text */}
+        style={{ opacity: 0.9 }}
+      >
+        <Suspense fallback={null}>
+          <Canvas
+            camera={{ position: [0, 0, 7], fov: 45 }}
+            gl={{ antialias: true, alpha: true }}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <ChromeSphere />
+          </Canvas>
+        </Suspense>
+      </div>
+
+      {/* Radial vignette — fades sphere edges into background */}
       <div
-        ref={lightRef}
-        className="absolute w-[80vw] h-[80vw] md:w-[40vw] md:h-[40vw] rounded-full blur-[100px] opacity-30 pointer-events-none"
+        aria-hidden
+        className="absolute inset-0 z-[1] pointer-events-none"
         style={{
-          background: "linear-gradient(45deg, #c8c8c8, #707070)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 0,
+          background:
+            "radial-gradient(ellipse 80% 80% at 65% 50%, transparent 30%, var(--v6-bg) 75%)",
         }}
       />
 
-      {/* Marquee ticker — upper band */}
+      {/* Bottom fade */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "180px",
+          background: "linear-gradient(to bottom, transparent, var(--v6-hero-gradient-end))",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      />
+
+      {/* Marquee ticker */}
       <div
         className="absolute top-20 left-0 right-0 overflow-hidden select-none"
         style={{ zIndex: 2 }}
         aria-hidden
       >
-        <div ref={marqueeRef} className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
+        <div className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_12s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "14px", letterSpacing: "0.2em", opacity: 0.6 }}
+            className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
+            style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
           >
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
+            {MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}
           </span>
           <span
-            className="inline-flex shrink-0 animate-[stahl-marquee_12s_linear_infinite]"
-            style={{ color: "#c8c8c8", fontSize: "14px", letterSpacing: "0.2em", opacity: 0.6 }}
+            className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
+            style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
             aria-hidden
           >
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
-            {MARQUEE_TEXT}
+            {MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}{MARQUEE_TEXT}
           </span>
         </div>
       </div>
 
-      {/* GSAP word reveal */}
+      {/* Words */}
       <div
         className="px-8 md:px-16 lg:px-24 pt-16 pb-8 flex flex-col leading-none"
         style={{ position: "relative", zIndex: 2 }}
@@ -220,43 +189,27 @@ export function HeroChrom() {
         <div
           ref={word1Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#ebebeb",
-            lineHeight: 0.9,
-            opacity: 0,
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Lokal.
         </div>
         <div
           ref={word2Ref}
           className="block font-[family-name:var(--font-display)] will-change-transform self-end md:self-center text-right md:text-center"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#ebebeb",
-            lineHeight: 0.9,
-            opacity: 0,
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Digital.
         </div>
         <div
           ref={word3Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform self-end"
-          style={{
-            fontSize: "clamp(80px, 18vw, 240px)",
-            color: "#c8c8c8",
-            lineHeight: 0.9,
-            opacity: 0,
-            textShadow: "0px 0px 20px rgba(200,200,200,0.5)",
-          }}
+          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-accent)", lineHeight: 0.9, opacity: 0 }}
         >
           Komplett.
         </div>
       </div>
 
-      {/* Sub + CTA row */}
+      {/* Sub + CTA */}
       <div
         className="px-8 md:px-16 lg:px-24 pb-24 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
         style={{ position: "relative", zIndex: 2 }}
@@ -264,7 +217,7 @@ export function HeroChrom() {
         <p
           ref={subRef}
           className="max-w-md text-base md:text-lg leading-relaxed"
-          style={{ color: "#c8c8c8", opacity: 0, fontFamily: "var(--font-body)", fontWeight: 500 }}
+          style={{ color: "var(--v6-text-muted)", opacity: 0, fontFamily: "var(--font-body)" }}
         >
           {manifesto.sub}
         </p>
@@ -272,31 +225,24 @@ export function HeroChrom() {
         <div ref={ctaRef} style={{ opacity: 0, display: "flex", gap: "16px", flexWrap: "wrap" }}>
           <a
             href="#services"
-            className="inline-flex items-center h-14 px-10 text-[14px] tracking-[0.1em] uppercase font-bold transition-all duration-300 shadow-[0_0_20px_rgba(200,200,200,0.2)] hover:shadow-[0_0_30px_rgba(200,200,200,0.5)] hover:scale-105"
-            style={{ backgroundColor: "#ebebeb", color: "#0a0a0a", textDecoration: "none" }}
+            className="inline-flex items-center h-11 px-8 text-[13px] tracking-[0.1em] uppercase font-semibold transition-all duration-300 hover:bg-[var(--v6-accent-hover)]"
+            style={{ backgroundColor: "var(--v6-accent)", color: "var(--v6-text-on-accent)", textDecoration: "none" }}
           >
             Unsere Leistungen
           </a>
           <a
             href="#contact"
             className="inline-flex items-center gap-3 group"
-            style={{ color: "#ebebeb", textDecoration: "none" }}
+            style={{ color: "var(--v6-accent)", textDecoration: "none" }}
           >
-            <span className="text-[14px] tracking-[0.12em] uppercase font-bold transition-all duration-300 group-hover:text-white group-hover:tracking-[0.2em]">
+            <span className="text-[13px] tracking-[0.12em] uppercase font-semibold transition-colors duration-300 group-hover:text-[var(--v6-text)]">
               Projekt starten
             </span>
             <span
-              className="flex items-center justify-center w-14 h-14 border transition-all duration-300 group-hover:bg-[#ebebeb] group-hover:text-[#0a0a0a] group-hover:rotate-45"
-              style={{ borderColor: "#ebebeb" }}
+              className="flex items-center justify-center w-10 h-10 border transition-all duration-300 group-hover:bg-[var(--v6-accent)] group-hover:text-[var(--v6-text-on-accent)]"
+              style={{ borderColor: "var(--v6-accent)" }}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 14 14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 7h10M7 2l5 5-5 5" />
               </svg>
             </span>

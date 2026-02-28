@@ -71,17 +71,21 @@ export function Navbar() {
     ScrollTrigger.create({
       start: "top+=80 top",
       onEnter: () => {
-        gsap.to(navRef.current, {
-          backgroundColor: "rgba(10,10,10,0.95)",
+        const el = navRef.current
+        if (!el) return
+        const bg = getComputedStyle(el).getPropertyValue("--v6-nav-scrolled-bg").trim()
+        const border = getComputedStyle(el).getPropertyValue("--v6-nav-scrolled-border").trim()
+        gsap.to(el, {
+          backgroundColor: bg || "rgba(10,10,10,0.95)",
           backdropFilter: "blur(12px)",
-          borderBottomColor: "var(--v6-border)",
+          borderBottomColor: border || "var(--v6-border)",
           duration: 0.4,
           ease: "power2.out",
         })
       },
       onLeaveBack: () => {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(10,10,10,0)",
+          backgroundColor: "transparent",
           backdropFilter: "blur(0px)",
           borderBottomColor: "transparent",
           duration: 0.4,

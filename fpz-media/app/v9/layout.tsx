@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { DM_Serif_Display, DM_Sans } from "next/font/google"
-import { GrainOverlay } from "@/components/v9/GrainOverlay"
+import { GrainOverlay } from "@/components/v6/GrainOverlay"
+import { V6ThemeProvider } from "@/app/v6/ThemeProvider"
+import "@/app/v6/v6-theme.css"
 
 const display = DM_Serif_Display({
   subsets: ["latin"],
@@ -15,19 +17,18 @@ const body = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "FPZ Media — V9 Perfect",
+  title: "FPZ Media — V9",
   description:
     "Full-Service Digitalagentur für lokale Unternehmen im Ruhrgebiet. Web. Film. Automation.",
 }
 
 export default function V9Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={`${display.variable} ${body.variable} antialiased`}
-      style={{ backgroundColor: "#0a0a0a", color: "#ebebeb", minHeight: "100vh" }}
-    >
-      <GrainOverlay />
-      {children}
+    <div className={`${display.variable} ${body.variable} antialiased`}>
+      <V6ThemeProvider>
+        <GrainOverlay />
+        {children}
+      </V6ThemeProvider>
     </div>
   )
 }

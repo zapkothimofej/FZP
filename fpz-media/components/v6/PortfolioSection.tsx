@@ -91,11 +91,11 @@ export function PortfolioSection() {
   const getHeight = (size: string) => {
     switch (size) {
       case "large":
-        return "min-h-[360px] md:min-h-0"
+        return "min-h-[360px]"
       case "medium":
-        return "min-h-[300px] md:min-h-0"
+        return "min-h-[300px]"
       default:
-        return "min-h-[260px] md:min-h-0"
+        return "min-h-[240px]"
     }
   }
 
@@ -146,7 +146,7 @@ export function PortfolioSection() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-4 md:gap-5 md:[grid-auto-flow:dense]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 md:[grid-auto-flow:dense] md:[grid-auto-rows:240px]">
           {portfolioPlaceholders.map((item) => (
             <div
               key={item.id}

@@ -69,7 +69,7 @@ export function PricingSection() {
               Number.isInteger(obj.val) && obj.val >= 1000
                 ? Math.round(obj.val).toLocaleString("de-DE") // 1500 → "1.500"
                 : String(Math.round(obj.val))
-            el.textContent = prefix + formatted + suffix
+            el.textContent = formatted
           },
         })
       })

@@ -41,12 +41,9 @@ export function StatsSection() {
             toggleActions: "play none none none",
           },
           onUpdate: () => {
-            el.textContent =
-              prefix +
-              (Number.isInteger(num)
-                ? Math.round(obj.val).toString()
-                : obj.val.toFixed(1)) +
-              suffix
+            el.textContent = Number.isInteger(num)
+              ? Math.round(obj.val).toString()
+              : obj.val.toFixed(1)
           },
         })
       })
