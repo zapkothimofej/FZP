@@ -17,12 +17,12 @@ const WireframeIcon = dynamic(
 const PANEL_ICONS: Array<"cube" | "sphere" | "torus"> = ["cube", "sphere", "torus"]
 
 export function ServicesSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
 
   useGSAP(
     () => {
-      if (!containerRef.current || !trackRef.current) return
+      if (!wrapperRef.current || !trackRef.current) return
 
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
@@ -31,20 +31,26 @@ export function ServicesSection() {
         xPercent: -100 * (panels.length - 1),
         ease: "none",
         scrollTrigger: {
-          trigger: containerRef.current,
-          pin: true,
+          trigger: wrapperRef.current,
+          start: "top top",
+          end: "bottom bottom",
           scrub: true,
-          anticipatePin: 1,
-          end: () => "+=" + (panels.length - 1) * window.innerWidth,
           invalidateOnRefresh: true,
         },
       })
     },
-    { scope: containerRef }
+    { scope: wrapperRef }
   )
 
   return (
-    <section id="services" className="relative" ref={containerRef}>
+    // Wrapper gibt dem horizontalen Scroll Platz (1 Screen pro Panel)
+    <div
+      ref={wrapperRef}
+      id="services"
+      style={{ height: `${services.length * 100}vh` }}
+    >
+      {/* CSS sticky — kein GSAP pin:true, kein DOM-Eingriff */}
+      <section className="sticky top-0 relative overflow-hidden" style={{ height: "100vh" }}>
       {/* Section label */}
       <div
         className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
@@ -184,7 +190,8 @@ export function ServicesSection() {
           </div>
         ))}
       </div>
-    </section>
+      </section>
+    </div>
   )
 }
 
