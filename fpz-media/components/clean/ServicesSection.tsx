@@ -26,7 +26,13 @@ export function ServicesSection() {
           trigger: wrapperRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: true,
+          scrub: 1,
+          snap: {
+            snapTo: 1 / (panels.length - 1),
+            duration: { min: 0.3, max: 0.6 },
+            ease: "power2.inOut",
+            delay: 0.05,
+          },
           invalidateOnRefresh: true,
         },
       })
@@ -35,148 +41,169 @@ export function ServicesSection() {
   )
 
   return (
-    // Wrapper gibt dem horizontalen Scroll Platz (1 Screen pro Panel)
     <div
       ref={wrapperRef}
       id="services"
       style={{ height: `${services.length * 100}vh` }}
     >
-      {/* CSS sticky — kein GSAP pin:true, kein DOM-Eingriff */}
       <section className="sticky top-0 relative overflow-hidden" style={{ height: "100vh" }}>
-      {/* Section label */}
-      <div
-        className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
-        aria-hidden
-      >
-        <p
-          className="text-[11px] tracking-[0.2em] uppercase"
-          style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+        {/* Section label */}
+        <div
+          className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
+          aria-hidden
         >
-          Unsere Leistungen — Scroll
-        </p>
-      </div>
-
-      {/* Horizontal track */}
-      <div
-        ref={trackRef}
-        className="flex"
-        style={{ width: `${services.length * 100}vw` }}
-      >
-        {services.map((service, i) => (
-          <div
-            key={service.id}
-            className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
-            style={{
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "var(--v6-bg-elevated)",
-              borderRight: i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
-              flexShrink: 0,
-            }}
+          <p
+            className="text-[11px] tracking-[0.2em] uppercase"
+            style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
           >
-            {/* Giant service number in background */}
+            Unsere Leistungen — Scroll
+          </p>
+        </div>
+
+        {/* Horizontal track */}
+        <div
+          ref={trackRef}
+          className="flex"
+          style={{ width: `${services.length * 100}vw` }}
+        >
+          {services.map((service, i) => (
             <div
-              className="absolute top-0 right-0 select-none pointer-events-none font-[family-name:var(--font-display)] leading-none"
-              aria-hidden
+              key={service.id}
+              className="v6-service-panel relative flex flex-col justify-center overflow-hidden"
               style={{
-                fontSize: "clamp(160px, 28vw, 400px)",
-                color: "var(--v6-accent)",
-                opacity: 0.06,
-                lineHeight: 0.85,
-                paddingRight: "2rem",
+                width: "100vw",
+                height: "100vh",
+                backgroundColor: "var(--v6-bg-elevated)",
+                borderRight: i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
+                flexShrink: 0,
               }}
             >
-              {service.number}
-            </div>
-
-            {/* Panel content */}
-            <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-2xl">
-              {/* Number label */}
-              <p
-                className="text-[11px] tracking-[0.2em] uppercase mb-6"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
-              >
-                {service.number} / {String(services.length).padStart(2, "0")}
-              </p>
-
-              {/* Title */}
-              <h2
-                className="font-[family-name:var(--font-display)] mb-4"
+              {/* Giant service number — centered in background */}
+              <div
+                className="absolute inset-0 flex items-center justify-center select-none pointer-events-none font-[family-name:var(--font-display)] leading-none"
+                aria-hidden
                 style={{
-                  fontSize: "clamp(40px, 7vw, 96px)",
-                  color: "var(--v6-text)",
+                  fontSize: "clamp(220px, 38vw, 550px)",
+                  color: "var(--v6-accent)",
+                  opacity: 0.05,
                   lineHeight: 1,
                 }}
               >
-                {service.title}
-              </h2>
-
-              {/* Headline */}
-              <p
-                className="text-lg mb-6 italic"
-                style={{
-                  color: "var(--v6-accent)",
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(18px, 2vw, 26px)",
-                }}
-              >
-                {service.headline}
-              </p>
-
-              {/* Description */}
-              <p
-                className="text-sm leading-relaxed mb-8 max-w-md"
-                style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
-              >
-                {service.description}
-              </p>
-
-              {/* Thin separator */}
-              <div
-                className="mb-6"
-                style={{ height: "1px", backgroundColor: "var(--v6-border)", width: "100%" }}
-              />
-
-              {/* Deliverables */}
-              <ul className="flex flex-col gap-2">
-                {service.deliverables.map((d, j) => (
-                  <li
-                    key={j}
-                    className="flex items-center gap-3 text-sm"
-                    style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
-                  >
-                    <span
-                      className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: "var(--v6-accent)" }}
-                    />
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Scroll hint on first panel */}
-            {i === 0 && (
-              <div
-                className="absolute bottom-8 right-12 flex items-center gap-2"
-                style={{ color: "var(--v6-text-muted)", fontSize: "11px", letterSpacing: "0.1em" }}
-              >
-                <span>SCROLLEN ZUM ENTDECKEN</span>
-                <svg
-                  width="24"
-                  height="10"
-                  viewBox="0 0 24 10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                >
-                  <path d="M0 5h22M17 1l5 4-5 4" />
-                </svg>
+                {service.number}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+
+              {/* Panel content */}
+              <div className="relative z-10 px-16 md:px-24 lg:px-32 max-w-4xl">
+                {/* Number label */}
+                <p
+                  className="text-[13px] tracking-[0.3em] uppercase mb-8 font-semibold"
+                  style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}
+                >
+                  {service.number} / {String(services.length).padStart(2, "0")}
+                </p>
+
+                {/* Title */}
+                <h2
+                  className="font-[family-name:var(--font-display)] mb-6 tracking-tight"
+                  style={{
+                    fontSize: "clamp(56px, 9vw, 130px)",
+                    color: "var(--v6-text)",
+                    lineHeight: 0.92,
+                  }}
+                >
+                  {service.title}
+                </h2>
+
+                {/* Headline */}
+                <p
+                  className="mb-8 italic"
+                  style={{
+                    color: "var(--v6-accent)",
+                    fontFamily: "var(--font-display)",
+                    fontSize: "clamp(20px, 2.5vw, 32px)",
+                  }}
+                >
+                  {service.headline}
+                </p>
+
+                {/* Description */}
+                <p
+                  className="leading-relaxed mb-10"
+                  style={{
+                    color: "var(--v6-text-muted)",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "clamp(15px, 1.2vw, 18px)",
+                    maxWidth: "520px",
+                  }}
+                >
+                  {service.description}
+                </p>
+
+                {/* Thin separator */}
+                <div
+                  className="mb-8"
+                  style={{ height: "1px", backgroundColor: "var(--v6-border)", width: "100%", maxWidth: "520px" }}
+                />
+
+                {/* Deliverables */}
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ maxWidth: "520px" }}>
+                  {service.deliverables.map((d, j) => (
+                    <li
+                      key={j}
+                      className="flex items-center gap-3"
+                      style={{
+                        color: "var(--v6-text-muted)",
+                        fontFamily: "var(--font-body)",
+                        fontSize: "clamp(13px, 1vw, 15px)",
+                      }}
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: "var(--v6-accent)" }}
+                      />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Scroll hint on first panel */}
+              {i === 0 && (
+                <div
+                  className="absolute bottom-10 right-14 flex items-center gap-2 animate-pulse"
+                  style={{ color: "var(--v6-text-muted)", fontSize: "11px", letterSpacing: "0.15em", fontWeight: 600 }}
+                >
+                  <span>SCROLLEN ZUM ENTDECKEN</span>
+                  <svg
+                    width="28"
+                    height="10"
+                    viewBox="0 0 28 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path d="M0 5h26M21 1l6 4-6 4" />
+                  </svg>
+                </div>
+              )}
+
+              {/* Panel indicator dots */}
+              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
+                {services.map((_, dotIdx) => (
+                  <span
+                    key={dotIdx}
+                    className="rounded-full transition-all duration-300"
+                    style={{
+                      width: dotIdx === i ? "24px" : "6px",
+                      height: "6px",
+                      backgroundColor: dotIdx === i ? "var(--v6-accent)" : "var(--v6-border)",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   )
