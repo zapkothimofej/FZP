@@ -9,76 +9,39 @@ import { manifesto } from "@/lib/content-de"
 
 const MARQUEE_TEXT = "WEBENTWICKLUNG · MEDIENPRODUKTION · AUTOMATION · RUHRGEBIET · "
 
-// Chrome sphere with three animated point lights giving it dynamic reflections
-function ChromeSphere() {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const groupRef = useRef<THREE.Group>(null)
-  const light1Ref = useRef<THREE.PointLight>(null)
-  const light2Ref = useRef<THREE.PointLight>(null)
-  const light3Ref = useRef<THREE.PointLight>(null)
+// Große silberne Wireframe-Kugel — wie WireframeIcon aber im Hero-Format
+// "andere Reflektion": zwei überlagerte Gitter (grob + fein) für Tiefenwirkung
+function SilverSphere() {
+  const outerRef = useRef<THREE.Mesh>(null)
+  const innerRef = useRef<THREE.Mesh>(null)
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-
-    // Slow sphere rotation
-    if (meshRef.current) {
-      meshRef.current.rotation.x = t * 0.04
-      meshRef.current.rotation.y = t * 0.07
+    if (outerRef.current) {
+      outerRef.current.rotation.x = t * 0.08
+      outerRef.current.rotation.y = t * 0.12
     }
-
-    // Gentle float
-    if (groupRef.current) {
-      groupRef.current.position.y = Math.sin(t * 0.4) * 0.12
-    }
-
-    // Orbiting lights — create shifting reflections on the sphere
-    if (light1Ref.current) {
-      light1Ref.current.position.set(
-        Math.sin(t * 0.35) * 5,
-        Math.cos(t * 0.28) * 3 + 1,
-        Math.cos(t * 0.22) * 2 + 5
-      )
-    }
-    if (light2Ref.current) {
-      light2Ref.current.position.set(
-        Math.cos(t * 0.42) * 6,
-        Math.sin(t * 0.31) * 4,
-        Math.sin(t * 0.19) * 3 + 4
-      )
-    }
-    if (light3Ref.current) {
-      light3Ref.current.position.set(
-        Math.sin(t * 0.18 + 2) * 4,
-        Math.cos(t * 0.45) * 2 - 2,
-        Math.cos(t * 0.38) * 3 + 6
-      )
+    if (innerRef.current) {
+      // Inner sphere rotates in opposite direction — creates depth/parallax reflection effect
+      innerRef.current.rotation.x = -t * 0.05
+      innerRef.current.rotation.y = -t * 0.09
     }
   })
 
   return (
-    <group ref={groupRef} position={[1.2, 0, 0]}>
-      {/* Static key light for strong specular */}
-      <pointLight position={[4, 3, 6]} intensity={8} color="#ffffff" />
-
-      {/* Three animated lights for dynamic shifting reflections */}
-      <pointLight ref={light1Ref} intensity={6} color="#d0d0d0" distance={18} decay={2} />
-      <pointLight ref={light2Ref} intensity={4} color="#a8a8a8" distance={16} decay={2} />
-      <pointLight ref={light3Ref} intensity={3} color="#e8e8e8" distance={14} decay={2} />
-
-      {/* Dim fill */}
-      <ambientLight intensity={0.06} />
-
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[2.4, 128, 128]} />
-        {/* MeshPhongMaterial: dark base, bright specular highlight — classic chrome look */}
-        <meshPhongMaterial
-          color="#0d0d0d"
-          specular="#e0e0e0"
-          shininess={180}
-          reflectivity={1}
-        />
+    <>
+      {/* Outer wireframe — coarser grid */}
+      <mesh ref={outerRef}>
+        <sphereGeometry args={[3.2, 18, 14]} />
+        <meshBasicMaterial color="#c8c8c8" wireframe opacity={0.45} transparent />
       </mesh>
-    </group>
+
+      {/* Inner wireframe — finer grid, counter-rotating for the "andere Reflektion" effect */}
+      <mesh ref={innerRef}>
+        <sphereGeometry args={[3.0, 32, 24]} />
+        <meshBasicMaterial color="#a0a0a0" wireframe opacity={0.18} transparent />
+      </mesh>
+    </>
   )
 }
 
@@ -117,29 +80,26 @@ export function HeroChrom() {
         backgroundColor: "var(--v6-bg)",
       }}
     >
-      {/* Three.js sphere — full-section canvas */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ opacity: 0.9 }}
-      >
+      {/* Three.js silver wireframe sphere — fills entire hero */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Suspense fallback={null}>
           <Canvas
-            camera={{ position: [0, 0, 7], fov: 45 }}
+            camera={{ position: [0, 0, 7], fov: 50 }}
             gl={{ antialias: true, alpha: true }}
             style={{ width: "100%", height: "100%" }}
           >
-            <ChromeSphere />
+            <SilverSphere />
           </Canvas>
         </Suspense>
       </div>
 
-      {/* Radial vignette — fades sphere edges into background */}
+      {/* Radial vignette — fades sphere into background, text stays readable */}
       <div
         aria-hidden
         className="absolute inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 80% at 65% 50%, transparent 30%, var(--v6-bg) 75%)",
+            "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 20%, var(--v6-bg) 72%)",
         }}
       />
 
@@ -164,7 +124,7 @@ export function HeroChrom() {
         style={{ zIndex: 2 }}
         aria-hidden
       >
-        <div className="flex whitespace-nowrap" style={{ willChange: "transform" }}>
+        <div className="flex whitespace-nowrap">
           <span
             className="inline-flex shrink-0 animate-[stahl-marquee_18s_linear_infinite]"
             style={{ color: "var(--v6-accent)", fontSize: "11px", letterSpacing: "0.2em", opacity: 0.4 }}
