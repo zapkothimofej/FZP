@@ -1,49 +1,17 @@
 "use client"
 
-import { useRef, Suspense } from "react"
+import { useRef, useEffect } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import { Canvas, useFrame } from "@react-three/fiber"
-import * as THREE from "three"
+import dynamic from "next/dynamic"
 import { manifesto } from "@/lib/content-de"
 
+const ChromeSphere = dynamic(
+  () => import("@/components/v9/ChromeSphere").then((m) => m.ChromeSphere),
+  { ssr: false }
+)
+
 const MARQUEE_TEXT = "WEBENTWICKLUNG · MEDIENPRODUKTION · AUTOMATION · RUHRGEBIET · "
-
-// Große silberne Wireframe-Kugel — wie WireframeIcon aber im Hero-Format
-// "andere Reflektion": zwei überlagerte Gitter (grob + fein) für Tiefenwirkung
-function SilverSphere() {
-  const outerRef = useRef<THREE.Mesh>(null)
-  const innerRef = useRef<THREE.Mesh>(null)
-
-  useFrame(({ clock }) => {
-    const t = clock.elapsedTime
-    if (outerRef.current) {
-      outerRef.current.rotation.x = t * 0.08
-      outerRef.current.rotation.y = t * 0.12
-    }
-    if (innerRef.current) {
-      // Inner sphere rotates in opposite direction — creates depth/parallax reflection effect
-      innerRef.current.rotation.x = -t * 0.05
-      innerRef.current.rotation.y = -t * 0.09
-    }
-  })
-
-  return (
-    <>
-      {/* Outer wireframe — coarser grid */}
-      <mesh ref={outerRef}>
-        <sphereGeometry args={[3.2, 18, 14]} />
-        <meshBasicMaterial color="#c8c8c8" wireframe opacity={0.45} transparent />
-      </mesh>
-
-      {/* Inner wireframe — finer grid, counter-rotating for the "andere Reflektion" effect */}
-      <mesh ref={innerRef}>
-        <sphereGeometry args={[3.0, 32, 24]} />
-        <meshBasicMaterial color="#a0a0a0" wireframe opacity={0.18} transparent />
-      </mesh>
-    </>
-  )
-}
 
 export function HeroChrom() {
   const containerRef = useRef<HTMLElement>(null)
@@ -52,6 +20,15 @@ export function HeroChrom() {
   const word3Ref = useRef<HTMLDivElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<number>(0)
+
+  useEffect(() => {
+    const onScroll = () => {
+      scrollRef.current = Math.min(1, Math.max(0, window.scrollY / 700))
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useGSAP(
     () => {
@@ -80,26 +57,19 @@ export function HeroChrom() {
         backgroundColor: "var(--v6-bg)",
       }}
     >
-      {/* Three.js silver wireframe sphere — fills entire hero */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Suspense fallback={null}>
-          <Canvas
-            camera={{ position: [0, 0, 7], fov: 50 }}
-            gl={{ antialias: true, alpha: true }}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <SilverSphere />
-          </Canvas>
-        </Suspense>
-      </div>
+      {/* Chrome sphere — full-screen canvas */}
+      <ChromeSphere scrollRef={scrollRef} />
 
-      {/* Radial vignette — fades sphere into background, text stays readable */}
+      {/* Left-to-right gradient so text stays readable */}
       <div
         aria-hidden
-        className="absolute inset-0 z-[1] pointer-events-none"
         style={{
+          position: "absolute",
+          inset: 0,
           background:
-            "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 20%, var(--v6-bg) 72%)",
+            "linear-gradient(to right, var(--v6-bg) 30%, rgba(10,10,10,0.55) 60%, rgba(10,10,10,0.1) 100%)",
+          pointerEvents: "none",
+          zIndex: 1,
         }}
       />
 
@@ -118,7 +88,7 @@ export function HeroChrom() {
         }}
       />
 
-      {/* Marquee ticker */}
+      {/* Marquee */}
       <div
         className="absolute top-20 left-0 right-0 overflow-hidden select-none"
         style={{ zIndex: 2 }}
