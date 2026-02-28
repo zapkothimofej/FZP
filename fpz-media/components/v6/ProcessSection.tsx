@@ -113,11 +113,11 @@ export function ProcessSection() {
                 className="v6-process-step relative"
                 style={{ opacity: 0 }}
               >
-                {/* 3D-look dot on the timeline line — CSS radial shadow depth effect */}
+                {/* Dot zentriert auf der Timeline-Linie — mr-12=48px mobile, mr-20=80px desktop */}
+                {/* left = -(gap + 0.5px Linie + 6.5px halber Dot) */}
                 <div
-                  className="absolute"
+                  className="absolute left-[-55px] md:left-[-87px]"
                   style={{
-                    left: "-52px",
                     top: "8px",
                     width: "13px",
                     height: "13px",
@@ -125,7 +125,6 @@ export function ProcessSection() {
                     backgroundColor: "var(--v6-accent)",
                     border: "2px solid var(--v6-bg)",
                     outline: "1px solid var(--v6-accent)",
-                    marginLeft: "-6px",
                     boxShadow: "var(--v6-shadow-step)",
                   }}
                 />

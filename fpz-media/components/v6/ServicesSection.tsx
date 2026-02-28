@@ -171,7 +171,7 @@ export function ServicesSection() {
                 className="absolute bottom-8 right-12 flex items-center gap-2"
                 style={{ color: "#707070", fontSize: "11px", letterSpacing: "0.1em" }}
               >
-                <span>DRAG TO EXPLORE</span>
+                <span>SCROLLEN ZUM ENTDECKEN</span>
                 <svg
                   width="24"
                   height="10"

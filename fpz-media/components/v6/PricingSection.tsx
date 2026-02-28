@@ -128,6 +128,7 @@ export function PricingSection() {
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     background: "var(--v6-price-highlight)",
+                    backgroundSize: "200% 100%",
                     animation: "stahl-shimmer 3s ease-in-out infinite",
                   }}
                 />

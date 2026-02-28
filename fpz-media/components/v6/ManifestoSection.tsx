@@ -17,6 +17,11 @@ export function ManifestoSection() {
     () => {
       if (!sectionRef.current || !textRef.current || !lineRef.current) return
 
+      // GSAP kann keine CSS clamp()-Strings tweenen — konkrete px-Werte berechnen
+      const vw = window.innerWidth
+      const startPx = Math.max(48, Math.min(vw * 0.1, 160))
+      const endPx = Math.max(28, Math.min(vw * 0.04, 64))
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -30,8 +35,8 @@ export function ManifestoSection() {
       // Beim Runterscrollen wird der Text kleiner
       tl.fromTo(
         textRef.current,
-        { fontSize: "clamp(48px, 10vw, 160px)" },
-        { fontSize: "clamp(28px, 4vw, 64px)", ease: "none" },
+        { fontSize: `${startPx}px` },
+        { fontSize: `${endPx}px`, ease: "none" },
         0
       )
       // Linie zeichnet sich von links

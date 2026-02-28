@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { manifesto } from "@/lib/content-de"
 
-const MARQUEE_TEXT = "WEB DEVELOPMENT · MEDIA PRODUCTION · AUTOMATION · RUHRGEBIET · "
+const MARQUEE_TEXT = "WEBENTWICKLUNG · MEDIENPRODUKTION · AUTOMATION · RUHRGEBIET · "
 
 export function HeroChrom() {
   const containerRef = useRef<HTMLElement>(null)
@@ -145,8 +145,7 @@ export function HeroChrom() {
         <div ref={ctaRef} style={{ opacity: 0, display: "flex", gap: "16px", flexWrap: "wrap" }}>
           <a
             href="#services"
-            className="inline-flex items-center h-11 px-8 text-[13px] tracking-[0.1em] uppercase font-semibold transition-all duration-300"
-            className="hover:bg-[var(--v6-accent-hover)]"
+            className="inline-flex items-center h-11 px-8 text-[13px] tracking-[0.1em] uppercase font-semibold transition-all duration-300 hover:bg-[var(--v6-accent-hover)]"
             style={{ backgroundColor: "var(--v6-accent)", color: "var(--v6-text-on-accent)", textDecoration: "none" }}
           >
             Unsere Leistungen

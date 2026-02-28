@@ -261,7 +261,7 @@ export function PortfolioSection() {
               fontFamily: "var(--font-body)",
             }}
           >
-            Echte Kundenprojekte folgen — Q1 2025
+            Echte Kundenprojekte folgen — Demnächst
           </p>
           <a
             href="#contact"

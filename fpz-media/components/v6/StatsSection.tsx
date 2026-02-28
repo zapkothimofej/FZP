@@ -90,7 +90,7 @@ export function StatsSection() {
                 className="v6-stat-card flex flex-col items-center justify-center py-16 px-4 text-center"
                 style={{
                   backgroundColor: "#141414",
-                  borderRight: i < stats.length - 1 ? "1px solid #222222" : "none",
+                  borderRight: i < stats.length - 1 ? "1px solid var(--v6-border)" : "none",
                   opacity: 0,
                 }}
               >
