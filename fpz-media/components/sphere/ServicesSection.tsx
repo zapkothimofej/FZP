@@ -38,6 +38,7 @@ export function ServicesSection() {
         animating = true
         currentIndex = index
 
+        gsap.killTweensOf(panels)
         gsap.to(panels, {
           xPercent: -100 * index,
           duration: 0.8,
@@ -71,18 +72,28 @@ export function ServicesSection() {
         end: () => "+=" + (panels.length - 1) * window.innerHeight * 3,
         // Von oben rein → Panel 0
         onEnter: () => {
+          gsap.killTweensOf(panels)
+          panels.forEach(p => {
+            gsap.killTweensOf(p.querySelector(".bg-number"))
+            gsap.killTweensOf(p.querySelector("h2"))
+          })
+          gsap.set(panels, { xPercent: 0 })
+          currentIndex = 0
           isActive = true
           exiting  = false
-          currentIndex = 0
-          gsap.set(panels, { xPercent: 0 })
           animating = false
         },
         // Von unten rein (hochscrollen) → letztes Panel
         onEnterBack: () => {
+          gsap.killTweensOf(panels)
+          panels.forEach(p => {
+            gsap.killTweensOf(p.querySelector(".bg-number"))
+            gsap.killTweensOf(p.querySelector("h2"))
+          })
+          gsap.set(panels, { xPercent: -100 * (panels.length - 1) })
+          currentIndex = panels.length - 1
           isActive = true
           exiting  = false
-          currentIndex = panels.length - 1
-          gsap.set(panels, { xPercent: -100 * currentIndex })
           animating = false
         },
         onLeave:     () => { isActive = false },
