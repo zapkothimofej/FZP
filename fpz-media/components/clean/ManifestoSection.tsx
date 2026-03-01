@@ -38,9 +38,9 @@ export function ManifestoSection() {
       // Words slide up from behind their overflow-hidden containers — staggered
       gsap.to(".manifesto-word", {
         y: 0,
-        duration: 0.85,
+        duration: 1.2,
         ease: "power3.out",
-        stagger: 0.055,
+        stagger: 0.09,
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 72%",
