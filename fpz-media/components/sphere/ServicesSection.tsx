@@ -25,71 +25,109 @@ export function ServicesSection() {
     () => {
       if (!containerRef.current || !trackRef.current) return
 
-      // Verhindert dass schnelles Scrollen die gepinnte Sektion überspringt
-      ScrollTrigger.normalizeScroll(true)
-
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          pin: true,
-          anticipatePin: 1,
-          scrub: 1,
-          // * 1.5 gibt mehr Scroll-Widerstand → verhindert zufälliges Durchscrollen
-          end: () => "+=" + (panels.length - 1) * window.innerWidth * 1.5,
-          snap: {
-            snapTo: 1 / (panels.length - 1),
-            duration: { min: 0.3, max: 0.6 },
-            delay: 0.05,   // snapped schnell nachdem Scroll stoppt
-            ease: "power2.inOut",
-          },
-          invalidateOnRefresh: true,
-        },
-      })
+      let currentIndex = 0
+      let animating = false
+      let isActive   = false
+      let exiting    = false
 
-      // ease: "none" ist Pflicht bei scrub — sonst ist Position nicht linear zur Scroll-Position
-      tl.to(panels, {
-        xPercent: -100 * (panels.length - 1),
-        ease: "none",
-      })
+      const goTo = (index: number) => {
+        if (animating) return
+        animating = true
+        currentIndex = index
 
-      // Parallax-Effekte innerhalb der Panels
-      panels.forEach((panel) => {
-        const title = panel.querySelector("h2")
-        const number = panel.querySelector(".bg-number")
+        gsap.to(panels, {
+          xPercent: -100 * index,
+          duration: 0.8,
+          ease: "power3.inOut",
+          onComplete: () => { animating = false },
+        })
 
-        if (title) {
-          gsap.to(title, {
-            x: 200,
-            scale: 1.1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: panel,
-              containerAnimation: tl,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          })
-        }
+        const panel  = panels[index]
+        const number = panel?.querySelector<HTMLElement>(".bg-number")
+        const title  = panel?.querySelector<HTMLElement>("h2")
 
         if (number) {
-          gsap.to(number, {
-            x: -150,
-            rotation: 45,
-            ease: "none",
-            scrollTrigger: {
-              trigger: panel,
-              containerAnimation: tl,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          })
+          gsap.fromTo(number,
+            { x: 80, opacity: 0 },
+            { x: 0, opacity: 0.03, duration: 1, ease: "power2.out" }
+          )
         }
+        if (title) {
+          gsap.fromTo(title,
+            { x: -40, opacity: 0 },
+            { x: 0, opacity: 1, duration: 0.7, ease: "power2.out", delay: 0.1 }
+          )
+        }
+      }
+
+      const st = ScrollTrigger.create({
+        trigger: containerRef.current,
+        pin: true,
+        anticipatePin: 1,
+        start: "top top",
+        end: () => "+=" + (panels.length - 1) * window.innerHeight * 3,
+        // Von oben rein → Panel 0
+        onEnter: () => {
+          isActive = true
+          exiting  = false
+          currentIndex = 0
+          gsap.set(panels, { xPercent: 0 })
+          animating = false
+        },
+        // Von unten rein (hochscrollen) → letztes Panel
+        onEnterBack: () => {
+          isActive = true
+          exiting  = false
+          currentIndex = panels.length - 1
+          gsap.set(panels, { xPercent: -100 * currentIndex })
+          animating = false
+        },
+        onLeave:     () => { isActive = false },
+        onLeaveBack: () => { isActive = false },
+        invalidateOnRefresh: true,
       })
+
+      const onWheel = (e: WheelEvent) => {
+        if (!isActive) return
+
+        // Kein vertikaler Scroll während wir in der Sektion sind
+        e.preventDefault()
+
+        if (exiting || animating && (
+          (e.deltaY > 0 && currentIndex === panels.length - 1) ||
+          (e.deltaY < 0 && currentIndex === 0)
+        )) return
+
+        const forward = e.deltaY > 0
+
+        if (forward) {
+          if (currentIndex < panels.length - 1) {
+            goTo(currentIndex + 1)
+          } else {
+            // Letztes Panel → programmatisch aus der Sektion raus nach unten
+            exiting = true
+            window.scrollTo(0, st.end + 10)
+          }
+        } else {
+          if (currentIndex > 0) {
+            goTo(currentIndex - 1)
+          } else {
+            // Erstes Panel → programmatisch aus der Sektion raus nach oben
+            exiting = true
+            window.scrollTo(0, Math.max(0, st.start - 10))
+          }
+        }
+      }
+
+      window.addEventListener("wheel", onWheel, { passive: false })
+
+      return () => {
+        window.removeEventListener("wheel", onWheel)
+        st.kill()
+      }
     },
     { scope: containerRef }
   )
