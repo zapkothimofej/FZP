@@ -41,23 +41,24 @@ export function ServicesSection() {
     updateDots(0)
 
     // Single wheel tick = next / prev panel
-    // passive: false so we can preventDefault and stop page from scrolling through
-    // Only preventDefault when mid-panels — at boundaries let page scroll continue
+    // IMPORTANT: preventDefault must be called on EVERY event while sticky,
+    // including when animating=true (otherwise page scrolls through mid-animation)
+    // Only skip preventDefault at the true boundaries so page can continue past
     const handleWheel = (e: WheelEvent) => {
       if (!wrapperRef.current) return
       const rect = wrapperRef.current.getBoundingClientRect()
       const isSticky = rect.top <= 0 && rect.bottom >= window.innerHeight
       if (!isSticky) return
 
-      if (e.deltaY > 0 && currentIdx < panels.length - 1) {
+      const atLastGoingDown = e.deltaY > 0 && currentIdx >= panels.length - 1
+      const atFirstGoingUp  = e.deltaY < 0 && currentIdx <= 0
+
+      if (!atLastGoingDown && !atFirstGoingUp) {
+        // Block page scroll while navigating between panels
         e.preventDefault()
-        gotoPanel(currentIdx + 1)
-      } else if (e.deltaY < 0 && currentIdx > 0) {
-        e.preventDefault()
-        gotoPanel(currentIdx - 1)
+        gotoPanel(e.deltaY > 0 ? currentIdx + 1 : currentIdx - 1)
       }
-      // At last panel scrolling down, or first panel scrolling up:
-      // no preventDefault → page scroll passes through naturally
+      // at boundaries: no preventDefault → page scrolls naturally past the section
     }
 
     window.addEventListener("wheel", handleWheel, { passive: false })
