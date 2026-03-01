@@ -29,41 +29,56 @@ export function ServicesSection() {
     }
     slider.addEventListener("scroll", onScroll, { passive: true })
 
-    // One wheel tick → one panel
-    let animating = false
+    // One wheel tick → one panel.
+    // targetPanel tracks the logical destination to avoid relying on
+    // scrollLeft mid-animation (rounding can give wrong atEnd/atStart).
+    let targetPanel = 0
+    let animating   = false
     const onWheel = (e: WheelEvent) => {
-      const rect     = wrapper.getBoundingClientRect()
-      const isSticky = rect.top <= 0 && rect.bottom >= window.innerHeight
+      const rect = wrapper.getBoundingClientRect()
+      // 1px buffer: sub-pixel float can make rect.top = 0.3 on section entry,
+      // causing the first fast wheel event to slip through as vertical scroll.
+      const isSticky = rect.top <= 1 && rect.bottom >= window.innerHeight
       if (!isSticky) return
 
-      const cur    = Math.round(slider.scrollLeft / panelW())
-      const atEnd  = cur >= services.length - 1 && e.deltaY > 0
-      const atStart = cur <= 0               && e.deltaY < 0
+      // Block ALL vertical scroll while a horizontal animation is running.
+      // Without this, mid-animation scrollLeft rounds to the target panel,
+      // atEnd/atStart can become true, and e.preventDefault() isn't called.
+      if (animating) {
+        e.preventDefault()
+        return
+      }
 
-      // Always block page scroll while mid-section
+      const atEnd   = targetPanel >= services.length - 1 && e.deltaY > 0
+      const atStart = targetPanel <= 0                   && e.deltaY < 0
+
       if (!atEnd && !atStart) e.preventDefault()
 
-      if (!animating && !atEnd && !atStart) {
-        animating  = true
-        const next = e.deltaY > 0 ? cur + 1 : cur - 1
+      if (!atEnd && !atStart) {
+        animating = true
+        const next = e.deltaY > 0 ? targetPanel + 1 : targetPanel - 1
+        targetPanel = next
         updateDots(next)
-
-        // Silently snap page scroll to the exit point so ONE more scroll exits
-        const absTop = wrapper.getBoundingClientRect().top + window.scrollY
-        if (next === services.length - 1) {
-          // Going to last panel → pre-position page at bottom of wrapper
-          window.scrollTo({ top: absTop + wrapper.offsetHeight - window.innerHeight - 2 })
-        } else if (next === 0) {
-          // Going to first panel → pre-position page at top of wrapper
-          window.scrollTo({ top: absTop })
-        }
 
         gsap.to(slider, {
           scrollLeft : next * panelW(),
           duration   : 0.55,
           ease       : "power2.inOut",
           overwrite  : true,
-          onComplete : () => { animating = false },
+          onComplete : () => {
+            // Pre-position page for clean exit AFTER animation, not before —
+            // doing it before caused a visible vertical jump on the 2nd/3rd panel.
+            const absTop = wrapper.getBoundingClientRect().top + window.scrollY
+            if (next === services.length - 1) {
+              window.scrollTo({ top: absTop + wrapper.offsetHeight - window.innerHeight - 2 })
+            } else if (next === 0) {
+              window.scrollTo({ top: absTop })
+            }
+            // Short cooldown absorbs trackpad inertia events that arrive right
+            // after the snap — without it they can trigger an immediate reverse
+            // transition (e.g. panel 2→1 from a tiny upward momentum event).
+            setTimeout(() => { animating = false }, 120)
+          },
         })
       }
     }

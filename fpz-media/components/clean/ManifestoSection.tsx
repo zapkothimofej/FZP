@@ -30,7 +30,7 @@ export function ManifestoSection() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 80%",
-            toggleActions: "play none none none",
+            toggleActions: "play none none reverse",
           },
         }
       )
@@ -44,7 +44,7 @@ export function ManifestoSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 72%",
-          toggleActions: "play none none none",
+          toggleActions: "play none none reverse",
         },
       })
 
@@ -60,7 +60,7 @@ export function ManifestoSection() {
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 55%",
-              toggleActions: "play none none none",
+              toggleActions: "play none none reverse",
             },
           }
         )
@@ -80,7 +80,7 @@ export function ManifestoSection() {
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 55%",
-              toggleActions: "play none none none",
+              toggleActions: "play none none reverse",
             },
           }
         )
