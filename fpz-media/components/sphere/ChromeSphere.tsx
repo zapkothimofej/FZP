@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, Suspense } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Environment, Sphere } from "@react-three/drei"
 import * as THREE from "three"
 
@@ -9,6 +9,7 @@ function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
   const meshRef = useRef<THREE.Mesh>(null)
   // Lerped scroll value — prevents hard rotation snap on fast scroll
   const smoothProgress = useRef(0)
+  const { viewport } = useThree()
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return
@@ -20,7 +21,10 @@ function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
     meshRef.current.rotation.y = clock.elapsedTime * 0.2 + progress * Math.PI * 2
     meshRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.1
 
-    const scale = Math.max(0.3, 1 - progress * 0.7)
+    // viewport.width in world units: ~2.3 on mobile portrait, ~8.8 on desktop
+    // Scale down on mobile so the sphere doesn't dominate the screen
+    const mobileMult = viewport.width < 5 ? 0.42 : 1
+    const scale = Math.max(0.15, (1 - progress * 0.7) * mobileMult)
     meshRef.current.scale.setScalar(scale)
   })
 

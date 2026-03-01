@@ -68,14 +68,30 @@ export function HeroChrom() {
         @keyframes sphere-fadein { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
 
-      {/* Left-to-right gradient so text stays readable */}
+      {/* Left-to-right gradient so text stays readable — stronger on mobile */}
       <div
         aria-hidden
+        className="mobile-hero-gradient"
         style={{
           position: "absolute",
           inset: 0,
           background:
             "linear-gradient(to right, var(--v6-bg) 30%, color-mix(in srgb, var(--v6-bg) 55%, transparent) 60%, color-mix(in srgb, var(--v6-bg) 10%, transparent) 100%)",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      />
+      {/* Extra top gradient on mobile so sphere doesn't bleed into text area */}
+      <div
+        aria-hidden
+        className="block md:hidden"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "50%",
+          background: "linear-gradient(to bottom, var(--v6-bg) 0%, transparent 100%)",
           pointerEvents: "none",
           zIndex: 1,
         }}

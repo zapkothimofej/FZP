@@ -108,7 +108,7 @@ export function PricingSection() {
           return (
             <div
               key={plan.name}
-              className={`v6-pricing-card flex flex-col relative overflow-hidden rounded-2xl transition-transform duration-500 hover:-translate-y-4 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] ${plan.highlighted ? "scale-105 z-10" : ""}`}
+              className={`v6-pricing-card flex flex-col relative overflow-hidden rounded-2xl transition-transform duration-500 hover:-translate-y-4 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] ${plan.highlighted ? "md:scale-105 z-10" : ""}`}
               style={{
                 backgroundColor: plan.highlighted ? "#141414" : "#0f0f0f",
                 border: plan.highlighted ? "1px solid #c8c8c8" : "1px solid #333",

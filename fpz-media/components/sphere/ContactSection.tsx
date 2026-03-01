@@ -84,7 +84,7 @@ export function ContactSection() {
         style={{ background: "radial-gradient(circle, #c8c8c8 0%, transparent 70%)", transform: "translate(20%, -20%)" }}
       />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 relative z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32 relative z-10">
         {/* Left: heading + contact info */}
         <div className="flex flex-col gap-10">
           <div>

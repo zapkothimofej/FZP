@@ -139,10 +139,52 @@ export function ServicesSection() {
         }
       }
 
+      // Touch-Support für Mobile Swipe
+      const touch = { startX: 0, startY: 0 }
+
+      const onTouchStart = (e: TouchEvent) => {
+        touch.startX = e.touches[0].clientX
+        touch.startY = e.touches[0].clientY
+      }
+
+      const onTouchEnd = (e: TouchEvent) => {
+        if (!isActive || exiting) return
+        const deltaX = touch.startX - e.changedTouches[0].clientX
+        const deltaY = Math.abs(touch.startY - e.changedTouches[0].clientY)
+        // Nur horizontale Wischgesten (nicht vertikaler Scroll)
+        if (Math.abs(deltaX) < 50 || deltaY > Math.abs(deltaX)) return
+
+        if (deltaX > 0) {
+          // Wischen nach links → nächstes Panel
+          if (!animating) {
+            if (currentIndex < panels.length - 1) {
+              goTo(currentIndex + 1)
+            } else {
+              exiting = true
+              window.scrollTo(0, st.end + 10)
+            }
+          }
+        } else {
+          // Wischen nach rechts → vorheriges Panel
+          if (!animating) {
+            if (currentIndex > 0) {
+              goTo(currentIndex - 1)
+            } else {
+              exiting = true
+              window.scrollTo(0, Math.max(0, st.start - 10))
+            }
+          }
+        }
+      }
+
       window.addEventListener("wheel", onWheel, { passive: false })
+      window.addEventListener("touchstart", onTouchStart, { passive: true })
+      window.addEventListener("touchend", onTouchEnd, { passive: true })
 
       return () => {
         window.removeEventListener("wheel", onWheel)
+        window.removeEventListener("touchstart", onTouchStart)
+        window.removeEventListener("touchend", onTouchEnd)
         st.kill()
       }
     },
@@ -160,7 +202,8 @@ export function ServicesSection() {
           className="text-[11px] tracking-[0.2em] uppercase"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
-          Unsere Leistungen — Scroll
+          <span className="hidden md:inline">Unsere Leistungen — Scroll</span>
+          <span className="md:hidden">Unsere Leistungen — Wischen</span>
         </p>
       </div>
 
@@ -198,16 +241,16 @@ export function ServicesSection() {
               {service.number}
             </div>
 
-            {/* Three.js Wireframe Icon — top-right corner */}
+            {/* Three.js Wireframe Icon — top-right corner, hidden on mobile */}
             <div
-              className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
+              className="hidden md:block absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
               aria-hidden
             >
               <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
             </div>
 
             {/* Panel content */}
-            <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
+            <div className="relative z-10 px-6 md:px-20 pb-12 md:pb-20 pt-24 md:pt-32 max-w-3xl">
               {/* Number label */}
               <p
                 className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold"
@@ -273,13 +316,14 @@ export function ServicesSection() {
               </ul>
             </div>
 
-            {/* Scroll hint on first panel */}
+            {/* Scroll/Swipe hint on first panel */}
             {i === 0 && (
               <div
-                className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse"
+                className="absolute bottom-8 right-6 md:bottom-12 md:right-12 flex items-center gap-3 animate-pulse"
                 style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}
               >
-                <span>WEITER SCROLLEN</span>
+                <span className="hidden md:inline">WEITER SCROLLEN</span>
+                <span className="md:hidden">WISCHEN</span>
                 <svg
                   width="30"
                   height="12"

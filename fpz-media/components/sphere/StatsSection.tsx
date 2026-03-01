@@ -89,7 +89,7 @@ export function StatsSection() {
             return (
               <div
                 key={stat.label}
-                className="v6-stat-card relative flex flex-col items-center justify-center py-20 px-6 text-center rounded-2xl overflow-hidden group hover:scale-105 transition-transform duration-500"
+                className="v6-stat-card relative flex flex-col items-center justify-center py-10 md:py-20 px-4 md:px-6 text-center rounded-2xl overflow-hidden group hover:scale-105 transition-transform duration-500"
                 style={{
                   backgroundColor: "#0a0a0a",
                   border: "1px solid #333",
