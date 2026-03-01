@@ -59,7 +59,7 @@ export function ProcessSection() {
     <section
       ref={sectionRef}
       id="process"
-      className="relative py-32 px-8 md:px-16 lg:px-24"
+      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24"
       style={{ backgroundColor: "var(--v6-bg)" }}
     >
       <div className="max-w-5xl mx-auto">
@@ -106,7 +106,7 @@ export function ProcessSection() {
           </div>
 
           {/* Steps */}
-          <div className="flex flex-col gap-24 flex-1 pb-8">
+          <div className="flex flex-col gap-16 md:gap-24 flex-1 pb-8">
             {processSteps.map((item) => (
               <div
                 key={item.step}

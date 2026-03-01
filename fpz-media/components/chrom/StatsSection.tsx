@@ -77,8 +77,8 @@ export function StatsSection() {
       {/* Stats grid */}
       <div className="px-8 md:px-16 lg:px-24">
         <div
-          className="grid grid-cols-2 md:grid-cols-4"
-          style={{ border: "1px solid var(--v6-border)" }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-px"
+          style={{ backgroundColor: "var(--v6-border)", border: "1px solid var(--v6-border)" }}
         >
           {stats.map((stat, i) => {
             const { prefix, num, suffix } = parseStatValue(stat.value)
@@ -88,7 +88,6 @@ export function StatsSection() {
                 className="v6-stat-card flex flex-col items-center justify-center py-16 px-4 text-center"
                 style={{
                   backgroundColor: "var(--v6-bg-elevated)",
-                  borderRight: i < stats.length - 1 ? "1px solid var(--v6-border)" : "none",
                   opacity: 0,
                 }}
               >

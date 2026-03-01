@@ -81,7 +81,7 @@ export function PricingSection() {
     <section
       ref={sectionRef}
       id="pricing"
-      className="py-32 px-8 md:px-16 lg:px-24"
+      className="py-16 md:py-32 px-8 md:px-16 lg:px-24"
       style={{ backgroundColor: "var(--v6-bg)" }}
     >
       {/* Header */}

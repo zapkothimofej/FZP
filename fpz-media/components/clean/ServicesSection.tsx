@@ -150,7 +150,7 @@ export function ServicesSection() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 px-16 md:px-24 lg:px-32 max-w-4xl">
+              <div className="relative z-10 px-8 md:px-24 lg:px-32 max-w-4xl">
                 <p className="text-[13px] tracking-[0.3em] uppercase mb-8 font-semibold"
                   style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}>
                   {service.number} / {String(services.length).padStart(2, "0")}

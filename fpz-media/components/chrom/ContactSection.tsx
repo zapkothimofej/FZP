@@ -75,7 +75,7 @@ export function ContactSection() {
     <section
       ref={sectionRef}
       id="contact"
-      className="py-32 px-8 md:px-16 lg:px-24"
+      className="py-16 md:py-32 px-8 md:px-16 lg:px-24"
       style={{ backgroundColor: "var(--v6-bg)", borderTop: "1px solid var(--v6-border)" }}
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32">

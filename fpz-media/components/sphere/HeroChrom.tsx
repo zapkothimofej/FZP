@@ -127,21 +127,21 @@ export function HeroChrom() {
         <div
           ref={word1Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform"
-          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
+          style={{ fontSize: "clamp(44px, 13vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Lokal.
         </div>
         <div
           ref={word2Ref}
           className="block font-[family-name:var(--font-display)] will-change-transform self-end md:self-center text-right md:text-center"
-          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
+          style={{ fontSize: "clamp(44px, 13vw, 240px)", color: "var(--v6-text)", lineHeight: 0.9, opacity: 0 }}
         >
           Digital.
         </div>
         <div
           ref={word3Ref}
           className="block font-[family-name:var(--font-display)] italic will-change-transform self-end"
-          style={{ fontSize: "clamp(80px, 18vw, 240px)", color: "var(--v6-accent)", lineHeight: 0.9, opacity: 0 }}
+          style={{ fontSize: "clamp(44px, 13vw, 240px)", color: "var(--v6-accent)", lineHeight: 0.9, opacity: 0 }}
         >
           Komplett.
         </div>
