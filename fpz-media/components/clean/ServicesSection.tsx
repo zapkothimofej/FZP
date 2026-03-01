@@ -1,121 +1,127 @@
 "use client"
 
-import { useRef } from "react"
-import { useGSAP } from "@gsap/react"
+import { useRef, useEffect } from "react"
 import gsap from "gsap"
 import { services } from "@/lib/content-de"
 
 export function ServicesSection() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const sliderRef  = useRef<HTMLDivElement>(null)
 
-  useGSAP(() => {
-    if (!wrapperRef.current || !trackRef.current) return
-    const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
-    if (!panels.length) return
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    const slider  = sliderRef.current
+    if (!wrapper || !slider) return
 
-    let currentIdx = 0
-    let animating = false
+    const panelW = () => window.innerWidth
 
     const updateDots = (idx: number) => {
       document.querySelectorAll<HTMLElement>(".v6-panel-dot").forEach((dot, di) => {
-        dot.style.width = di === idx ? "24px" : "6px"
-        dot.style.backgroundColor =
-          di === idx ? "var(--v6-accent)" : "var(--v6-border)"
+        dot.style.width           = di === idx ? "24px" : "6px"
+        dot.style.backgroundColor = di === idx ? "var(--v6-accent)" : "var(--v6-border)"
       })
     }
 
-    const gotoPanel = (idx: number) => {
-      if (animating || idx < 0 || idx >= panels.length) return
-      animating = true
-      currentIdx = idx
+    // Snap dot on scroll (fires after CSS snap settles)
+    const onScroll = () => {
+      const idx = Math.round(slider.scrollLeft / panelW())
       updateDots(idx)
-      gsap.to(trackRef.current!, {
-        xPercent: -100 * idx,
-        duration: 0.55,
-        ease: "power2.inOut",
-        onComplete: () => { animating = false },
-      })
     }
+    slider.addEventListener("scroll", onScroll, { passive: true })
 
-    updateDots(0)
-
-    // Single wheel tick = next / prev panel
-    // IMPORTANT: preventDefault must be called on EVERY event while sticky,
-    // including when animating=true (otherwise page scrolls through mid-animation)
-    // Only skip preventDefault at the true boundaries so page can continue past
-    const handleWheel = (e: WheelEvent) => {
-      if (!wrapperRef.current) return
-      const rect = wrapperRef.current.getBoundingClientRect()
+    // One wheel tick → one panel
+    let animating = false
+    const onWheel = (e: WheelEvent) => {
+      const rect     = wrapper.getBoundingClientRect()
       const isSticky = rect.top <= 0 && rect.bottom >= window.innerHeight
       if (!isSticky) return
 
-      const atLastGoingDown = e.deltaY > 0 && currentIdx >= panels.length - 1
-      const atFirstGoingUp  = e.deltaY < 0 && currentIdx <= 0
+      const cur    = Math.round(slider.scrollLeft / panelW())
+      const atEnd  = cur >= services.length - 1 && e.deltaY > 0
+      const atStart = cur <= 0               && e.deltaY < 0
 
-      if (!atLastGoingDown && !atFirstGoingUp) {
-        // Block page scroll while navigating between panels
-        e.preventDefault()
-        gotoPanel(e.deltaY > 0 ? currentIdx + 1 : currentIdx - 1)
+      // Always block page scroll while mid-section
+      if (!atEnd && !atStart) e.preventDefault()
+
+      if (!animating && !atEnd && !atStart) {
+        animating     = true
+        const next    = e.deltaY > 0 ? cur + 1 : cur - 1
+        updateDots(next)
+        gsap.to(slider, {
+          scrollLeft : next * panelW(),
+          duration   : 0.55,
+          ease       : "power2.inOut",
+          overwrite  : true,
+          onComplete : () => { animating = false },
+        })
       }
-      // at boundaries: no preventDefault → page scrolls naturally past the section
     }
 
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    return () => window.removeEventListener("wheel", handleWheel)
-  }, { scope: wrapperRef })
+    window.addEventListener("wheel", onWheel, { passive: false })
+    updateDots(0)
+
+    return () => {
+      window.removeEventListener("wheel", onWheel)
+      slider.removeEventListener("scroll", onScroll)
+    }
+  }, [])
 
   return (
-    // Wrapper gives the sticky section its scroll distance
     <div ref={wrapperRef} id="services" style={{ height: `${services.length * 100}vh` }}>
       <section className="sticky top-0 overflow-hidden" style={{ height: "100vh" }}>
 
-        {/* Section label */}
+        {/* Label */}
         <div className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none" aria-hidden>
-          <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}>
+          <p className="text-[11px] tracking-[0.2em] uppercase"
+            style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}>
             Unsere Leistungen — Scroll
           </p>
         </div>
 
-        {/* Shared panel indicator — sits above the track */}
+        {/* Dots */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {services.map((_, dotIdx) => (
-            <span
-              key={dotIdx}
-              className="v6-panel-dot rounded-full transition-all duration-300"
-              style={{ width: "6px", height: "6px", backgroundColor: "var(--v6-border)" }}
-            />
+          {services.map((_, i) => (
+            <span key={i} className="v6-panel-dot rounded-full transition-all duration-300"
+              style={{ width: "6px", height: "6px", backgroundColor: "var(--v6-border)" }} />
           ))}
         </div>
 
-        {/* Horizontal track */}
-        <div ref={trackRef} className="flex" style={{ width: `${services.length * 100}vw` }}>
+        {/* Horizontal slider — CSS snap handles alignment */}
+        <div
+          ref={sliderRef}
+          className="flex h-full [&::-webkit-scrollbar]:hidden"
+          style={{
+            overflowX        : "scroll",
+            scrollSnapType   : "x mandatory",
+            msOverflowStyle  : "none",
+            scrollbarWidth   : "none",
+          } as React.CSSProperties}
+        >
           {services.map((service, i) => (
             <div
               key={service.id}
               className="v6-service-panel relative flex flex-col justify-center overflow-hidden"
               style={{
-                width: "100vw",
-                height: "100vh",
+                minWidth      : "100vw",
+                height        : "100%",
+                scrollSnapAlign: "start",
                 backgroundColor: "var(--v6-bg-elevated)",
-                borderRight: i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
-                flexShrink: 0,
-              }}
+                borderRight   : i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
+                flexShrink    : 0,
+              } as React.CSSProperties}
             >
-              {/* Giant number — right side, vertically centred */}
-              <div
-                className="absolute select-none pointer-events-none font-[family-name:var(--font-display)]"
+              {/* Background number */}
+              <div className="absolute select-none pointer-events-none font-[family-name:var(--font-display)]"
                 aria-hidden
                 style={{
-                  top: "38%",
-                  right: "8%",
+                  top      : "38%",
+                  right    : "8%",
                   transform: "translateY(-50%)",
-                  fontSize: "clamp(200px, 32vw, 480px)",
-                  color: "var(--v6-accent)",
-                  opacity: 0.06,
+                  fontSize : "clamp(200px, 32vw, 480px)",
+                  color    : "var(--v6-accent)",
+                  opacity  : 0.06,
                   lineHeight: 1,
-                }}
-              >
+                }}>
                 {service.number}
               </div>
 
@@ -125,24 +131,19 @@ export function ServicesSection() {
                   style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)" }}>
                   {service.number} / {String(services.length).padStart(2, "0")}
                 </p>
-
                 <h2 className="font-[family-name:var(--font-display)] mb-6 tracking-tight"
                   style={{ fontSize: "clamp(56px, 9vw, 130px)", color: "var(--v6-text)", lineHeight: 0.92 }}>
                   {service.title}
                 </h2>
-
                 <p className="mb-8 italic"
                   style={{ color: "var(--v6-accent)", fontFamily: "var(--font-display)", fontSize: "clamp(20px, 2.5vw, 32px)" }}>
                   {service.headline}
                 </p>
-
                 <p className="leading-relaxed mb-10"
                   style={{ color: "var(--v6-text-muted)", fontFamily: "var(--font-body)", fontSize: "clamp(15px, 1.2vw, 18px)", maxWidth: "520px" }}>
                   {service.description}
                 </p>
-
                 <div className="mb-8" style={{ height: "1px", backgroundColor: "var(--v6-border)", maxWidth: "520px" }} />
-
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ maxWidth: "520px" }}>
                   {service.deliverables.map((d, j) => (
                     <li key={j} className="flex items-center gap-3"
@@ -154,7 +155,6 @@ export function ServicesSection() {
                 </ul>
               </div>
 
-              {/* Scroll hint — first panel only */}
               {i === 0 && (
                 <div className="absolute bottom-10 right-14 flex items-center gap-2 animate-pulse"
                   style={{ color: "var(--v6-text-muted)", fontSize: "11px", letterSpacing: "0.15em", fontWeight: 600 }}>
