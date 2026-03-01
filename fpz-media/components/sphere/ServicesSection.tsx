@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -14,19 +14,27 @@ const WireframeIcon = dynamic(
   { ssr: false }
 )
 
-// Each service panel gets a different wireframe icon
 const PANEL_ICONS: Array<"cube" | "sphere" | "torus"> = ["cube", "sphere", "torus"]
 
 export function ServicesSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   useGSAP(
     () => {
-      if (!containerRef.current || !trackRef.current) return
+      // Kein GSAP-Pin auf Mobile
+      if (isMobile || !mounted || !containerRef.current || !trackRef.current) return
 
-      // Verhindert dass Trackpad-Momentum den Scroll in einem Frame über
-      // die gesamte Sektion hinausspringt
       ScrollTrigger.normalizeScroll(true)
 
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
@@ -73,10 +81,7 @@ export function ServicesSection() {
         pin: true,
         anticipatePin: 1,
         start: "top top",
-        // * 15 → ~27 000 px bei 3 Panels — kein realistischer Scroll-Sprung
-        // kann diese Distanz in einem Event überwinden → kein Skip möglich
         end: () => "+=" + (panels.length - 1) * window.innerHeight * 15,
-        // Von oben rein → Panel 0
         onEnter: () => {
           gsap.killTweensOf(panels)
           panels.forEach(p => {
@@ -89,7 +94,6 @@ export function ServicesSection() {
           exiting  = false
           animating = false
         },
-        // Von unten rein (hochscrollen) → letztes Panel
         onEnterBack: () => {
           gsap.killTweensOf(panels)
           panels.forEach(p => {
@@ -109,8 +113,6 @@ export function ServicesSection() {
 
       const onWheel = (e: WheelEvent) => {
         if (!isActive) return
-
-        // Kein vertikaler Scroll während wir in der Sektion sind
         e.preventDefault()
 
         if (exiting || animating && (
@@ -124,7 +126,6 @@ export function ServicesSection() {
           if (currentIndex < panels.length - 1) {
             goTo(currentIndex + 1)
           } else {
-            // Letztes Panel → programmatisch aus der Sektion raus nach unten
             exiting = true
             window.scrollTo(0, st.end + 10)
           }
@@ -132,68 +133,167 @@ export function ServicesSection() {
           if (currentIndex > 0) {
             goTo(currentIndex - 1)
           } else {
-            // Erstes Panel → programmatisch aus der Sektion raus nach oben
             exiting = true
             window.scrollTo(0, Math.max(0, st.start - 10))
           }
         }
       }
 
-      // Touch-Support für Mobile Swipe
-      const touch = { startX: 0, startY: 0 }
-
-      const onTouchStart = (e: TouchEvent) => {
-        touch.startX = e.touches[0].clientX
-        touch.startY = e.touches[0].clientY
-      }
-
-      const onTouchEnd = (e: TouchEvent) => {
-        if (!isActive || exiting) return
-        const deltaX = touch.startX - e.changedTouches[0].clientX
-        const deltaY = Math.abs(touch.startY - e.changedTouches[0].clientY)
-        // Nur horizontale Wischgesten (nicht vertikaler Scroll)
-        if (Math.abs(deltaX) < 50 || deltaY > Math.abs(deltaX)) return
-
-        if (deltaX > 0) {
-          // Wischen nach links → nächstes Panel
-          if (!animating) {
-            if (currentIndex < panels.length - 1) {
-              goTo(currentIndex + 1)
-            } else {
-              exiting = true
-              window.scrollTo(0, st.end + 10)
-            }
-          }
-        } else {
-          // Wischen nach rechts → vorheriges Panel
-          if (!animating) {
-            if (currentIndex > 0) {
-              goTo(currentIndex - 1)
-            } else {
-              exiting = true
-              window.scrollTo(0, Math.max(0, st.start - 10))
-            }
-          }
-        }
-      }
-
       window.addEventListener("wheel", onWheel, { passive: false })
-      window.addEventListener("touchstart", onTouchStart, { passive: true })
-      window.addEventListener("touchend", onTouchEnd, { passive: true })
 
       return () => {
         window.removeEventListener("wheel", onWheel)
-        window.removeEventListener("touchstart", onTouchStart)
-        window.removeEventListener("touchend", onTouchEnd)
         st.kill()
       }
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [isMobile, mounted] }
   )
 
+  // ── MOBILE LAYOUT: einfache vertikale Karten, kein Pin, kein Scroll-Hijack ──
+  if (mounted && isMobile) {
+    return (
+      <section id="services" style={{ backgroundColor: "#141414" }}>
+        <div style={{ padding: "64px 24px 32px" }}>
+          <p
+            style={{
+              color: "#707070",
+              fontSize: "11px",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            Unsere Leistungen
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {services.map((service, i) => (
+            <div
+              key={service.id}
+              style={{
+                backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
+                borderTop: "1px solid #333",
+                padding: "40px 24px 48px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* Nummer im Hintergrund */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: "-10%",
+                  right: "-5%",
+                  fontSize: "clamp(120px, 40vw, 240px)",
+                  color: "#c8c8c8",
+                  opacity: 0.04,
+                  lineHeight: 0.85,
+                  fontFamily: "var(--font-display)",
+                  pointerEvents: "none",
+                  userSelect: "none",
+                }}
+              >
+                {service.number}
+              </div>
+
+              {/* Nummer-Label */}
+              <p
+                style={{
+                  fontSize: "13px",
+                  letterSpacing: "0.3em",
+                  textTransform: "uppercase",
+                  fontWeight: "bold",
+                  color: "#ebebeb",
+                  fontFamily: "var(--font-body)",
+                  marginBottom: "20px",
+                }}
+              >
+                {service.number} / {String(services.length).padStart(2, "0")}
+              </p>
+
+              {/* Titel */}
+              <h2
+                style={{
+                  fontSize: "clamp(40px, 11vw, 80px)",
+                  color: "#ebebeb",
+                  lineHeight: 0.9,
+                  fontFamily: "var(--font-display)",
+                  letterSpacing: "-0.02em",
+                  marginBottom: "20px",
+                }}
+              >
+                {service.title}
+              </h2>
+
+              {/* Headline */}
+              <p
+                style={{
+                  fontSize: "clamp(18px, 5vw, 24px)",
+                  color: "#c8c8c8",
+                  fontFamily: "var(--font-display)",
+                  fontStyle: "italic",
+                  marginBottom: "16px",
+                }}
+              >
+                {service.headline}
+              </p>
+
+              {/* Beschreibung */}
+              <p
+                style={{
+                  fontSize: "15px",
+                  lineHeight: 1.7,
+                  color: "#a0a0a0",
+                  fontFamily: "var(--font-body)",
+                  marginBottom: "28px",
+                }}
+              >
+                {service.description}
+              </p>
+
+              {/* Trennlinie */}
+              <div style={{ height: "1px", backgroundColor: "#333", marginBottom: "20px" }} />
+
+              {/* Deliverables */}
+              <ul style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {service.deliverables.map((d, j) => (
+                  <li
+                    key={j}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      fontSize: "14px",
+                      color: "#707070",
+                      fontFamily: "var(--font-body)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: "#c8c8c8",
+                        flexShrink: 0,
+                        boxShadow: "0 0 8px #c8c8c8",
+                      }}
+                    />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  // ── DESKTOP LAYOUT: originaler GSAP Horizontal-Scroll ──
   return (
     <section id="services" className="relative" ref={containerRef} style={{ overflow: "hidden" }}>
-      {/* Section label */}
       <div
         className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
         aria-hidden
@@ -202,12 +302,10 @@ export function ServicesSection() {
           className="text-[11px] tracking-[0.2em] uppercase"
           style={{ color: "#707070", fontFamily: "var(--font-body)" }}
         >
-          <span className="hidden md:inline">Unsere Leistungen — Scroll</span>
-          <span className="md:hidden">Unsere Leistungen — Wischen</span>
+          Unsere Leistungen — Scroll
         </p>
       </div>
 
-      {/* Horizontal track */}
       <div
         ref={trackRef}
         className="flex h-screen"
@@ -225,7 +323,6 @@ export function ServicesSection() {
               flexShrink: 0,
             }}
           >
-            {/* Giant service number in background */}
             <div
               className="bg-number absolute top-[-5%] right-[-5%] select-none pointer-events-none font-[family-name:var(--font-display)] leading-none z-0"
               aria-hidden
@@ -241,17 +338,14 @@ export function ServicesSection() {
               {service.number}
             </div>
 
-            {/* Three.js Wireframe Icon — top-right corner, hidden on mobile */}
             <div
-              className="hidden md:block absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
+              className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
               aria-hidden
             >
               <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
             </div>
 
-            {/* Panel content */}
-            <div className="relative z-10 px-6 md:px-20 pb-12 md:pb-20 pt-24 md:pt-32 max-w-3xl">
-              {/* Number label */}
+            <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
               <p
                 className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold"
                 style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}
@@ -259,7 +353,6 @@ export function ServicesSection() {
                 {service.number} / {String(services.length).padStart(2, "0")}
               </p>
 
-              {/* Title */}
               <h2
                 className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
                 style={{
@@ -272,7 +365,6 @@ export function ServicesSection() {
                 {service.title}
               </h2>
 
-              {/* Headline */}
               <p
                 className="text-xl mb-8 italic"
                 style={{
@@ -284,7 +376,6 @@ export function ServicesSection() {
                 {service.headline}
               </p>
 
-              {/* Description */}
               <p
                 className="text-base leading-relaxed mb-10 max-w-lg"
                 style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}
@@ -292,13 +383,11 @@ export function ServicesSection() {
                 {service.description}
               </p>
 
-              {/* Thin separator with glow */}
               <div
                 className="mb-8"
                 style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }}
               />
 
-              {/* Deliverables */}
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {service.deliverables.map((d, j) => (
                   <li
@@ -316,22 +405,13 @@ export function ServicesSection() {
               </ul>
             </div>
 
-            {/* Scroll/Swipe hint on first panel */}
             {i === 0 && (
               <div
-                className="absolute bottom-8 right-6 md:bottom-12 md:right-12 flex items-center gap-3 animate-pulse"
+                className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse"
                 style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}
               >
-                <span className="hidden md:inline">WEITER SCROLLEN</span>
-                <span className="md:hidden">WISCHEN</span>
-                <svg
-                  width="30"
-                  height="12"
-                  viewBox="0 0 24 10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <span>WEITER SCROLLEN</span>
+                <svg width="30" height="12" viewBox="0 0 24 10" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M0 5h22M17 1l5 4-5 4" />
                 </svg>
               </div>

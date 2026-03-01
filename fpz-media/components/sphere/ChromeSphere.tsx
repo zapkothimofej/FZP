@@ -22,10 +22,14 @@ function ChromeMesh({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
     meshRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.1
 
     // viewport.width in world units: ~2.3 on mobile portrait, ~8.8 on desktop
-    // Scale down on mobile so the sphere doesn't dominate the screen
-    const mobileMult = viewport.width < 5 ? 0.42 : 1
-    const scale = Math.max(0.15, (1 - progress * 0.7) * mobileMult)
+    const isMobile = viewport.width < 5
+    const mobileMult = isMobile ? 0.22 : 1
+    const scale = Math.max(0.08, (1 - progress * 0.7) * mobileMult)
     meshRef.current.scale.setScalar(scale)
+
+    // On mobile: shift sphere to upper-right corner so it doesn't block text
+    meshRef.current.position.x = isMobile ? viewport.width * 0.28 : 0
+    meshRef.current.position.y = isMobile ? viewport.height * 0.22 : 0
   })
 
   return (
