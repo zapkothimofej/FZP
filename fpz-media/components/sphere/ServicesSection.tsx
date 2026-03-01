@@ -4,10 +4,11 @@ import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Observer } from "gsap/Observer"
 import dynamic from "next/dynamic"
 import { services } from "@/lib/content-de"
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, Observer)
 
 const WireframeIcon = dynamic(
   () => import("@/components/chrom/WireframeIcon").then((m) => m.WireframeIcon),
@@ -26,15 +27,12 @@ export function ServicesSection() {
       // Kein GSAP auf Mobile — CSS zeigt dort die vertikalen Karten
       if (window.innerWidth < 768) return
 
-      ScrollTrigger.normalizeScroll(true)
-
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
 
       let currentIndex = 0
       let animating = false
-      let isActive   = false
-      let exiting    = false
+      let exiting   = false
 
       const goTo = (index: number) => {
         if (animating) return
@@ -67,6 +65,53 @@ export function ServicesSection() {
         }
       }
 
+      // Getter damit obs-Callbacks auf st zugreifen können (st wird nach obs erstellt)
+      const exit = { endPos: 0, startPos: 0 }
+
+      // Observer blockiert Scroll komplett wenn aktiv (preventDefault: true)
+      // und wird nur innerhalb der Sektion enabled
+      const obs = Observer.create({
+        target: window,
+        type: "wheel,touch",
+        tolerance: 10,
+        preventDefault: true,
+        onDown: () => {
+          // Scroll nach unten → nächstes Panel
+          if (exiting || animating) return
+          if (currentIndex < panels.length - 1) {
+            goTo(currentIndex + 1)
+          } else {
+            exiting = true
+            obs.disable()
+            window.scrollTo(0, exit.endPos + 10)
+          }
+        },
+        onUp: () => {
+          // Scroll nach oben → vorheriges Panel
+          if (exiting || animating) return
+          if (currentIndex > 0) {
+            goTo(currentIndex - 1)
+          } else {
+            exiting = true
+            obs.disable()
+            window.scrollTo(0, Math.max(0, exit.startPos - 10))
+          }
+        },
+      })
+      obs.disable()
+
+      const resetPanels = (toIndex: number) => {
+        gsap.killTweensOf(panels)
+        panels.forEach(p => {
+          gsap.killTweensOf(p.querySelector(".bg-number"))
+          gsap.killTweensOf(p.querySelector("h2"))
+        })
+        gsap.set(panels, { xPercent: -100 * toIndex })
+        currentIndex = toIndex
+        exiting  = false
+        animating = false
+      }
+
       const st = ScrollTrigger.create({
         trigger: containerRef.current,
         pin: true,
@@ -74,66 +119,28 @@ export function ServicesSection() {
         start: "top top",
         end: () => "+=" + (panels.length - 1) * window.innerHeight * 15,
         onEnter: () => {
-          gsap.killTweensOf(panels)
-          panels.forEach(p => {
-            gsap.killTweensOf(p.querySelector(".bg-number"))
-            gsap.killTweensOf(p.querySelector("h2"))
-          })
-          gsap.set(panels, { xPercent: 0 })
-          currentIndex = 0
-          isActive = true
-          exiting  = false
-          animating = false
+          exit.endPos   = st.end
+          exit.startPos = st.start
+          resetPanels(0)
+          obs.enable()
         },
         onEnterBack: () => {
-          gsap.killTweensOf(panels)
-          panels.forEach(p => {
-            gsap.killTweensOf(p.querySelector(".bg-number"))
-            gsap.killTweensOf(p.querySelector("h2"))
-          })
-          gsap.set(panels, { xPercent: -100 * (panels.length - 1) })
-          currentIndex = panels.length - 1
-          isActive = true
-          exiting  = false
-          animating = false
+          exit.endPos   = st.end
+          exit.startPos = st.start
+          resetPanels(panels.length - 1)
+          obs.enable()
         },
-        onLeave:     () => { isActive = false },
-        onLeaveBack: () => { isActive = false },
+        onLeave:     () => { obs.disable() },
+        onLeaveBack: () => { obs.disable() },
         invalidateOnRefresh: true,
+        onRefresh: () => {
+          exit.endPos   = st.end
+          exit.startPos = st.start
+        },
       })
 
-      const onWheel = (e: WheelEvent) => {
-        if (!isActive) return
-        e.preventDefault()
-
-        if (exiting || animating && (
-          (e.deltaY > 0 && currentIndex === panels.length - 1) ||
-          (e.deltaY < 0 && currentIndex === 0)
-        )) return
-
-        const forward = e.deltaY > 0
-
-        if (forward) {
-          if (currentIndex < panels.length - 1) {
-            goTo(currentIndex + 1)
-          } else {
-            exiting = true
-            window.scrollTo(0, st.end + 10)
-          }
-        } else {
-          if (currentIndex > 0) {
-            goTo(currentIndex - 1)
-          } else {
-            exiting = true
-            window.scrollTo(0, Math.max(0, st.start - 10))
-          }
-        }
-      }
-
-      window.addEventListener("wheel", onWheel, { passive: false })
-
       return () => {
-        window.removeEventListener("wheel", onWheel)
+        obs.kill()
         st.kill()
       }
     },
