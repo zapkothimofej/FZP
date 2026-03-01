@@ -27,6 +27,11 @@ export function ServicesSection() {
       // Kein GSAP auf Mobile — CSS zeigt dort die vertikalen Karten
       if (window.innerWidth < 768) return
 
+      // Limitiert Scroll-Geschwindigkeit → verhindert dass schnelles Scrollen
+      // über die gepinnte Section springt. Observer + normalizeScroll sind laut
+      // GSAP-Docs explizit dafür ausgelegt, zusammen zu funktionieren.
+      ScrollTrigger.normalizeScroll(true)
+
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
 
@@ -142,6 +147,7 @@ export function ServicesSection() {
       return () => {
         obs.kill()
         st.kill()
+        ScrollTrigger.normalizeScroll(false)
       }
     },
     { scope: containerRef }
