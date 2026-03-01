@@ -25,6 +25,10 @@ export function ServicesSection() {
     () => {
       if (!containerRef.current || !trackRef.current) return
 
+      // Verhindert dass Trackpad-Momentum den Scroll in einem Frame über
+      // die gesamte Sektion hinausspringt
+      ScrollTrigger.normalizeScroll(true)
+
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
 
@@ -69,7 +73,9 @@ export function ServicesSection() {
         pin: true,
         anticipatePin: 1,
         start: "top top",
-        end: () => "+=" + (panels.length - 1) * window.innerHeight * 3,
+        // * 15 → ~27 000 px bei 3 Panels — kein realistischer Scroll-Sprung
+        // kann diese Distanz in einem Event überwinden → kein Skip möglich
+        end: () => "+=" + (panels.length - 1) * window.innerHeight * 15,
         // Von oben rein → Panel 0
         onEnter: () => {
           gsap.killTweensOf(panels)
