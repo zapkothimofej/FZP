@@ -44,9 +44,20 @@ export function ServicesSection() {
       if (!atEnd && !atStart) e.preventDefault()
 
       if (!animating && !atEnd && !atStart) {
-        animating     = true
-        const next    = e.deltaY > 0 ? cur + 1 : cur - 1
+        animating  = true
+        const next = e.deltaY > 0 ? cur + 1 : cur - 1
         updateDots(next)
+
+        // Silently snap page scroll to the exit point so ONE more scroll exits
+        const absTop = wrapper.getBoundingClientRect().top + window.scrollY
+        if (next === services.length - 1) {
+          // Going to last panel → pre-position page at bottom of wrapper
+          window.scrollTo({ top: absTop + wrapper.offsetHeight - window.innerHeight - 2 })
+        } else if (next === 0) {
+          // Going to first panel → pre-position page at top of wrapper
+          window.scrollTo({ top: absTop })
+        }
+
         gsap.to(slider, {
           scrollLeft : next * panelW(),
           duration   : 0.55,
@@ -67,7 +78,7 @@ export function ServicesSection() {
   }, [])
 
   return (
-    <div ref={wrapperRef} id="services" style={{ height: `${services.length * 100}vh` }}>
+    <div ref={wrapperRef} id="services" style={{ height: "130vh" }}>
       <section className="sticky top-0 overflow-hidden" style={{ height: "100vh" }}>
 
         {/* Label */}
