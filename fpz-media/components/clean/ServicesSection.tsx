@@ -40,19 +40,27 @@ export function ServicesSection() {
 
     updateDots(0)
 
-    // Single wheel tick = next / prev panel — no scrub, no lag
-    // rect.top is <=0 (and going negative) while wrapper is being scrolled through
-    // rect.bottom >= innerHeight as long as wrapper bottom hasn't passed viewport
+    // Single wheel tick = next / prev panel
+    // passive: false so we can preventDefault and stop page from scrolling through
+    // Only preventDefault when mid-panels — at boundaries let page scroll continue
     const handleWheel = (e: WheelEvent) => {
       if (!wrapperRef.current) return
       const rect = wrapperRef.current.getBoundingClientRect()
       const isSticky = rect.top <= 0 && rect.bottom >= window.innerHeight
       if (!isSticky) return
-      if (e.deltaY > 0) gotoPanel(currentIdx + 1)
-      else if (e.deltaY < 0) gotoPanel(currentIdx - 1)
+
+      if (e.deltaY > 0 && currentIdx < panels.length - 1) {
+        e.preventDefault()
+        gotoPanel(currentIdx + 1)
+      } else if (e.deltaY < 0 && currentIdx > 0) {
+        e.preventDefault()
+        gotoPanel(currentIdx - 1)
+      }
+      // At last panel scrolling down, or first panel scrolling up:
+      // no preventDefault → page scroll passes through naturally
     }
 
-    window.addEventListener("wheel", handleWheel, { passive: true })
+    window.addEventListener("wheel", handleWheel, { passive: false })
     return () => window.removeEventListener("wheel", handleWheel)
   }, { scope: wrapperRef })
 
