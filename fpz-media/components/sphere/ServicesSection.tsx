@@ -77,69 +77,110 @@ export function ServicesSection() {
         animating = false
       }
 
+      const exit = { endPos: 0, startPos: 0 }
+
       // Observer blockiert Scroll komplett wenn aktiv (preventDefault: true)
-      // und wird nur innerhalb der Sektion enabled
       const obs = Observer.create({
         target: window,
         type: "wheel,touch",
         tolerance: 10,
         preventDefault: true,
         onDown: () => {
-          // Scroll nach unten → nächstes Panel
           if (exiting || animating) return
           if (currentIndex < panels.length - 1) {
             goTo(currentIndex + 1)
           } else {
             exiting = true
             obs.disable()
-            const el = containerRef.current!
-            window.scrollTo(0, el.offsetTop + el.offsetHeight + 10)
+            window.scrollTo(0, exit.endPos + 10)
           }
         },
         onUp: () => {
-          // Scroll nach oben → vorheriges Panel
           if (exiting || animating) return
           if (currentIndex > 0) {
             goTo(currentIndex - 1)
           } else {
             exiting = true
             obs.disable()
-            const el = containerRef.current!
-            window.scrollTo(0, Math.max(0, el.offsetTop - 10))
+            window.scrollTo(0, Math.max(0, exit.startPos - 10))
           }
         },
       })
       obs.disable()
 
-      // ScrollTrigger nur für Enter/Leave-Erkennung — kein Pin mehr nötig,
-      // da die Section echte DOM-Höhe hat (CSS sticky übernimmt das Pinnen)
+      // ── Wheel-Fence ──────────────────────────────────────────────────────────
+      // Fängt Wheel-Events *synchron* (passive:false) ab, BEVOR der Browser
+      // scrollY verändert. Prüft ob das geschätzte Scroll-Ziel die Section-
+      // Oberkante überspringen würde — falls ja: preventDefault() + scrollTo
+      // auf stStart + Observer aktivieren.
+      //
+      // Das ist nötig weil GSAP's onEnter erst im nächsten rAF-Frame feuert —
+      // zu spät bei schnellem Momentum-Scroll.
+      // ─────────────────────────────────────────────────────────────────────────
+      let stStart = 0
+
+      const wheelFence = (e: WheelEvent) => {
+        if (obs.isEnabled || exiting) return  // Observer aktiv: dieser kümmert sich drum
+        if (e.deltaY <= 0 || window.scrollY >= stStart) return  // Kein Abwärts-Scroll oder schon drin
+
+        // Schätze die Ziel-ScrollY nach diesem Event
+        let delta = e.deltaY
+        if (e.deltaMode === 1) delta *= 40               // lines → pixel (Mausrad)
+        else if (e.deltaMode === 2) delta *= window.innerHeight  // pages → pixel
+
+        // Würde dieser Scroll die Section-Oberkante überspringen?
+        if (window.scrollY + delta >= stStart) {
+          e.preventDefault()
+          window.scrollTo(0, stStart)
+          resetPanels(0)
+          obs.enable()
+        }
+      }
+
+      window.addEventListener("wheel", wheelFence, { passive: false })
+
       const st = ScrollTrigger.create({
         trigger: containerRef.current,
+        pin: true,
+        anticipatePin: 1,
         start: "top top",
-        end: "bottom bottom",
+        end: () => "+=" + (panels.length - 1) * window.innerHeight * 15,
         onEnter: () => {
+          exit.endPos   = st.end
+          exit.startPos = st.start
+          stStart       = st.start
           resetPanels(0)
           obs.enable()
         },
         onEnterBack: () => {
+          exit.endPos   = st.end
+          exit.startPos = st.start
+          stStart       = st.start
           resetPanels(panels.length - 1)
           obs.enable()
         },
         onLeave:     () => { obs.disable() },
         onLeaveBack: () => { obs.disable() },
         invalidateOnRefresh: true,
+        onRefresh: () => {
+          exit.endPos   = st.end
+          exit.startPos = st.start
+          stStart       = st.start
+        },
       })
+      stStart = st.start  // Initialwert direkt nach create setzen
 
       return () => {
         obs.kill()
         st.kill()
+        window.removeEventListener("wheel", wheelFence)
       }
     },
     { scope: containerRef }
   )
 
   return (
-    <section id="services">
+    <section id="services" ref={containerRef} style={{ overflow: "hidden" }}>
 
       {/* ── MOBILE: vertikale Karten — nur auf < 768px sichtbar via CSS ── */}
       <div className="block md:hidden" style={{ backgroundColor: "#141414" }}>
@@ -163,7 +204,6 @@ export function ServicesSection() {
               overflow: "hidden",
             }}
           >
-            {/* Ghost-Nummer im Hintergrund */}
             <div aria-hidden style={{
               position: "absolute", top: "-10%", right: "-5%",
               fontSize: "clamp(120px, 40vw, 240px)",
@@ -203,91 +243,80 @@ export function ServicesSection() {
         ))}
       </div>
 
-      {/* ── DESKTOP: echte DOM-Höhe + CSS sticky statt GSAP pin ──
-           Die Section belegt services.length × 100vh im DOM, sodass kein
-           schnelles Scrollen darüber hinwegspringen kann. Das innere Div
-           klebt per CSS position:sticky am Viewport-Top. */}
-      <div
-        ref={containerRef}
-        className="hidden md:block"
-        style={{ height: `${services.length * 100}vh` }}
-      >
-        {/* Sticky wrapper — bleibt am Viewport-Top solange die Section sichtbar ist */}
-        <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+      {/* ── DESKTOP: GSAP pin + Observer + Wheel-Fence ── */}
+      <div className="hidden md:block relative">
+        <div className="absolute top-8 left-16 lg:left-24 z-10 pointer-events-none" aria-hidden>
+          <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: "#707070", fontFamily: "var(--font-body)" }}>
+            Unsere Leistungen — Scroll
+          </p>
+        </div>
 
-          <div className="absolute top-8 left-16 lg:left-24 z-10 pointer-events-none" aria-hidden>
-            <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: "#707070", fontFamily: "var(--font-body)" }}>
-              Unsere Leistungen — Scroll
-            </p>
-          </div>
-
-          <div ref={trackRef} className="flex h-screen" style={{ width: `${services.length * 100}vw` }}>
-            {services.map((service, i) => (
+        <div ref={trackRef} className="flex h-screen" style={{ width: `${services.length * 100}vw` }}>
+          {services.map((service, i) => (
+            <div
+              key={service.id}
+              className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
+              style={{
+                width: "100vw",
+                height: "100vh",
+                backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
+                borderRight: i < services.length - 1 ? "1px solid #333" : "none",
+                flexShrink: 0,
+              }}
+            >
               <div
-                key={service.id}
-                className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
-                style={{
-                  width: "100vw",
-                  height: "100vh",
-                  backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
-                  borderRight: i < services.length - 1 ? "1px solid #333" : "none",
-                  flexShrink: 0,
-                }}
+                className="bg-number absolute top-[-5%] right-[-5%] select-none pointer-events-none font-[family-name:var(--font-display)] leading-none z-0"
+                aria-hidden
+                style={{ fontSize: "clamp(250px, 45vw, 600px)", color: "#c8c8c8", opacity: 0.03, lineHeight: 0.85, paddingRight: "2rem", textShadow: "0 0 50px rgba(200,200,200,0.1)" }}
               >
-                <div
-                  className="bg-number absolute top-[-5%] right-[-5%] select-none pointer-events-none font-[family-name:var(--font-display)] leading-none z-0"
-                  aria-hidden
-                  style={{ fontSize: "clamp(250px, 45vw, 600px)", color: "#c8c8c8", opacity: 0.03, lineHeight: 0.85, paddingRight: "2rem", textShadow: "0 0 50px rgba(200,200,200,0.1)" }}
-                >
-                  {service.number}
-                </div>
-
-                <div className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150" aria-hidden>
-                  <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
-                </div>
-
-                <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
-                  <p className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold" style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}>
-                    {service.number} / {String(services.length).padStart(2, "0")}
-                  </p>
-                  <h2
-                    className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
-                    style={{ fontSize: "clamp(50px, 9vw, 120px)", color: "#ebebeb", lineHeight: 0.9, textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}
-                  >
-                    {service.title}
-                  </h2>
-                  <p className="text-xl mb-8 italic" style={{ color: "#c8c8c8", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 36px)" }}>
-                    {service.headline}
-                  </p>
-                  <p className="text-base leading-relaxed mb-10 max-w-lg" style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}>
-                    {service.description}
-                  </p>
-                  <div className="mb-8" style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }} />
-                  <ul className="grid grid-cols-2 gap-4">
-                    {service.deliverables.map((d, j) => (
-                      <li
-                        key={j}
-                        className="flex items-center gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors cursor-default"
-                        style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 shadow-[0_0_8px_#c8c8c8]" style={{ backgroundColor: "#c8c8c8" }} />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {i === 0 && (
-                  <div className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse" style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}>
-                    <span>WEITER SCROLLEN</span>
-                    <svg width="30" height="12" viewBox="0 0 24 10" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M0 5h22M17 1l5 4-5 4" />
-                    </svg>
-                  </div>
-                )}
+                {service.number}
               </div>
-            ))}
-          </div>
+
+              <div className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150" aria-hidden>
+                <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
+              </div>
+
+              <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
+                <p className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold" style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}>
+                  {service.number} / {String(services.length).padStart(2, "0")}
+                </p>
+                <h2
+                  className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
+                  style={{ fontSize: "clamp(50px, 9vw, 120px)", color: "#ebebeb", lineHeight: 0.9, textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}
+                >
+                  {service.title}
+                </h2>
+                <p className="text-xl mb-8 italic" style={{ color: "#c8c8c8", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 36px)" }}>
+                  {service.headline}
+                </p>
+                <p className="text-base leading-relaxed mb-10 max-w-lg" style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}>
+                  {service.description}
+                </p>
+                <div className="mb-8" style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }} />
+                <ul className="grid grid-cols-2 gap-4">
+                  {service.deliverables.map((d, j) => (
+                    <li
+                      key={j}
+                      className="flex items-center gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors cursor-default"
+                      style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 shadow-[0_0_8px_#c8c8c8]" style={{ backgroundColor: "#c8c8c8" }} />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {i === 0 && (
+                <div className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse" style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}>
+                  <span>WEITER SCROLLEN</span>
+                  <svg width="30" height="12" viewBox="0 0 24 10" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M0 5h22M17 1l5 4-5 4" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
