@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -19,21 +19,12 @@ const PANEL_ICONS: Array<"cube" | "sphere" | "torus"> = ["cube", "sphere", "toru
 export function ServicesSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const [isMobile, setIsMobile] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener("resize", check)
-    return () => window.removeEventListener("resize", check)
-  }, [])
 
   useGSAP(
     () => {
-      // Kein GSAP-Pin auf Mobile
-      if (isMobile || !mounted || !containerRef.current || !trackRef.current) return
+      if (!containerRef.current || !trackRef.current) return
+      // Kein GSAP auf Mobile — CSS zeigt dort die vertikalen Karten
+      if (window.innerWidth < 768) return
 
       ScrollTrigger.normalizeScroll(true)
 
@@ -146,279 +137,151 @@ export function ServicesSection() {
         st.kill()
       }
     },
-    { scope: containerRef, dependencies: [isMobile, mounted] }
+    { scope: containerRef }
   )
 
-  // ── MOBILE LAYOUT: einfache vertikale Karten, kein Pin, kein Scroll-Hijack ──
-  if (mounted && isMobile) {
-    return (
-      <section id="services" style={{ backgroundColor: "#141414" }}>
+  return (
+    <section id="services" ref={containerRef} style={{ overflow: "hidden" }}>
+
+      {/* ── MOBILE: vertikale Karten — nur auf < 768px sichtbar via CSS ── */}
+      <div className="block md:hidden" style={{ backgroundColor: "#141414" }}>
         <div style={{ padding: "64px 24px 32px" }}>
-          <p
-            style={{
-              color: "#707070",
-              fontSize: "11px",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              fontFamily: "var(--font-body)",
-            }}
-          >
+          <p style={{
+            color: "#707070", fontSize: "11px", letterSpacing: "0.2em",
+            textTransform: "uppercase", fontFamily: "var(--font-body)",
+          }}>
             Unsere Leistungen
           </p>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {services.map((service, i) => (
+          <div
+            key={service.id}
+            style={{
+              backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
+              borderTop: "1px solid #333",
+              padding: "40px 24px 48px",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Ghost-Nummer im Hintergrund */}
+            <div aria-hidden style={{
+              position: "absolute", top: "-10%", right: "-5%",
+              fontSize: "clamp(120px, 40vw, 240px)",
+              color: "#c8c8c8", opacity: 0.04, lineHeight: 0.85,
+              fontFamily: "var(--font-display)", pointerEvents: "none", userSelect: "none",
+            }}>
+              {service.number}
+            </div>
+
+            <p style={{ fontSize: "13px", letterSpacing: "0.3em", textTransform: "uppercase", fontWeight: "bold", color: "#ebebeb", fontFamily: "var(--font-body)", marginBottom: "20px" }}>
+              {service.number} / {String(services.length).padStart(2, "0")}
+            </p>
+
+            <h2 style={{ fontSize: "clamp(42px, 11vw, 80px)", color: "#ebebeb", lineHeight: 0.9, fontFamily: "var(--font-display)", letterSpacing: "-0.02em", marginBottom: "20px" }}>
+              {service.title}
+            </h2>
+
+            <p style={{ fontSize: "clamp(18px, 5vw, 22px)", color: "#c8c8c8", fontFamily: "var(--font-display)", fontStyle: "italic", marginBottom: "16px" }}>
+              {service.headline}
+            </p>
+
+            <p style={{ fontSize: "15px", lineHeight: 1.7, color: "#a0a0a0", fontFamily: "var(--font-body)", marginBottom: "28px" }}>
+              {service.description}
+            </p>
+
+            <div style={{ height: "1px", backgroundColor: "#333", marginBottom: "20px" }} />
+
+            <ul style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {service.deliverables.map((d, j) => (
+                <li key={j} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "14px", color: "#707070", fontFamily: "var(--font-body)" }}>
+                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#c8c8c8", flexShrink: 0, boxShadow: "0 0 8px #c8c8c8" }} />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      {/* ── DESKTOP: originaler GSAP Horizontal-Scroll — nur auf >= 768px sichtbar ── */}
+      <div className="hidden md:block relative">
+        <div className="absolute top-8 left-16 lg:left-24 z-10 pointer-events-none" aria-hidden>
+          <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: "#707070", fontFamily: "var(--font-body)" }}>
+            Unsere Leistungen — Scroll
+          </p>
+        </div>
+
+        <div ref={trackRef} className="flex h-screen" style={{ width: `${services.length * 100}vw` }}>
           {services.map((service, i) => (
             <div
               key={service.id}
+              className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
               style={{
+                width: "100vw",
+                height: "100vh",
                 backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
-                borderTop: "1px solid #333",
-                padding: "40px 24px 48px",
-                position: "relative",
-                overflow: "hidden",
+                borderRight: i < services.length - 1 ? "1px solid #333" : "none",
+                flexShrink: 0,
               }}
             >
-              {/* Nummer im Hintergrund */}
               <div
+                className="bg-number absolute top-[-5%] right-[-5%] select-none pointer-events-none font-[family-name:var(--font-display)] leading-none z-0"
                 aria-hidden
-                style={{
-                  position: "absolute",
-                  top: "-10%",
-                  right: "-5%",
-                  fontSize: "clamp(120px, 40vw, 240px)",
-                  color: "#c8c8c8",
-                  opacity: 0.04,
-                  lineHeight: 0.85,
-                  fontFamily: "var(--font-display)",
-                  pointerEvents: "none",
-                  userSelect: "none",
-                }}
+                style={{ fontSize: "clamp(250px, 45vw, 600px)", color: "#c8c8c8", opacity: 0.03, lineHeight: 0.85, paddingRight: "2rem", textShadow: "0 0 50px rgba(200,200,200,0.1)" }}
               >
                 {service.number}
               </div>
 
-              {/* Nummer-Label */}
-              <p
-                style={{
-                  fontSize: "13px",
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  fontWeight: "bold",
-                  color: "#ebebeb",
-                  fontFamily: "var(--font-body)",
-                  marginBottom: "20px",
-                }}
-              >
-                {service.number} / {String(services.length).padStart(2, "0")}
-              </p>
+              <div className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150" aria-hidden>
+                <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
+              </div>
 
-              {/* Titel */}
-              <h2
-                style={{
-                  fontSize: "clamp(40px, 11vw, 80px)",
-                  color: "#ebebeb",
-                  lineHeight: 0.9,
-                  fontFamily: "var(--font-display)",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "20px",
-                }}
-              >
-                {service.title}
-              </h2>
+              <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
+                <p className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold" style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}>
+                  {service.number} / {String(services.length).padStart(2, "0")}
+                </p>
+                <h2
+                  className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
+                  style={{ fontSize: "clamp(50px, 9vw, 120px)", color: "#ebebeb", lineHeight: 0.9, textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}
+                >
+                  {service.title}
+                </h2>
+                <p className="text-xl mb-8 italic" style={{ color: "#c8c8c8", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 36px)" }}>
+                  {service.headline}
+                </p>
+                <p className="text-base leading-relaxed mb-10 max-w-lg" style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}>
+                  {service.description}
+                </p>
+                <div className="mb-8" style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }} />
+                <ul className="grid grid-cols-2 gap-4">
+                  {service.deliverables.map((d, j) => (
+                    <li
+                      key={j}
+                      className="flex items-center gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors cursor-default"
+                      style={{ color: "#707070", fontFamily: "var(--font-body)" }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 shadow-[0_0_8px_#c8c8c8]" style={{ backgroundColor: "#c8c8c8" }} />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              {/* Headline */}
-              <p
-                style={{
-                  fontSize: "clamp(18px, 5vw, 24px)",
-                  color: "#c8c8c8",
-                  fontFamily: "var(--font-display)",
-                  fontStyle: "italic",
-                  marginBottom: "16px",
-                }}
-              >
-                {service.headline}
-              </p>
-
-              {/* Beschreibung */}
-              <p
-                style={{
-                  fontSize: "15px",
-                  lineHeight: 1.7,
-                  color: "#a0a0a0",
-                  fontFamily: "var(--font-body)",
-                  marginBottom: "28px",
-                }}
-              >
-                {service.description}
-              </p>
-
-              {/* Trennlinie */}
-              <div style={{ height: "1px", backgroundColor: "#333", marginBottom: "20px" }} />
-
-              {/* Deliverables */}
-              <ul style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {service.deliverables.map((d, j) => (
-                  <li
-                    key={j}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      fontSize: "14px",
-                      color: "#707070",
-                      fontFamily: "var(--font-body)",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "6px",
-                        height: "6px",
-                        borderRadius: "50%",
-                        backgroundColor: "#c8c8c8",
-                        flexShrink: 0,
-                        boxShadow: "0 0 8px #c8c8c8",
-                      }}
-                    />
-                    {d}
-                  </li>
-                ))}
-              </ul>
+              {i === 0 && (
+                <div className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse" style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}>
+                  <span>WEITER SCROLLEN</span>
+                  <svg width="30" height="12" viewBox="0 0 24 10" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M0 5h22M17 1l5 4-5 4" />
+                  </svg>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </section>
-    )
-  }
-
-  // ── DESKTOP LAYOUT: originaler GSAP Horizontal-Scroll ──
-  return (
-    <section id="services" className="relative" ref={containerRef} style={{ overflow: "hidden" }}>
-      <div
-        className="absolute top-8 left-8 md:left-16 lg:left-24 z-10 pointer-events-none"
-        aria-hidden
-      >
-        <p
-          className="text-[11px] tracking-[0.2em] uppercase"
-          style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-        >
-          Unsere Leistungen — Scroll
-        </p>
       </div>
 
-      <div
-        ref={trackRef}
-        className="flex h-screen"
-        style={{ width: `${services.length * 100}vw` }}
-      >
-        {services.map((service, i) => (
-          <div
-            key={service.id}
-            className="v6-service-panel relative flex flex-col justify-end overflow-hidden"
-            style={{
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: i % 2 === 0 ? "#141414" : "#0f0f0f",
-              borderRight: i < services.length - 1 ? "1px solid #333" : "none",
-              flexShrink: 0,
-            }}
-          >
-            <div
-              className="bg-number absolute top-[-5%] right-[-5%] select-none pointer-events-none font-[family-name:var(--font-display)] leading-none z-0"
-              aria-hidden
-              style={{
-                fontSize: "clamp(250px, 45vw, 600px)",
-                color: "#c8c8c8",
-                opacity: 0.03,
-                lineHeight: 0.85,
-                paddingRight: "2rem",
-                textShadow: "0 0 50px rgba(200,200,200,0.1)",
-              }}
-            >
-              {service.number}
-            </div>
-
-            <div
-              className="absolute top-12 right-12 z-0 opacity-50 mix-blend-screen scale-150"
-              aria-hidden
-            >
-              <WireframeIcon type={PANEL_ICONS[i % PANEL_ICONS.length]} />
-            </div>
-
-            <div className="relative z-10 px-12 md:px-20 pb-20 pt-32 max-w-3xl">
-              <p
-                className="text-[13px] tracking-[0.3em] uppercase mb-8 font-bold"
-                style={{ color: "#ebebeb", fontFamily: "var(--font-body)" }}
-              >
-                {service.number} / {String(services.length).padStart(2, "0")}
-              </p>
-
-              <h2
-                className="font-[family-name:var(--font-display)] mb-6 tracking-tighter"
-                style={{
-                  fontSize: "clamp(50px, 9vw, 120px)",
-                  color: "#ebebeb",
-                  lineHeight: 0.9,
-                  textShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                }}
-              >
-                {service.title}
-              </h2>
-
-              <p
-                className="text-xl mb-8 italic"
-                style={{
-                  color: "#c8c8c8",
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(22px, 3vw, 36px)",
-                }}
-              >
-                {service.headline}
-              </p>
-
-              <p
-                className="text-base leading-relaxed mb-10 max-w-lg"
-                style={{ color: "#a0a0a0", fontFamily: "var(--font-body)" }}
-              >
-                {service.description}
-              </p>
-
-              <div
-                className="mb-8"
-                style={{ height: "2px", backgroundColor: "#333", width: "100%", boxShadow: "0 0 10px rgba(200,200,200,0.2)" }}
-              />
-
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {service.deliverables.map((d, j) => (
-                  <li
-                    key={j}
-                    className="flex items-center gap-4 text-sm font-medium hover:text-[#ebebeb] transition-colors cursor-default"
-                    style={{ color: "#707070", fontFamily: "var(--font-body)" }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0 shadow-[0_0_8px_#c8c8c8]"
-                      style={{ backgroundColor: "#c8c8c8" }}
-                    />
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {i === 0 && (
-              <div
-                className="absolute bottom-12 right-12 flex items-center gap-3 animate-pulse"
-                style={{ color: "#c8c8c8", fontSize: "12px", letterSpacing: "0.2em", fontWeight: "bold" }}
-              >
-                <span>WEITER SCROLLEN</span>
-                <svg width="30" height="12" viewBox="0 0 24 10" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M0 5h22M17 1l5 4-5 4" />
-                </svg>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
     </section>
   )
 }
