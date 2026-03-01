@@ -3,12 +3,11 @@
 import { useRef } from "react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Observer } from "gsap/Observer"
 import dynamic from "next/dynamic"
 import { services } from "@/lib/content-de"
 
-gsap.registerPlugin(ScrollTrigger, Observer)
+gsap.registerPlugin(Observer)
 
 const WireframeIcon = dynamic(
   () => import("@/components/chrom/WireframeIcon").then((m) => m.WireframeIcon),
@@ -24,15 +23,15 @@ export function ServicesSection() {
   useGSAP(
     () => {
       if (!containerRef.current || !trackRef.current) return
-      // Kein GSAP auf Mobile — CSS zeigt dort die vertikalen Karten
       if (window.innerWidth < 768) return
 
-      const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
-      if (panels.length === 0) return
+      const section = containerRef.current
+      const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel", section)
+      if (!panels.length) return
 
       let currentIndex = 0
       let animating = false
-      let exiting   = false
+      let locked = false
 
       const goTo = (index: number) => {
         if (animating) return
@@ -51,18 +50,8 @@ export function ServicesSection() {
         const number = panel?.querySelector<HTMLElement>(".bg-number")
         const title  = panel?.querySelector<HTMLElement>("h2")
 
-        if (number) {
-          gsap.fromTo(number,
-            { x: 80, opacity: 0 },
-            { x: 0, opacity: 0.03, duration: 1, ease: "power2.out" }
-          )
-        }
-        if (title) {
-          gsap.fromTo(title,
-            { x: -40, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.7, ease: "power2.out", delay: 0.1 }
-          )
-        }
+        if (number) gsap.fromTo(number, { x: 80, opacity: 0 }, { x: 0, opacity: 0.03, duration: 1, ease: "power2.out" })
+        if (title)  gsap.fromTo(title,  { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "power2.out", delay: 0.1 })
       }
 
       const resetPanels = (toIndex: number) => {
@@ -73,107 +62,99 @@ export function ServicesSection() {
         })
         gsap.set(panels, { xPercent: -100 * toIndex })
         currentIndex = toIndex
-        exiting  = false
         animating = false
       }
 
-      const exit = { endPos: 0, startPos: 0 }
+      // ── Lock / Unlock ─────────────────────────────────────────────────────────
+      // lock():   body.overflow = "hidden" → Seite kann nicht mehr gescrollt werden.
+      //           Scrollbalken-Breite wird als padding-right kompensiert (kein Layout-Shift).
+      //           Scroll-Position wird auf den Section-Anfang gesetzt.
+      //
+      // unlock(): stellt alles wieder her und springt per window.scrollTo an die
+      //           richtige Position vor/nach der Section.
+      // ─────────────────────────────────────────────────────────────────────────
 
-      // Observer blockiert Scroll komplett wenn aktiv (preventDefault: true)
+      const lock = (fromBelow: boolean) => {
+        if (locked) return
+        locked = true
+        const sbw = window.innerWidth - document.documentElement.clientWidth
+        window.scrollTo(0, section.offsetTop)
+        if (sbw > 0) document.body.style.paddingRight = `${sbw}px`
+        document.body.style.overflow = "hidden"
+        resetPanels(fromBelow ? panels.length - 1 : 0)
+        obs.enable()
+      }
+
+      const unlock = (forward: boolean) => {
+        if (!locked) return
+        locked = false
+        obs.disable()
+        document.body.style.overflow = ""
+        document.body.style.paddingRight = ""
+        if (forward) {
+          window.scrollTo(0, section.offsetTop + section.offsetHeight + 1)
+        } else {
+          window.scrollTo(0, Math.max(0, section.offsetTop - 1))
+        }
+      }
+
+      // Observer für Panel-Navigation (läuft nur wenn locked)
       const obs = Observer.create({
         target: window,
         type: "wheel,touch",
         tolerance: 10,
         preventDefault: true,
         onDown: () => {
-          if (exiting || animating) return
-          if (currentIndex < panels.length - 1) {
-            goTo(currentIndex + 1)
-          } else {
-            exiting = true
-            obs.disable()
-            window.scrollTo(0, exit.endPos + 10)
-          }
+          if (animating) return
+          if (currentIndex < panels.length - 1) goTo(currentIndex + 1)
+          else unlock(true)
         },
         onUp: () => {
-          if (exiting || animating) return
-          if (currentIndex > 0) {
-            goTo(currentIndex - 1)
-          } else {
-            exiting = true
-            obs.disable()
-            window.scrollTo(0, Math.max(0, exit.startPos - 10))
-          }
+          if (animating) return
+          if (currentIndex > 0) goTo(currentIndex - 1)
+          else unlock(false)
         },
       })
       obs.disable()
 
-      // ── Wheel-Fence ──────────────────────────────────────────────────────────
-      // Fängt Wheel-Events *synchron* (passive:false) ab, BEVOR der Browser
-      // scrollY verändert. Prüft ob das geschätzte Scroll-Ziel die Section-
-      // Oberkante überspringen würde — falls ja: preventDefault() + scrollTo
-      // auf stStart + Observer aktivieren.
-      //
-      // Das ist nötig weil GSAP's onEnter erst im nächsten rAF-Frame feuert —
-      // zu spät bei schnellem Momentum-Scroll.
+      // ── Wheel-Fence ───────────────────────────────────────────────────────────
+      // passive:false → darf preventDefault() aufrufen, BEVOR der Browser scrollY ändert.
+      // Berechnet die geschätzte Scroll-Zielposition und fängt ab, falls sie die
+      // Section überspringen würde.
       // ─────────────────────────────────────────────────────────────────────────
-      let stStart = 0
-
       const wheelFence = (e: WheelEvent) => {
-        if (obs.isEnabled || exiting) return  // Observer aktiv: dieser kümmert sich drum
-        if (e.deltaY <= 0 || window.scrollY >= stStart) return  // Kein Abwärts-Scroll oder schon drin
+        if (locked) return
 
-        // Schätze die Ziel-ScrollY nach diesem Event
+        const sTop    = section.offsetTop
+        const sBottom = section.offsetTop + section.offsetHeight
+        const sy      = window.scrollY
+
         let delta = e.deltaY
-        if (e.deltaMode === 1) delta *= 40               // lines → pixel (Mausrad)
-        else if (e.deltaMode === 2) delta *= window.innerHeight  // pages → pixel
+        if (e.deltaMode === 1) delta *= 40
+        else if (e.deltaMode === 2) delta *= window.innerHeight
 
-        // Würde dieser Scroll die Section-Oberkante überspringen?
-        if (window.scrollY + delta >= stStart) {
+        // Abwärts-Scroll würde Section-Oberkante überspringen
+        if (delta > 0 && sy < sTop && sy + delta >= sTop) {
           e.preventDefault()
-          window.scrollTo(0, stStart)
-          resetPanels(0)
-          obs.enable()
+          lock(false)
+          return
+        }
+        // Aufwärts-Scroll würde von unten durch die Section scrollen
+        if (delta < 0 && sy >= sBottom - window.innerHeight + 1 && sy + delta < sBottom - window.innerHeight + 1) {
+          e.preventDefault()
+          lock(true)
         }
       }
 
       window.addEventListener("wheel", wheelFence, { passive: false })
 
-      const st = ScrollTrigger.create({
-        trigger: containerRef.current,
-        pin: true,
-        anticipatePin: 1,
-        start: "top top",
-        end: () => "+=" + (panels.length - 1) * window.innerHeight * 15,
-        onEnter: () => {
-          exit.endPos   = st.end
-          exit.startPos = st.start
-          stStart       = st.start
-          resetPanels(0)
-          obs.enable()
-        },
-        onEnterBack: () => {
-          exit.endPos   = st.end
-          exit.startPos = st.start
-          stStart       = st.start
-          resetPanels(panels.length - 1)
-          obs.enable()
-        },
-        onLeave:     () => { obs.disable() },
-        onLeaveBack: () => { obs.disable() },
-        invalidateOnRefresh: true,
-        onRefresh: () => {
-          exit.endPos   = st.end
-          exit.startPos = st.start
-          stStart       = st.start
-        },
-      })
-      stStart = st.start  // Initialwert direkt nach create setzen
-
       return () => {
         obs.kill()
-        st.kill()
         window.removeEventListener("wheel", wheelFence)
+        if (locked) {
+          document.body.style.overflow = ""
+          document.body.style.paddingRight = ""
+        }
       }
     },
     { scope: containerRef }
@@ -243,7 +224,7 @@ export function ServicesSection() {
         ))}
       </div>
 
-      {/* ── DESKTOP: GSAP pin + Observer + Wheel-Fence ── */}
+      {/* ── DESKTOP: body.overflow=hidden statt GSAP-pin ── */}
       <div className="hidden md:block relative">
         <div className="absolute top-8 left-16 lg:left-24 z-10 pointer-events-none" aria-hidden>
           <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: "#707070", fontFamily: "var(--font-body)" }}>
