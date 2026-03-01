@@ -25,6 +25,9 @@ export function ServicesSection() {
     () => {
       if (!containerRef.current || !trackRef.current) return
 
+      // Verhindert dass schnelles Scrollen die gepinnte Sektion überspringt
+      ScrollTrigger.normalizeScroll(true)
+
       const panels = gsap.utils.toArray<HTMLElement>(".v6-service-panel")
       if (panels.length === 0) return
 
@@ -32,48 +35,60 @@ export function ServicesSection() {
         scrollTrigger: {
           trigger: containerRef.current,
           pin: true,
-          scrub: 1.5, // Smoother scrub
-          end: () => "+=" + (panels.length - 1) * window.innerWidth * 1.5, // Slower scroll
+          anticipatePin: 1,
+          scrub: 1,
+          // * 1.5 gibt mehr Scroll-Widerstand → verhindert zufälliges Durchscrollen
+          end: () => "+=" + (panels.length - 1) * window.innerWidth * 1.5,
+          snap: {
+            snapTo: 1 / (panels.length - 1),
+            duration: { min: 0.3, max: 0.6 },
+            delay: 0.05,   // snapped schnell nachdem Scroll stoppt
+            ease: "power2.inOut",
+          },
           invalidateOnRefresh: true,
         },
       })
 
-      // Extreme horizontal scroll with rotation and scale
+      // ease: "none" ist Pflicht bei scrub — sonst ist Position nicht linear zur Scroll-Position
       tl.to(panels, {
         xPercent: -100 * (panels.length - 1),
-        ease: "power1.inOut",
+        ease: "none",
       })
 
-      // Parallax effects inside each panel
-      panels.forEach((panel, i) => {
+      // Parallax-Effekte innerhalb der Panels
+      panels.forEach((panel) => {
         const title = panel.querySelector("h2")
         const number = panel.querySelector(".bg-number")
-        
-        gsap.to(title, {
-          x: 200,
-          scale: 1.1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: tl,
-            start: "left right",
-            end: "right left",
-            scrub: true,
-          }
-        })
 
-        gsap.to(number, {
-          x: -150,
-          rotation: 45,
-          ease: "none",
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: tl,
-            start: "left right",
-            end: "right left",
-            scrub: true,
-          }
-        })
+        if (title) {
+          gsap.to(title, {
+            x: 200,
+            scale: 1.1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: tl,
+              start: "left right",
+              end: "right left",
+              scrub: true,
+            },
+          })
+        }
+
+        if (number) {
+          gsap.to(number, {
+            x: -150,
+            rotation: 45,
+            ease: "none",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: tl,
+              start: "left right",
+              end: "right left",
+              scrub: true,
+            },
+          })
+        }
       })
     },
     { scope: containerRef }
