@@ -41,10 +41,12 @@ export function ServicesSection() {
     updateDots(0)
 
     // Single wheel tick = next / prev panel — no scrub, no lag
+    // rect.top is <=0 (and going negative) while wrapper is being scrolled through
+    // rect.bottom >= innerHeight as long as wrapper bottom hasn't passed viewport
     const handleWheel = (e: WheelEvent) => {
       if (!wrapperRef.current) return
       const rect = wrapperRef.current.getBoundingClientRect()
-      const isSticky = Math.abs(rect.top) < 2 && rect.bottom >= window.innerHeight - 2
+      const isSticky = rect.top <= 0 && rect.bottom >= window.innerHeight
       if (!isSticky) return
       if (e.deltaY > 0) gotoPanel(currentIdx + 1)
       else if (e.deltaY < 0) gotoPanel(currentIdx - 1)
@@ -96,8 +98,8 @@ export function ServicesSection() {
                 className="absolute select-none pointer-events-none font-[family-name:var(--font-display)]"
                 aria-hidden
                 style={{
-                  top: "50%",
-                  right: "2rem",
+                  top: "38%",
+                  right: "8%",
                   transform: "translateY(-50%)",
                   fontSize: "clamp(200px, 32vw, 480px)",
                   color: "var(--v6-accent)",
