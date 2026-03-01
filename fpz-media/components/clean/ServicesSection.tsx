@@ -91,10 +91,9 @@ export function ServicesSection() {
           ref={sliderRef}
           className="flex h-full [&::-webkit-scrollbar]:hidden"
           style={{
-            overflowX        : "scroll",
-            scrollSnapType   : "x mandatory",
-            msOverflowStyle  : "none",
-            scrollbarWidth   : "none",
+            overflowX       : "scroll",
+            msOverflowStyle : "none",
+            scrollbarWidth  : "none",
           } as React.CSSProperties}
         >
           {services.map((service, i) => (
@@ -102,9 +101,8 @@ export function ServicesSection() {
               key={service.id}
               className="v6-service-panel relative flex flex-col justify-center overflow-hidden"
               style={{
-                minWidth      : "100vw",
-                height        : "100%",
-                scrollSnapAlign: "start",
+                minWidth       : "100vw",
+                height         : "100%",
                 backgroundColor: "var(--v6-bg-elevated)",
                 borderRight   : i < services.length - 1 ? "1px solid var(--v6-border)" : "none",
                 flexShrink    : 0,
